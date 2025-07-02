@@ -1,0 +1,200 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,body, #root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.signup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #C2E4E4, #DEE8E8, #FBFBFB);
+  padding: 40px 16px; /* 모바일 대비 좌우 여백 */
+  box-sizing: border-box;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* 카드 박스 */
+.signup-card {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  min-height: 1000px;
+  max-width: 500px;
+  background-color: white;
+  border: 1px solid #BBBBBB;
+  border-radius: 16px;
+  margin: 0px 0px;
+
+}
+
+.logo {
+  display: block;
+  margin: 54px 112px 0 122px;
+  width: 266px;
+  height: 68px;
+}
+
+.title {
+  text-align: center;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 20px;
+  font-weight: 700; /*bold*/
+  color: #0B0B61;
+  line-height: 100%;
+  margin-top: 19px;
+}
+
+.description {
+  text-align: center;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 18px;
+  line-height: 1.6; /*글씨가 너무 붙어보여서 1.0에서 1.4로 수정*/
+  font-weight: 300;
+  color: #838383;
+  margin-top: 5px;
+  letter-spacing: 0;
+
+}
+
+.signup-form {
+  width: 360px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  display:flex;
+  padding: 45px 4px 51px;
+  margin: 0px 70px;
+  gap: 32px;
+}
+
+.check-duplicate {
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 100%;
+  color: #8BCECE
+}
+
+.row-with-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.row-with-button input {
+  flex: 1;
+}
+
+.check-btn,
+.upload-btn {
+  border: 0.69px solid #BBBBBB;
+  background-color: white;
+  padding: 4px 8px;
+  font-size: 9.88px;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 75px;
+  height: 27px;
+  font-family: 'Pretendard', sans-serif;
+  margin: 0px 0px 5px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column; /* 🔥 입력창을 아래로 */
+  width: 100%;
+  width: 360px;
+  height: 58px;
+}
+
+.form-row-left {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.form-row input {
+  border: none;                /* 테두리 없애기 */
+  border-bottom: 1px solid #BBBBBB; /* 밑줄만 */
+  background-color: transparent;
+  outline: none;
+  height: 40px;
+  width: 360px;
+  padding:0 0px;
+  font-size: 16px;
+  font-family: 'Pretendard', sans-serif;
+  box-sizing: border-box;
+}
+
+.form-row label {
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1;
+  color: #838383;
+
+}
+
+/* 파일명 표시 */
+.file-name {
+  font-size: 12px;
+  color: #c4c3c3;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 7px 0px 0px;
+}
+/* 밑줄 */
+.underline {
+  width: 100%;
+  height: 1px;
+  background-color: #BBBBBB;
+  margin-top: 2px;
+}
+
+/* input 태그 스타일 */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+  background-color: transparent;
+}
+
+input::placeholder {
+  color: white;
+  font-size: 14px;
+  opacity: 1;
+}
+
+.hidden-file {
+  display: none;
+}
+
+.submit-btn {
+  width: 360px;
+  height: 60px;
+  background-color: #0B0B61;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
