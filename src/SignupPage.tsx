@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { ChangeEvent } from 'react';
 
 import './SignupPage.css';
-import logo from './assets/UniTrip_rogo.svg';
+import logo from '/assets/UniTrip_rogo.svg';
 
 const SignupPage: React.FC = () => {
   const [fileName, setFileName] = useState<string>('');

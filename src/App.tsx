@@ -1,17 +1,13 @@
-import { useState } from 'react'
-import Header from './components/Header'
-import SignupPage from './SignupPage'
-
-import './App.css'
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
-
   return (
-    <>
-      <Header isLoggedIn={false} />
-      <SignupPage />
-    </>
-  )
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
