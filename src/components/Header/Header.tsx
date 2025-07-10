@@ -3,9 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import defaultProfile from "../../assets/header/default-profile.svg";
 
 interface HeaderProps {
-  isLoggedIn?: boolean;
-  username?: string;
-  profileUrl?: string;
+  isLoggedIn?: boolean; //todo
+  username?: string; //todo
+  profileUrl?: string; //todo
 }
 
 function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderProps): React.JSX.Element {
