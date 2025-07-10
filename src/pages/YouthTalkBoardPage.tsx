@@ -42,7 +42,7 @@ const YouthTalkBoardPage: React.FC = () => {
         .yt-board-title { font-weight: 700; font-size: 18px; color: #0b0b61; margin-bottom: 20px; }
         .yt-white-container { background: #fff; border-radius: 15px; box-shadow: 0 1px 6px #0001; padding: 24px 40px 24px 40px; margin-top: 10px; }
         .yt-post-list { display: flex; flex-direction: column; gap: 24px; }
-        .yt-post-card { display: flex; flex-direction: column; gap: 0; background: #fff; border-radius: 15px; border: 1px solid #bbb; padding: 24px; margin-bottom: 8px; }
+        .yt-post-card { display: flex; flex-direction: column; gap: 0; background: #fff; border-radius: 15px; border: 2px solid #bbb; padding: 24px; margin-bottom: 8px; }
         .yt-post-top-row { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #bbb; padding-bottom: 12px; margin-bottom: 18px; }
         .yt-post-info-row { display: flex; align-items: center; }
         .yt-profile { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; background: #eee; }

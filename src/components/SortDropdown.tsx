@@ -27,7 +27,7 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
         }}
         onClick={() => setOpen((o) => !o)}
       >
-        {value} <span style={{ float: "right" }}>▼</span>
+        {value} <span style={{ float: "right", transition: "transform 0.2s", display: "inline-block", transform: open ? "rotate(180deg)" : undefined }}>▼</span>
       </button>
       {open && (
         <div
