@@ -42,10 +42,18 @@ interface HeaderProps {
 
 function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderProps): React.JSX.Element {
   const location = useLocation();
+  
+  // 경로에 따라 스타일 변경
   const youthTalkActive = location.pathname.startsWith("/youth-talk");
+  const recordedYouthActive = location.pathname === "/recorded-youth";
+
   const youthTalkStyle = youthTalkActive
     ? { ...navLinkStyle, color: "#bbb", cursor: "default" }
     : navLinkStyle;
+
+    const recordedUsernameStyle = recordedYouthActive
+    ? { ...usernameStyle, color: "#bbb", cursor: "default" }
+    : usernameStyle;
 
   return (
     <header style={headerStyle}>
@@ -64,11 +72,14 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
       <div style={rightBoxStyle}>
         {isLoggedIn ? (
           <>
-            <span style={usernameStyle}>
+            <Link to="/recorded-youth" 
+            style={recordedUsernameStyle}>
               기록한 청춘
               <span style={usernameGapStyle} />
               <b>{username}</b>님
-            </span>
+            </Link>
+
+            
             <img
               src={profileUrl ? profileUrl : defaultProfile}
               alt="프로필"

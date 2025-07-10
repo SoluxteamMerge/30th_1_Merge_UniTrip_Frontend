@@ -14,11 +14,13 @@ const iconStyle = { fontSize: 28, fontWeight: 700, cursor: "pointer" };
 const editorWrapStyle = {
   background: "#fff",
   minHeight: "calc(100vh - 80px)",
-  maxWidth: 1200,
+  //maxWidth: 1200,
+  maxWidth: "1200px",
   margin: "0 auto",
   border: "1px solid #ccc",
   borderTop: "none",
-  boxSizing: "border-box"
+  //boxSizing: "border-box"
+  boxSizing: "border-box" as const
 };
 const titleRowStyle = {
   display: "flex",
@@ -34,7 +36,8 @@ const titleInputStyle = {
   color: "#bbb",
   background: "transparent",
   width: "100%",
-  textAlign: "center"
+  //textAlign: "center"
+  textAlign: "center" as const
 };
 const dividerStyle = {
   height: 1,
@@ -51,7 +54,8 @@ const contentInputStyle = {
   color: "#bbb",
   background: "transparent",
   padding: "32px 48px 0 48px",
-  resize: "vertical"
+  //resize: "vertical"
+  resize: "vertical" as const
 };
 
 const WritePostPage: React.FC = () => {
