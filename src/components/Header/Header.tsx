@@ -1,88 +1,90 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import defaultProfile from "../../assets/default-profile.svg";
-
-// 스타일 객체 분리
-const headerStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "20px 40px",
-  background: "#fbfbfb",
-  borderBottom: "1px solid #dedede"
-};
-const leftBoxStyle = { display: "flex", alignItems: "center" };
-const logoStyle = { height: 40, verticalAlign: "middle", marginRight: 8 };
-const navLinkStyle = {
-  color: "#0b0b61",
-  fontWeight: 700,
-  marginRight: 24,
-  textDecoration: "none"
-};
-const navLastLinkStyle = { ...navLinkStyle, marginRight: 0 };
-const rightBoxStyle = { display: "flex", alignItems: "center" };
-const usernameStyle = { color: "#0b0b61", fontWeight: 600, marginRight: 12 };
-const usernameGapStyle = { display: "inline-block", width: 24 };
-const profileImgStyle: React.CSSProperties = {
-  width: 48,
-  height: 48,
-  borderRadius: "50%",
-  objectFit: "cover",
-  background: "#eee",
-  border: "1.5px solid #ccc"
-};
-const loginLinkStyle = { color: "#0b0b61", fontWeight: 600, marginRight: 16, textDecoration: "none" };
-const signupLinkStyle = { color: "#0b0b61", fontWeight: 600, textDecoration: "none" };
+import defaultProfile from "../../assets/header/default-profile.svg";
 
 interface HeaderProps {
-  isLoggedIn?: boolean;
-  username?: string;
-  profileUrl?: string;
+  isLoggedIn?: boolean; //todo
+  username?: string; //todo
+  profileUrl?: string; //todo
 }
 
 function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderProps): React.JSX.Element {
   const location = useLocation();
-  const youthTalkActive = location.pathname.startsWith("/youth-talk");
-  const youthTalkStyle = youthTalkActive
-    ? { ...navLinkStyle, color: "#bbb", cursor: "default" }
-    : navLinkStyle;
+
+  // 각 메뉴의 경로
+  const menuLinks = [
+    { to: "/cjdcnsqkfwkrnr", label: "청춘 발자국" },
+    { to: "/dpaxlduwjdwleh", label: "MT여정지도" },
+    { to: "/gkaRpgody", label: "함께해요" },
+    { to: "/youth-talk", label: "청춘톡" },
+    { to: "/cjdcnstjfkq", label: "청춘서랍", last: true }
+  ];
 
   return (
-    <header style={headerStyle}>
-      <div style={leftBoxStyle}>
-        <span>
-          <img src="/src/assets/logo.svg" alt="로고" style={logoStyle} />
-        </span>
-        <nav>
-          <a href="#" style={navLinkStyle}>청춘 발자국</a>
-          <a href="#" style={navLinkStyle}>MT여정지도</a>
-          <a href="#" style={navLinkStyle}>함께해요</a>
-          <Link to="/youth-talk" style={youthTalkStyle}>청춘톡</Link>
-          <a href="#" style={navLastLinkStyle}>청춘서랍</a>
-        </nav>
-      </div>
-      <div style={rightBoxStyle}>
-        {isLoggedIn ? (
-          <>
-            <span style={usernameStyle}>
-              기록한 청춘
-              <span style={usernameGapStyle} />
-              <b>{username}</b>님
-            </span>
-            <img
-              src={profileUrl ? profileUrl : defaultProfile}
-              alt="프로필"
-              style={profileImgStyle}
-            />
-          </>
-        ) : (
-          <>
-            <a href="#" style={loginLinkStyle}>로그인</a>
-            <a href="#" style={signupLinkStyle}>회원가입</a>
-          </>
-        )}
-      </div>
-    </header>
+    <>
+      <style>
+        {`
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #fbfbfb; border-bottom: 1px solid #dedede; }
+        .header-left { display: flex; align-items: center; }
+        .header-logo { height: 40px; vertical-align: middle; margin-right: 8px; }
+        .header-nav-link { color: #0b0b61; font-weight: 700; margin-right: 24px; text-decoration: none; }
+        .header-nav-link.last { margin-right: 0; }
+        .header-nav-link.active { color: #bbb; cursor: default; }
+        .header-right { display: flex; align-items: center; }
+        .header-username { color: #0b0b61; font-weight: 600; margin-right: 12px; }
+        .header-username-link { color: #0b0b61; font-weight: 600; text-decoration: none; }
+        .header-username-gap { display: inline-block; width: 24px; }
+        .header-profile-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #eee; border: 1.5px solid #ccc; }
+        .header-login-link { color: #0b0b61; font-weight: 600; margin-right: 16px; text-decoration: none; }
+        .header-signup-link { color: #0b0b61; font-weight: 600; text-decoration: none; }
+        `}
+      </style>
+      <header className="header">
+        <div className="header-left">
+          <span>
+            <img src="/src/assets/header/logo.svg" alt="로고" className="header-logo" />
+          </span>
+          <nav>
+            {menuLinks.map(({ to, label, last }) => (
+              <Link
+                key={to}
+                to={to}
+                className={
+                  "header-nav-link" +
+                  (last ? " last" : "") +
+                  (location.pathname === to ? " active" : "")
+                }
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+        <div className="header-right">
+          {isLoggedIn ? (
+            <>
+              <span className="header-username">
+                <Link to="/my-youth" className="header-username-link">
+                  기록한 청춘
+                </Link>
+                <span className="header-username-gap" />
+                <b>{username}</b>님
+              </span>
+              <img
+                src={profileUrl ? profileUrl : defaultProfile}
+                alt="프로필"
+                className="header-profile-img"
+              />
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="header-login-link">로그인</Link>
+              <Link to="/signup" className="header-signup-link">회원가입</Link>
+            </>
+          )}
+        </div>
+      </header>
+    </>
   );
 }
 
