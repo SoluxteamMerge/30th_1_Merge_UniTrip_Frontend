@@ -1,12 +1,13 @@
-import React from 'react';
-import './App.css';
-import './LoginPage'
-import './MainPage';
-import MainPage from './MainPage';
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
-  return <MainPage />; // 앱 진입점에서 MainPage 렌더링
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
 }
 
 export default App;
-
