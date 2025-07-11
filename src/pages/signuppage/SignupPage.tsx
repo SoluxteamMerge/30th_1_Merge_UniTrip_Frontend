@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import type { ChangeEvent } from 'react';
-
 import './SignupPage.css';
-import logo from '/assets/UniTrip_rogo.svg';
+import logo from '../../assets/header/logo.svg';
+import checkIcon from "../../assets/체크아이콘.svg";
 
 const SignupPage: React.FC = () => {
   const [fileName, setFileName] = useState<string>('');
@@ -91,7 +91,9 @@ const SignupPage: React.FC = () => {
 
           {/* 학교 이메일 인증 */}
           <div className="form-row">
-            <label className="label">학교 이메일 인증</label>
+            <label className="label">학교 이메일 인증
+              <img src={checkIcon} alt = "체크" className="label-check-icon"/>
+            </label>
             <input type="email" placeholder="이메일을 입력하세요" />
             <div className="underline"></div>
           </div>

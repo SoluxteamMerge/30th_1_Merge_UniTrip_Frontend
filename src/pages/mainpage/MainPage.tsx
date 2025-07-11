@@ -1,9 +1,8 @@
-import React from 'react';
-import './App.css';
-import { reviewData } from './data/review';
-import { ReviewCard } from './components/ReviewCard';
-import Header from './components/Header';
-import './MainPage.css';
+import '../../App.css';
+import { reviewData } from '../../data/review';
+import { ReviewCard } from '../reviewcard/ReviewCard';
+import Header from '../../components/Header/Header';
+import '../mainpage/MainPage.css';
 
 function MainPage() {
   return (

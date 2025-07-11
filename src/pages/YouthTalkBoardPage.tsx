@@ -36,7 +36,7 @@ const YouthTalkBoardPage: React.FC = () => {
     <div className="yt-bg">
       <style>{`
         .yt-bg { background: #e8f0f2; min-height: 100vh; }
-        .yt-container { max-width: 1200px; margin: 0 auto; padding: 60px 0px 0px 300px; }
+        .yt-container { max-width: 1500px; margin: 0 auto; padding: 60px 0px 0px 300px; }
         .yt-title-box { font-weight: 700; font-size: 22px; color: #0b0b61; display: flex; align-items: center; margin-bottom: 0px; }
         .yt-title-icon { font-size: 20px; margin-right: 8px; }
         .yt-board-title { font-weight: 700; font-size: 18px; color: #0b0b61; margin-bottom: 20px; }

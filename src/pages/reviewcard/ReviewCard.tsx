@@ -1,5 +1,4 @@
 // components/ReviewCard.tsx
-import React from 'react';
 import './ReviewCard.css';
 
 interface ReviewCardProps {

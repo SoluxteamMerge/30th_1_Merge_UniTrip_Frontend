@@ -14,18 +14,20 @@ html,body, #root {
   justify-content: center;
   align-items: center;
   background: linear-gradient(to bottom, #C2E4E4, #DEE8E8, #FBFBFB);
-  padding: 40px 16px; /* 모바일 대비 좌우 여백 */
+  padding: 40px 160px; /* 데스크탑 기준 좌우 여백 */
   box-sizing: border-box;
   min-height: 100vh;
-  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
 }
+
 
 /* 카드 박스 */
 .signup-card {
   display: flex;
   flex-direction: column;
   width: 90%;
-  min-height: 1000px;
+  min-height: 593px;
   max-width: 500px;
   background-color: white;
   border: 1px solid #BBBBBB;
@@ -181,6 +183,21 @@ input::placeholder {
   display: none;
 }
 
+.label {
+  display: inline-flex;       /* 텍스트 + 아이콘 한 줄에 정렬 */
+  align-items: center;        /* 세로 가운데 정렬 */
+  gap: 7px;                   /* 텍스트와 아이콘 사이 간격 */
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.label-check-icon {
+  width: 12px;
+  height: 12px;
+  
+}
+
 .submit-btn {
   width: 360px;
   height: 60px;
@@ -192,7 +209,7 @@ input::placeholder {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  margin: 0 auto;
+  margin: 0 auto 51px;
 
   display: flex;
   align-items: center;
