@@ -19,7 +19,6 @@ const WriteReviewPage: React.FC = () => {
   // 메모 입력값(프론트에서만 사용)
   const [memo, setMemo] = useState("");
 
-  // 카테고리 드롭다운 상태
   const categories = [
     "청춘톡",
     "MT여정지도",
@@ -36,6 +35,8 @@ const WriteReviewPage: React.FC = () => {
     setSelectedCategory(cat);
     setCategoryOpen(false);
   };
+
+  const isEmailVerified = true; // todo
 
   return (
     <div className="wr-bg">
@@ -235,91 +236,153 @@ const WriteReviewPage: React.FC = () => {
           cursor: pointer;
           z-index: 100;
         }
+        .wr-overlay {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0,0,0,0.13);
+          z-index: 200;
+          pointer-events: auto;
+        }
+        .wr-modal {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: #fff;
+          border-radius: 25px;
+          box-shadow: 0 4px 32px 0 rgba(0,0,0,0.13);
+          padding: 80px 150px 50px 150px;
+          z-index: 300;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .wr-modal-text {
+          font-size: 20px;
+          color: #black;
+          font-weight: 700;
+          text-align: center;
+          margin-bottom: 30px;
+          line-height: 1.5;
+        }
+        .wr-modal-btn {
+          background: #0b0b61;
+          color: #fff;
+          font-size: 20px;
+          font-weight: 600;
+          border: none;
+          border-radius: 10px;
+          padding: 12px 48px;
+          cursor: pointer;
+        }
+        .wr-disabled-area {
+          pointer-events: none;
+          opacity: 0.45;
+          filter: blur(0.5px);
+        }
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
-      <div className="wr-left">
-        <div className="wr-category-select">
-          <button
-            className="wr-category-btn"
-            onClick={() => setCategoryOpen(o => !o)}
-            type="button"
-          >
-            <span>{selectedCategory}</span>
-            <span className="wr-category-arrow" style={{ transform: categoryOpen ? "rotate(180deg)" : undefined }}>▼</span>
-          </button>
-          {categoryOpen && (
-            <div className="wr-category-dropdown">
-              {categories.map(cat => (
-                <div
-                  key={cat}
-                  className={"wr-category-item" + (cat === selectedCategory ? " selected" : "")}
-                  onClick={() => handleCategorySelect(cat)}
-                >
-                  {cat}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="wr-memo-box">
-          <span className="wr-memo-label-abs">메모</span>
-          <textarea
-            className="wr-memo-textarea"
-            value={memo}
-            onChange={e => setMemo(e.target.value)}
-            placeholder=""
-            spellCheck={false}
-            autoComplete="off"
-            style={{ resize: "none" }}
-          />
-        </div>
-      </div>
-      <div className="wr-container">
-        <div className="wr-main">
-          <div className="wr-toolbar">
-            <button className="wr-toolbar-btn"><b>B</b></button>
-            <button className="wr-toolbar-btn"><b><u>U</u></b></button>
-            <button className="wr-toolbar-btn"><b><s>S</s></b></button>
-            <button className="wr-toolbar-btn"><img src={list1Icon} alt="리스트1" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
-            <button className="wr-toolbar-btn"><img src={list2Icon} alt="리스트2" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
-            <button className="wr-toolbar-btn"><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-            <button className="wr-toolbar-btn"><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-            <button className="wr-toolbar-btn"><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-            <button className="wr-toolbar-btn"><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-            <button className="wr-toolbar-btn"><img src={leftlistIcon} alt="왼쪽정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
-            <button className="wr-toolbar-btn"><img src={middlelistIcon} alt="가운데정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
-            <button className="wr-toolbar-btn"><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
-          </div>
-          <div className="wr-title-row">
-            <input className="wr-title-input" placeholder="제목을 입력하세요." />
-            <div className="wr-private-row">
-              <span className="wr-private-label">비공개</span>
-              <div
-                className={"wr-switch" + (isPrivate ? " on" : "")}
-                onClick={() => setIsPrivate(v => !v)}
-                role="button"
-                tabIndex={0}
-                aria-checked={isPrivate}
-                style={{ outline: "none" }}
+      <div className="wr-content-root" style={{ position: 'relative' }}>
+        <div className={isEmailVerified ? undefined : "wr-disabled-area"}>
+          <div className="wr-left">
+            <div className="wr-category-select">
+              <button
+                className="wr-category-btn"
+                onClick={() => setCategoryOpen(o => !o)}
+                type="button"
+                disabled={!isEmailVerified}
               >
-                <div className="wr-switch-circle" />
+                <span>{selectedCategory}</span>
+                <span className="wr-category-arrow" style={{ transform: categoryOpen ? "rotate(180deg)" : undefined }}>▼</span>
+              </button>
+              {categoryOpen && (
+                <div className="wr-category-dropdown">
+                  {categories.map(cat => (
+                    <div
+                      key={cat}
+                      className={"wr-category-item" + (cat === selectedCategory ? " selected" : "")}
+                      onClick={() => handleCategorySelect(cat)}
+                    >
+                      {cat}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="wr-memo-box">
+              <span className="wr-memo-label-abs">메모</span>
+              <textarea
+                className="wr-memo-textarea"
+                value={memo}
+                onChange={e => setMemo(e.target.value)}
+                placeholder=""
+                spellCheck={false}
+                autoComplete="off"
+                style={{ resize: "none" }}
+                disabled={!isEmailVerified}
+              />
+            </div>
+          </div>
+          <div className="wr-container">
+            <div className="wr-main">
+              <div className="wr-toolbar">
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><b>B</b></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><b><u>U</u></b></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><b><s>S</s></b></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list1Icon} alt="리스트1" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list2Icon} alt="리스트2" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={leftlistIcon} alt="왼쪽정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={middlelistIcon} alt="가운데정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
+              </div>
+              <div className="wr-title-row">
+                <input className="wr-title-input" placeholder="제목을 입력하세요." disabled={!isEmailVerified} />
+                <div className="wr-private-row">
+                  <span className="wr-private-label">비공개</span>
+                  <div
+                    className={"wr-switch" + (isPrivate ? " on" : "")}
+                    onClick={() => isEmailVerified && setIsPrivate(v => !v)}
+                    role="button"
+                    tabIndex={0}
+                    aria-checked={isPrivate}
+                    style={{ outline: "none" }}
+                  >
+                    <div className="wr-switch-circle" />
+                  </div>
+                </div>
+              </div>
+              <hr className="wr-divider" />
+              <div className="wr-content-area">
+                <textarea className="wr-content-input" placeholder="내용을 입력하세요..." disabled={!isEmailVerified} />
               </div>
             </div>
           </div>
-          <hr className="wr-divider" />
-          <div className="wr-content-area">
-            <textarea className="wr-content-input" placeholder="내용을 입력하세요..." />
-          </div>
+          {/* 플로팅 버튼 */}
+          <button
+            className="wr-floating-write-btn"
+            onClick={() => isEmailVerified && navigate(-1)}
+            aria-label="뒤로가기"
+            disabled={!isEmailVerified}
+          >
+            <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
+          </button>
         </div>
+        {!isEmailVerified && (
+          <>
+            <div className="wr-overlay" style={{ top: 0, left: 0, right: 0, bottom: 0, position: 'absolute' }} />
+            <div className="wr-modal">
+              <div className="wr-modal-text">
+                해당 게시판은 작성 전<br />학교 이메일 인증이 필요합니다.
+              </div>
+              <button className="wr-modal-btn" onClick={() => navigate('/cjdcnstjfkq')}>인증하기</button>
+            </div>
+          </>
+        )}
       </div>
-      {/* 플로팅 버튼 */}
-      <button
-        className="wr-floating-write-btn"
-        onClick={() => navigate(-1)}
-        aria-label="뒤로가기"
-      >
-        <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
-      </button>
     </div>
   );
 };
