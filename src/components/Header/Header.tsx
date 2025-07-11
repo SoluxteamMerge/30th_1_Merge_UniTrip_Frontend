@@ -18,10 +18,6 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
     { to: "/cjdcnstjfkq", label: "청춘서랍", last: true }
   ];
 
-  const recordedUsernameStyle = recordedYouthActive
-    ? { ...usernameStyle, color: "#bbb", cursor: "default" }
-    : usernameStyle;
-
   return (
     <>
       <style>
