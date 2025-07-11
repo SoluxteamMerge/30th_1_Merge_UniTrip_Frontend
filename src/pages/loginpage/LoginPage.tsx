@@ -1,6 +1,6 @@
 import type { FC } from 'react'; 
 import './LoginPage.css';
-import logo from './assets/UniTrip_rogo.svg'
+import logo from '../../assets/header/logo.svg'
 
 const LoginPage: FC = () => {
     return (
