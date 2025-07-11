@@ -10,8 +10,6 @@ interface HeaderProps {
 
 function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderProps): React.JSX.Element {
   const location = useLocation();
-
-  // 각 메뉴의 경로
   const menuLinks = [
     { to: "/cjdcnsqkfwkrnr", label: "청춘 발자국" },
     { to: "/dpaxlduwjdwleh", label: "MT여정지도" },
@@ -19,6 +17,10 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
     { to: "/youth-talk", label: "청춘톡" },
     { to: "/cjdcnstjfkq", label: "청춘서랍", last: true }
   ];
+
+  const recordedUsernameStyle = recordedYouthActive
+    ? { ...usernameStyle, color: "#bbb", cursor: "default" }
+    : usernameStyle;
 
   return (
     <>
@@ -64,7 +66,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
           {isLoggedIn ? (
             <>
               <span className="header-username">
-                <Link to="/my-youth" className="header-username-link">
+                <Link to="/recorded-youth" className="header-username-link">
                   기록한 청춘
                 </Link>
                 <span className="header-username-gap" />
