@@ -1,0 +1,21 @@
+
+.main-background {
+  min-height: 100vh;
+  padding-top: 80px;  
+  box-sizing: border-box;
+  background-color: #C2E4E4;
+}
+
+.section-title {
+  font-size: 32px;
+  margin-left: 152px;
+  font-weight: 600;
+  color: #0B0B61;
+  font-family: 'Pretendard', sans-serif;
+}
+
+@media screen and (max-width: 768px) {
+  .section-title {
+    margin-left: 24px;
+  }
+}
