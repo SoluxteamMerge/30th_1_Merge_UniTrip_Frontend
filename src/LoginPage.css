@@ -94,10 +94,11 @@
 }
 
 .forgot-password a {
-  font-size: 13px;
+  font-size: 15px;
   color: #8BCECE;
   text-decoration: none;
   font-family: 'Pretendard', sans-serif;
+  font-weight: 300;
 }
 
 .login-btn {
