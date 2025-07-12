@@ -10,7 +10,7 @@
   align-items: center;
   height: 100vh;
   width: 100%;
-  background: linear-gradient(to bottom, #C2E4E4, #DEE8E8, #FBFBFB);
+  background: linear-gradient(to bottom, /*#C2E4E4,*/ #DEE8E8, #FBFBFB);
 }
 
 .login-card {
@@ -36,6 +36,7 @@
 }
 
 .description {
+  color: #000000;
   font-weight: 700;
   font-size: 17px;
   line-height: 1.3;
@@ -87,7 +88,7 @@
 .forgot-password {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 12px;
+  margin-bottom: 40px;
   font-weight: 700;
   font-size: 17px;
   line-height: 100%;
@@ -104,15 +105,31 @@
 .login-btn {
   width: 360px;
   height: 60px;
-  background-color: #0B0B61;
-  color: white;
-  border: 1px;
+  background-color: #FFFFFF; /*원래는 #FBFBFB*/
+  color: #0B0B61;
+  border: 1px solid #BBBBBB;
   border-radius: 8px;
   font-family: 'Pretendard', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 24px;
+  overflow: pointer;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+}
+
+.login-text {
+  flex: 1;
+  align-items: center;
+}
+
+.google-icon {
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  left: 19px;
 }
 
 
@@ -122,43 +139,6 @@ input::placeholder {
   opacity: 1;
 }
 
-.divider-with-text {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 11px;
-}
-
-.divider-with-text::before,
-.divider-with-text::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background-color: #ccc;
-}
-
-.divider-with-text span {
-  padding: 0 12px;
-  font-size: 14px;
-  color: #666;
-  font-family: 'Pretendard', sans-serif;
-  white-space: nowrap;
-}
-
-.google-login-btn {
-  width: 60px;
-  height: 60px;
-  border-radius: 60px;
-  background-color: #D9D9D9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin: 0px auto; /* 가운데 정렬 (block 요소처럼 보이게) */
-  padding: 0;
-  border: none;
-  margin-bottom: 33px;
-}
 
 .signup-link {
   display: flex;
@@ -172,6 +152,11 @@ input::placeholder {
   line-height: 100%;
   font-weight: 300;
 }
+
+.signup-link span {
+  color: #838383;
+}
+
 
 .signup-link a {
   color: #0B0B61; /* 피그마 기준 짙은 보라색 계열로 추정 */

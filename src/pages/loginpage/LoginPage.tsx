@@ -1,6 +1,7 @@
 import type { FC } from 'react'; 
 import './LoginPage.css';
-import logo from '../../assets/header/logo.svg'
+import logo from '../../assets/header/logo.svg';
+import Google from '../../assets/Google_Logo.svg.svg';
 
 const LoginPage: FC = () => {
     return (
@@ -24,21 +25,18 @@ const LoginPage: FC = () => {
                     </div>
                 </div>
                 <div className="forgot-password">
-                    <a href="#">비밀번호를 잊으셨나요?</a>
+                    <a href="#" style={{ textDecoration: 'underline' }}>비밀번호를 잊으셨나요?</a>
                 </div>
-                <button className="login-btn">로그인</button>
-                <div className="divider-with-text">
-                    <span>다른 방법으로 로그인</span>
-                </div>
-
-                
-                <button className="google-login-btn">
-                    <img src="" alt="구글 로그인" />
+                <button 
+                    className="login-btn"
+                    onClick={() => (window.location.href = "#")}>
+                    <img src={ Google } alt="로고" className="google-icon"/>
+                    <span className="login-text">구글 계정으로 로그인</span>
                 </button>
 
                 <div className="signup-link">
                     <span>아직 회원이 아니신가요?</span>
-                    <a href="#">회원가입</a>
+                    <a href="#" style={{ textDecoration: 'underline' }}>구글 계정으로 회원가입</a>
                 </div>
 
             
