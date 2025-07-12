@@ -5,6 +5,7 @@ import SignupPage from "../pages/signuppage/SignupPage";
 import LoginPage from "../pages/loginpage/LoginPage";
 import MainPage from "../pages/mainpage/MainPage";
 import RecordedYouthPage from "../pages/RecordedYouthPage";
+import ScrappedYouthPage from "../pages/ScrappedYouth";
 
 const AppRoutes = () => (
   <Routes>
@@ -14,7 +15,9 @@ const AppRoutes = () => (
     <Route path="/youth-talk" element={<YouthTalkBoardPage />} />
     <Route path="/review-write" element={<WriteReviewPage />} />
     <Route path="/recorded-youth" element={<RecordedYouthPage />} />
+
     {/* 다른 페이지 라우트도 여기에 추가 */}
+
   </Routes>
 );
 
