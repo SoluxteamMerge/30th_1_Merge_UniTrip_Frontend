@@ -3,6 +3,8 @@ import './LoginPage.css';
 import logo from '../../assets/header/logo.svg';
 import Google from '../../assets/Google_Logo.svg.svg';
 
+
+
 const LoginPage: FC = () => {
     return (
         <div className="login-page">

@@ -4,6 +4,7 @@ import './SignupPage.css';
 import logo from '../../assets/header/logo.svg';
 import checkIcon from "../../assets/체크아이콘.svg";
 
+
 const SignupPage: React.FC = () => {
   const [fileName, setFileName] = useState<string>('');
 
