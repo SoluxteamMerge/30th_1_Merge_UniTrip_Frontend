@@ -5,8 +5,8 @@ import SignupPage from "../pages/signuppage/SignupPage";
 import LoginPage from "../pages/loginpage/LoginPage";
 import MainPage from "../pages/mainpage/MainPage";
 import WritePostPage from "../pages/WritePostPage";
-import RecordedYouthPage from "../pages/RecordedYouthPage";
-import ScrappedYouthPage from "../pages/ScrappedYouth";
+import RecordedYouthPage from "../pages/mypage/RecordedYouthPage";
+import ScrappedYouthPage from "../pages/mypage/ScrappedYouth";
 
 const AppRoutes = () => (
   <Routes>
@@ -16,6 +16,7 @@ const AppRoutes = () => (
     <Route path="/youth-talk" element={<YouthTalkBoardPage />} />
     <Route path="/review-write" element={<WriteReviewPage />} />
     <Route path="/recorded-youth" element={<RecordedYouthPage />} />
+    <Route path="/recorded-youth/scrapped-youth" element={<ScrappedYouthPage />} />
 
     {/* 다른 페이지 라우트도 여기에 추가 */}
 
