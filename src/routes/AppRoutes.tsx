@@ -4,7 +4,6 @@ import WriteReviewPage from "../pages/WriteReviewPage";
 import SignupPage from "../pages/signuppage/SignupPage";
 import LoginPage from "../pages/loginpage/LoginPage";
 import MainPage from "../pages/mainpage/MainPage";
-import WritePostPage from "../pages/WritePostPage";
 import RecordedYouthPage from "../pages/mypage/RecordedYouthPage";
 import ScrappedYouthPage from "../pages/mypage/ScrappedYouth";
 
