@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import RouletteModal from "../roulette/RouletteModal";
 import '../../App.css';
 import { reviewData } from '../../data/review';
 import { ReviewCard } from '../../pages/reviewcard/ReviewCard';
@@ -13,6 +14,7 @@ const recommended = {
   imageUrl: 'https://picsum.photos/120/80'
 };
 function MainPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <div>
       <Header />
@@ -58,7 +60,7 @@ function MainPage() {
         </section>
 
         <div className="roulette-wrapper">
-          <button className="roulette-button">룰렛 돌리기</button>
+          <button className="roulette-button" onClick={() => setIsModalOpen(true)}>룰렛 돌리기</button>
         </div>
         
 
@@ -82,6 +84,17 @@ function MainPage() {
           </div>
         </section>
       </div>
+
+      {isModalOpen && (
+        <>
+          <div className="modal-overlay" onClick={() => setIsModalOpen(false)}></div>
+          <div className="modal-content">
+            <RouletteModal onClose={() => setIsModalOpen(false)}/>
+          </div>
+        </>
+      )}
+
+      
     </div>
   );
 }
