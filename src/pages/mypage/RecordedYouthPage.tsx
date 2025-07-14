@@ -2,12 +2,10 @@ import React from "react";
 import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 
-
-
 const RecordedYouthPage: React.FC = () => {
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요
 
-  // 💡 스타일
+  // 스타일
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
   const containerStyle = { maxWidth: 1200, margin: "0 auto", padding: "40px 0" };
   const titleBoxStyle = {
@@ -26,9 +24,6 @@ const RecordedYouthPage: React.FC = () => {
       <Header isLoggedIn={true} username={username} profileUrl="" />
 
       <div style={containerStyle}>
-        <div style={titleBoxStyle}>
-          <span style={titleIconStyle}>▶</span>기록한 청춘
-        </div>
 
         <div style={{ display: "flex" }}>
           {/* 사이드바 */}
@@ -40,7 +35,8 @@ const RecordedYouthPage: React.FC = () => {
               padding: "32px 24px",
               boxShadow: "0 0 8px rgba(0,0,0,0.05)",
               marginRight: 32,
-              textAlign: "center"
+              textAlign: "center",
+              marginTop: 48
             }}
           >
             <div
@@ -60,33 +56,44 @@ const RecordedYouthPage: React.FC = () => {
                 <Link to="/recorded-youth/scrapped-youth" style={{ color: "#888", textDecoration: "none" }}>
                   · 스크랩한 청춘
                 </Link>
-                </li>
-              <li>· 청춘 일정</li>
+              </li>
+              <li>
+                <Link to="/recorded-youth/youth-calendar" style={{ color: "#888", textDecoration: "none" }}>
+                  · 청춘 일정
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* 콘텐츠 */}
-          <div
-            style={{
-              flex: 1,
-              background: "#fff",
-              borderRadius: 12,
-              padding: "32px 48px",
-              boxShadow: "0 0 8px rgba(0,0,0,0.05)"
-            }}
-          >
-            <h2 style={{ marginBottom: 8, fontSize: 20 }}>내가 만든 청춘</h2>
-            <p style={{ marginBottom: 48, fontSize: 14, color: "#888" }}>내가 쓴 게시글</p>
+          <div style={{ flex: 1 }}>
 
-            {/* 아래 내용도 실제 사용자가 작성한 게시글과 연동 필요 */}
-            <p style={{ fontSize: 16, color: "#555", textAlign: "center", marginTop: 80 }}>
-              아직 내가 만든 청춘이 없어요
-            </p>
-            <p style={{ fontSize: 14, color: "#888", textAlign: "center", marginTop: 8 }}>
-              <Link to="/write" style={{ color: "#888", textDecoration: "underline" }}>
-                청춘을 만들러 가볼까요? &gt;
-              </Link>
-            </p>
+            <div style={titleBoxStyle}>
+              <span style={titleIconStyle}>▶</span>기록한 청춘
+            </div>
+
+            <div
+              style={{
+                flex: 1,
+                background: "#fff",
+                borderRadius: 12,
+                padding: "32px 48px",
+                boxShadow: "0 0 8px rgba(0,0,0,0.05)"
+              }}
+            >
+              <h2 style={{ marginBottom: 8, fontSize: 20 }}>내가 만든 청춘</h2>
+              <p style={{ marginBottom: 48, fontSize: 14, color: "#888" }}>내가 쓴 게시글</p>
+
+              {/* 아래 내용도 실제 사용자가 작성한 게시글과 연동 필요 */}
+              <p style={{ fontSize: 16, color: "#555", textAlign: "center", marginTop: 80 }}>
+                아직 내가 만든 청춘이 없어요
+              </p>
+              <p style={{ fontSize: 14, color: "#888", textAlign: "center", marginTop: 8 }}>
+                <Link to="/write" style={{ color: "#888", textDecoration: "underline" }}>
+                  청춘을 만들러 가볼까요? &gt;
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -107,9 +114,8 @@ const RecordedYouthPage: React.FC = () => {
           cursor: "pointer",
           boxShadow: "0 4px 8px rgba(0,0,0,0.2)"
         }}
-      >
-        ✎
-      </button>
+      ></button>
+
     </div>
   );
 };
