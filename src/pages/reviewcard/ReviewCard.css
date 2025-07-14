@@ -26,9 +26,9 @@
 }
 
 .card-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 0px;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  margin-bottom: 0px !important;
 }
 
 .card-content p {
