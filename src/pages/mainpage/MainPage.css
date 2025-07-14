@@ -18,7 +18,7 @@
 .search-container {
   width: calc(100vw - 320px);
   height: 100px;
-  margin: 0 auto;         /* 가운데 정렬 */
+  margin: 0 auto;      
   border-radius: 59px;
   background-color: white;
   box-sizing: border-box;
@@ -48,10 +48,12 @@
   font-size: 16px;
   outline: none;
   color: #333;
+  font-size: 30px;
 }
 
 .search-input::placeholder {
-  color: #333;
+  color: #838383;
+  font-size: 30px;
 }
 
 .suggest-section {
@@ -120,6 +122,9 @@
   margin-bottom: 22px;
   color: #101010;
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .recommend-summary {
@@ -147,16 +152,16 @@
 
 
 .roulette-wrapper {
-  padding: 0 110px; /* ✅ 양쪽 여백 110px */
+  padding: 0 110px;
   display: flex;
   justify-content: center;
-  margin: 40px 0; /* 위아래 간격은 필요에 따라 */
+  margin: 40px 0; 
   box-sizing: border-box;
 }
 
 .roulette-button {
   width: 100%;
-  max-width: calc(100vw - 220px);/* ✅ 최대 버튼 너비 (선택사항) */
+  max-width: calc(100vw - 220px);
   height: 110px;
   background-color: #FBFBFB;
   color: #101010;
@@ -192,7 +197,7 @@
 
 .section-header {
   display: flex;
-  justify-content: space-between;  /* 왼쪽/오른쪽 끝 정렬 */
+  justify-content: space-between; 
   align-items: center;
   padding: 0 8px; /* 있으면 살짝 띄우기 */
   margin-bottom: 24px;

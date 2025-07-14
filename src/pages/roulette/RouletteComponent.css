@@ -1,0 +1,132 @@
+.roulette-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.arrow {
+  position: relative;
+  top: 20px; 
+  z-index: 10;
+}
+
+.arrow img {
+  width: 80px;
+  height: auto;
+  display: block;
+}
+
+.wheel {
+  width: 450px;
+  height: 450px;
+  border: 15px solid #BBBBBB;
+  border-radius: 50%;
+  position: relative;
+  background: #DEDEDE;
+  transform: rotate(45deg);
+  margin-top: -60px;
+  transition: transform 10s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+
+
+.sector {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 0;
+  left: 50%;
+  transform-origin: 0% 100%;
+}
+.wheel::before {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 100%;
+  background-color: #BBBBBB;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.wheel::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background-color: #BBBBBB;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+
+.sector:nth-child(1) {
+  transform: rotate(0deg) translateX(-100%);
+}
+.sector:nth-child(2) {
+  transform: rotate(90deg) translateX(-100%);
+}
+.sector:nth-child(3) {
+  transform: rotate(180deg) translateX(-100%);
+}
+.sector:nth-child(4) {
+  transform: rotate(270deg) translateX(-100%);
+}
+
+
+.center-circle {
+  width: 60px;
+  height: 60px;
+  background: navy;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.spin-button {
+  width: 450px;
+  height: 70px;
+  background: #0B0B61;
+  color: white;
+  padding: 10px 20px;
+  margin-top: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.sector {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 0;
+  left: 50%;
+  transform-origin: 0% 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  text-align: center;
+}
+
+.sector span {
+  transform: rotate(-45deg) translateY(25px);
+  font-size: 24px;
+  font-weight: 600;
+  display: block;
+  text-align: center;
+  white-space: normal; /*줄바꿈 기능 추가, 미니게임 글자가 너무 길음... */
+  word-break: break-word;
+  max-width: 120px;
+
+
+}

@@ -13,7 +13,7 @@
 
 .modal-box {
   background-color: white;
-  width: 600px;
+  width: 1000px;
   padding: 40px;
   border-radius: 16px;
   position: relative;
@@ -29,8 +29,6 @@
   border: none;
   cursor: pointer;
 }
-
-/* 기존 모달 스타일 유지 */
 
 .dropdown {
   position: relative;

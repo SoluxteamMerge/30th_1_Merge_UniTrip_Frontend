@@ -3,6 +3,7 @@ import './RouletteModal.css';
 import closeIcon from "../../assets/close.svg";
 import arrowDown from '../../assets/DropDown.svg';
 import arrowUp from '../../assets/DropUp.svg';
+import RouletteComponent from '../roulette/RouletteComponent'
 
 interface Props {
   onClose: () => void;
@@ -13,7 +14,7 @@ export default function RouletteModal({ onClose }: Props) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const options = [
-    '빈칸 채워 룰렛 돌리기',
+    '미니 게임',
     '스몰토크 주제 추천',
     '레크레이션 추천',
   ];
@@ -46,7 +47,7 @@ export default function RouletteModal({ onClose }: Props) {
           )}
         </div>
 
-        {/* 여기에 룰렛 컴포넌트 들어갈 예정 */}
+        <RouletteComponent selectedType={selectedOption} />
       </div>
     </div>
   );
