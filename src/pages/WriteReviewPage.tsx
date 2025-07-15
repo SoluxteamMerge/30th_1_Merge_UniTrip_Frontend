@@ -11,6 +11,7 @@ import starIcon from "../assets/toolbar/star.svg";
 import leftlistIcon from "../assets/toolbar/leftlist.svg";
 import middlelistIcon from "../assets/toolbar/middlelist.svg";
 import rightlistIcon from "../assets/toolbar/rightlist.svg";
+import closeIcon from "../assets/close.svg";
 
 const WriteReviewPage: React.FC = () => {
   const [isPrivate, setIsPrivate] = useState(false);
@@ -32,6 +33,9 @@ const WriteReviewPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState(categories[2]);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleInput, setScheduleInput] = useState("");
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
@@ -67,6 +71,22 @@ const WriteReviewPage: React.FC = () => {
       
       setScheduleInput(formatted);
     }
+  };
+
+  const handleTagInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleTagSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
+      const newTag = `#${tagInput.trim()}`;
+      setTags([...tags, newTag]);
+      setTagInput("");
+    }
+  };
+
+  const handleTagButtonClick = () => {
+    setShowTagModal(true);
   };
 
   const getModalMessage = () => {
@@ -360,6 +380,92 @@ const WriteReviewPage: React.FC = () => {
           flex-direction: column;
           align-items: center;
         }
+        .wr-modal.tag {
+          position: fixed;
+          top: 160px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #fff;
+          border-radius: 25px;
+          box-shadow: 0 4px 32px 0 rgba(0,0,0,0.13);
+          padding: 40px;
+          z-index: 300;
+          min-width: 600px;
+        }
+        .wr-tag-header {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 20px;
+          gap: 470px;
+        }
+        .wr-tag-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #838383;
+        }
+        .wr-tag-close {
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+          background: none;
+          border: none;
+          padding: 0;
+        }
+        .wr-tag-input-container {
+          width: 110%;
+          padding: 0 20px;
+        }
+        .wr-tag-input-wrapper {
+          margin-bottom: 15px;
+          border-radius: 30px;
+          background: #dedede;
+          padding: 2px;
+        }
+        .wr-tag-input {
+          width: 100%;
+          padding: 10px;
+          border: none;
+          border-radius: 15px;
+          font-size: 16px;
+          box-sizing: border-box;
+          outline: none;
+        }
+        .wr-tag-input::placeholder {
+          color: #999;
+          opacity: 1;
+        }
+        .wr-tags-display {
+          margin-top: 15px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .wr-tag-badge {
+          display: inline-flex;
+          align-items: center;
+          background: #0b0b61;
+          color: #fff;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 14px;
+          font-weight: 300;
+        }
+        .wr-tag-remove {
+          background: none;
+          border: none;
+          color: #fff;
+          margin-left: 8px;
+          cursor: pointer;
+          font-size: 20px;
+          font-weight: 200;
+          padding: 0;
+          width: 16px;
+          height: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
       <div className="wr-content-root" style={{ position: 'relative' }}>
@@ -411,7 +517,7 @@ const WriteReviewPage: React.FC = () => {
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><b><s>S</s></b></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list1Icon} alt="리스트1" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list2Icon} alt="리스트2" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleTagButtonClick}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
@@ -480,6 +586,49 @@ const WriteReviewPage: React.FC = () => {
                 />
               </div>
               <button className="wr-modal-btn schedule" onClick={() => setShowScheduleModal(false)}>확인</button>
+            </div>
+          </>
+        )}
+        {showTagModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal tag">
+              <div className="wr-tag-header">
+                <span className="wr-tag-title">태그</span>
+                <button className="wr-tag-close" onClick={() => setShowTagModal(false)}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-tag-input-container">
+                <div className="wr-tag-input-wrapper">
+                  <input 
+                    type="text" 
+                    className="wr-tag-input"
+                    placeholder="태그를 입력해주세요... 입력 후 엔터 또는 콤마"
+                    value={tagInput}
+                    onChange={handleTagInput}
+                    onKeyPress={handleTagSubmit}
+                  />
+                </div>
+                <div className="wr-tags-display">
+                  {tags.map((tag, index) => (
+                    <span key={index} className="wr-tag-badge">
+                      {tag}
+                      <button 
+                        className="wr-tag-remove" 
+                        onClick={() => {
+                          setTags(tags.filter((_, i) => i !== index));
+                          if (tags.length === 1) {
+                            setShowTagModal(false);
+                          }
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </>
         )}
