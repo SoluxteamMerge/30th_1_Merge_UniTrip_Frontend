@@ -30,10 +30,51 @@ const WriteReviewPage: React.FC = () => {
   ];
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[2]);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleInput, setScheduleInput] = useState("");
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
     setCategoryOpen(false);
+    
+    // MT여정지도가 선택되면 MT일정 모달을, 나머지는 여행일정 모달을 표시
+    if (cat === "MT여정지도") {
+      setShowScheduleModal(true);
+    } else {
+      setShowScheduleModal(true);
+    }
+  };
+
+  const handleScheduleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // 숫자만 허용
+    const numbersOnly = value.replace(/[^0-9]/g, '');
+    
+    if (numbersOnly.length <= 12) { // 최대 12자리 (YYMMDDYYMMDD)
+      let formatted = '';
+      
+      // 숫자를 2자리씩 그룹화하여 하이픈과 물결표 추가
+      for (let i = 0; i < numbersOnly.length; i++) {
+        if (i === 2 || i === 4) {
+          formatted += '-';
+        } else if (i === 6) {
+          formatted += ' ~ ';
+        } else if (i === 8 || i === 10) {
+          formatted += '-';
+        }
+        formatted += numbersOnly[i];
+      }
+      
+      setScheduleInput(formatted);
+    }
+  };
+
+  const getModalMessage = () => {
+    if (selectedCategory === "MT여정지도") {
+      return "MT 일정을 입력해주세요";
+    } else {
+      return "여행 일정을 입력해주세요";
+    }
   };
 
   const isEmailVerified = true; // todo
@@ -73,8 +114,8 @@ const WriteReviewPage: React.FC = () => {
         .wr-category-dropdown {
           position: absolute;
           top: 48px;
-          left: 75px;
-          width: 80%;
+          left: 40px;
+          width: 81%;
           background: #fff;
           border: 1.5px solid #bbb;
           border-radius: 12px;
@@ -258,6 +299,14 @@ const WriteReviewPage: React.FC = () => {
           flex-direction: column;
           align-items: center;
         }
+        .wr-modal.schedule {
+          padding: 80px 120px 20px 120px;
+          min-width: 400px;
+          min-height: 400px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
         .wr-modal-text {
           font-size: 20px;
           color: #black;
@@ -276,10 +325,40 @@ const WriteReviewPage: React.FC = () => {
           padding: 12px 48px;
           cursor: pointer;
         }
-        .wr-disabled-area {
-          pointer-events: none;
-          opacity: 0.45;
-          filter: blur(0.5px);
+        .wr-modal-btn.schedule {
+          width: 150%;
+          padding: 12px 80px;
+        }
+        .wr-schedule-input-container {
+          margin-bottom: 50px;
+          width: 150%;
+        }
+        .wr-schedule-label {
+          display: block;
+          margin-bottom: 10px;
+          font-size: 16px;
+          font-weight: 400;
+          color: #bbb;
+          text-align: left;
+        }
+        .wr-schedule-input {
+          width: 100%;
+          padding: 0px;
+          font-size: 10px;
+          box-sizing: border-box;
+        }
+        .wr-schedule-input::placeholder {
+          color: #999;
+          opacity: 1;
+        }
+        .wr-date-row {
+          display: flex;
+          justify-content: center;
+        }
+        .wr-date-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
@@ -380,6 +459,27 @@ const WriteReviewPage: React.FC = () => {
                 해당 게시판은 작성 전<br />학교 이메일 인증이 필요합니다.
               </div>
               <button className="wr-modal-btn" onClick={() => navigate('/cjdcnstjfkq')}>인증하기</button>
+            </div>
+          </>
+        )}
+        {showScheduleModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal schedule">
+              <div className="wr-modal-text">
+                {getModalMessage()}
+              </div>
+              <div className="wr-schedule-input-container">
+                <label className="wr-schedule-label">날짜</label>
+                <input 
+                  type="text" 
+                  className="wr-schedule-input"
+                  placeholder="YY-MM-DD ~ YY-MM-DD"
+                  value={scheduleInput}
+                  onChange={handleScheduleInput}
+                />
+              </div>
+              <button className="wr-modal-btn schedule" onClick={() => setShowScheduleModal(false)}>확인</button>
             </div>
           </>
         )}
