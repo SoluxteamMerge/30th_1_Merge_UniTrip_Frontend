@@ -11,7 +11,9 @@ import starIcon from "../assets/toolbar/star.svg";
 import leftlistIcon from "../assets/toolbar/leftlist.svg";
 import middlelistIcon from "../assets/toolbar/middlelist.svg";
 import rightlistIcon from "../assets/toolbar/rightlist.svg";
-import closeIcon from "../assets/close.svg";
+import closeIcon from "../assets/module/close.svg";
+import starWishIcon from "../assets/module/star_wish.svg";
+import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 
 const WriteReviewPage: React.FC = () => {
   const [isPrivate, setIsPrivate] = useState(false);
@@ -34,8 +36,13 @@ const WriteReviewPage: React.FC = () => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleInput, setScheduleInput] = useState("");
   const [showTagModal, setShowTagModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
@@ -87,6 +94,43 @@ const WriteReviewPage: React.FC = () => {
 
   const handleTagButtonClick = () => {
     setShowTagModal(true);
+  };
+
+  const handleImageButtonClick = () => {
+    setShowImageModal(true);
+  };
+
+  const handleFileUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        setSelectedImage(file.name);
+      }
+    };
+    input.click();
+  };
+
+  const handleImageRemove = () => {
+    setSelectedImage("");
+  };
+
+  const handleRatingButtonClick = () => {
+    setShowRatingModal(true);
+  };
+
+  const handleStarClick = (starIndex: number) => {
+    setRating(starIndex + 1);
+  };
+
+  const handleStarHover = (starIndex: number) => {
+    setHoverRating(starIndex + 1);
+  };
+
+  const handleStarLeave = () => {
+    setHoverRating(0);
   };
 
   const getModalMessage = () => {
@@ -466,6 +510,88 @@ const WriteReviewPage: React.FC = () => {
           align-items: center;
           justify-content: center;
         }
+        .wr-image-upload-row {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        .wr-image-input-wrapper {
+          flex: 1;
+          position: relative;
+          border-bottom: 1px solid #bbb;
+          padding-bottom: 10px;
+        }
+        .wr-image-input {
+          width: 100%;
+          padding: 10px 0px 0px 10px;
+          border: none;
+          outline: none;
+          font-size: 15px;
+          font-weight: 500;
+          color: #999;
+          background: none;
+        }
+        .wr-image-remove {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: #999;
+          cursor: pointer;
+          font-size: 18px;
+          padding: 0;
+        }
+        .wr-file-upload-btn {
+          background: #fff;
+          border: 2px solid #bbb;
+          border-radius: 11px;
+          padding: 12px 24px;
+          font-size: 16px;
+          font-weight: 700;
+          color: #101010;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        .wr-rating-upload-row {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        .wr-rating-input-wrapper {
+          flex: 1;
+          position: relative;
+          border-bottom: 1px solid #bbb;
+          padding-bottom: 10px;
+        }
+        .wr-rating-display {
+          display: flex;
+          gap: 25px;
+          padding: 10px 0px 0px 10px;
+        }
+        .wr-star-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+        }
+        .wr-star-img {
+          width: 40px;
+          height: 40px;
+          transition: all 0.2s;
+        }
+        .wr-rating-confirm-btn {
+          background: #fff;
+          border: 2px solid #bbb;
+          border-radius: 11px;
+          padding: 12px 24px;
+          font-size: 16px;
+          font-weight: 700;
+          color: #101010;
+          cursor: pointer;
+          white-space: nowrap;
+        }
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
       <div className="wr-content-root" style={{ position: 'relative' }}>
@@ -518,9 +644,9 @@ const WriteReviewPage: React.FC = () => {
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list1Icon} alt="리스트1" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list2Icon} alt="리스트2" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleTagButtonClick}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleImageButtonClick}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleRatingButtonClick}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={leftlistIcon} alt="왼쪽정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={middlelistIcon} alt="가운데정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
@@ -627,6 +753,73 @@ const WriteReviewPage: React.FC = () => {
                       </button>
                     </span>
                   ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {showImageModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal tag">
+              <div className="wr-tag-header">
+                <span className="wr-tag-title">이미지</span>
+                <button className="wr-tag-close" onClick={() => setShowImageModal(false)}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-tag-input-container">
+                <div className="wr-image-upload-row">
+                  <div className="wr-image-input-wrapper">
+                    <input 
+                      type="text" 
+                      className="wr-image-input"
+                      placeholder="image1.png"
+                      value={selectedImage}
+                      readOnly
+                    />
+                    <button className="wr-image-remove" onClick={handleImageRemove}>×</button>
+                  </div>
+                  <button className="wr-file-upload-btn" onClick={handleFileUpload}>파일업로드</button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {showRatingModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal tag">
+              <div className="wr-tag-header">
+                <span className="wr-tag-title">별점</span>
+                <button className="wr-tag-close" onClick={() => setShowRatingModal(false)}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-tag-input-container">
+                <div className="wr-rating-upload-row">
+                  <div className="wr-rating-input-wrapper">
+                    <div className="wr-rating-display">
+                      {[0, 1, 2, 3, 4].map((index) => (
+                        <button
+                          key={index}
+                          className="wr-star-btn"
+                          onClick={() => handleStarClick(index)}
+                          onMouseEnter={() => handleStarHover(index)}
+                          onMouseLeave={handleStarLeave}
+                        >
+                                                  <img 
+                          src={(hoverRating || rating) > index ? starWishFillIcon : starWishIcon} 
+                          alt="별" 
+                          className="wr-star-img"
+                        />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <button className="wr-rating-confirm-btn" onClick={() => setShowRatingModal(false)}>
+                    확인
+                  </button>
                 </div>
               </div>
             </div>
