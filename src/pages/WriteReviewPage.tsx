@@ -38,6 +38,7 @@ const WriteReviewPage: React.FC = () => {
   const [showTagModal, setShowTagModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -131,6 +132,38 @@ const WriteReviewPage: React.FC = () => {
 
   const handleStarLeave = () => {
     setHoverRating(0);
+  };
+
+  const handlePublishClick = () => {
+    setShowPublishModal(true);
+  };
+
+  const handlePublishConfirm = () => {
+    // 카테고리에 따라 다른 URL로 이동
+    switch (selectedCategory) {
+      case "청춘톡":
+        navigate('/youth-talk');
+        break;
+      case "MT여정지도":
+        navigate('/mt-journey');
+        break;
+      case "함께해요-동행구해요":
+      case "함께해요-번개모임":
+      case "함께해요-졸업/휴학여행":
+      case "함께해요-국내학점교류":
+        navigate('/together');
+        break;
+      case "카테고리별-해외교환학생":
+        navigate('/exchange-student');
+        break;
+      default:
+        navigate('/youth-talk');
+    }
+    setShowPublishModal(false);
+  };
+
+  const handlePublishCancel = () => {
+    setShowPublishModal(false);
   };
 
   const getModalMessage = () => {
@@ -592,6 +625,60 @@ const WriteReviewPage: React.FC = () => {
           cursor: pointer;
           white-space: nowrap;
         }
+        .wr-modal.publish {
+          padding: 120px 120px 20px 120px;
+          min-width: 400px;
+          min-height: 400px;
+          text-align: center;
+        }
+        .wr-publish-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 60px;
+        }
+        .wr-publish-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #333;
+        }
+        .wr-publish-close {
+          background: none;
+          border: none;
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+          padding: 0;
+          position: absolute;
+          right: 20px;
+          top: 20px;
+        }
+        .wr-publish-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          align-items: center;
+        }
+        .wr-publish-confirm-btn {
+          background: #0b0b61;
+          color: #fff;
+          border: none;
+          border-radius: 10px;
+          padding: 12px 68px;
+          font-size: 20px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .wr-publish-cancel-btn {
+          background: #fff;
+          color: #333;
+          border: 2px solid #838383;
+          border-radius: 10px;
+          padding: 12px 48px;
+          font-size: 20px;
+          font-weight: 600;
+          cursor: pointer;
+        }
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
       <div className="wr-content-root" style={{ position: 'relative' }}>
@@ -676,8 +763,8 @@ const WriteReviewPage: React.FC = () => {
           {/* 플로팅 버튼 */}
           <button
             className="wr-floating-write-btn"
-            onClick={() => isEmailVerified && navigate(-1)}
-            aria-label="뒤로가기"
+            onClick={() => isEmailVerified && handlePublishClick()}
+            aria-label="게시하기"
             disabled={!isEmailVerified}
           >
             <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
@@ -786,7 +873,7 @@ const WriteReviewPage: React.FC = () => {
             </div>
           </>
         )}
-        {showRatingModal && (
+                {showRatingModal && (
           <>
             <div className="wr-overlay" />
             <div className="wr-modal tag">
@@ -808,11 +895,11 @@ const WriteReviewPage: React.FC = () => {
                           onMouseEnter={() => handleStarHover(index)}
                           onMouseLeave={handleStarLeave}
                         >
-                                                  <img 
-                          src={(hoverRating || rating) > index ? starWishFillIcon : starWishIcon} 
-                          alt="별" 
-                          className="wr-star-img"
-                        />
+                          <img 
+                            src={(hoverRating || rating) > index ? starWishFillIcon : starWishIcon} 
+                            alt="별" 
+                            className="wr-star-img"
+                          />
                         </button>
                       ))}
                     </div>
@@ -821,6 +908,27 @@ const WriteReviewPage: React.FC = () => {
                     확인
                   </button>
                 </div>
+              </div>
+            </div>
+          </>
+        )}
+        {showPublishModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal publish">
+              <div className="wr-publish-header">
+                <span className="wr-publish-title">게시하시겠습니까?</span>
+                <button className="wr-publish-close" onClick={handlePublishCancel}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-publish-buttons">
+                <button className="wr-publish-confirm-btn" onClick={handlePublishConfirm}>
+                  예
+                </button>
+                <button className="wr-publish-cancel-btn" onClick={handlePublishCancel}>
+                  아니요
+                </button>
               </div>
             </div>
           </>
