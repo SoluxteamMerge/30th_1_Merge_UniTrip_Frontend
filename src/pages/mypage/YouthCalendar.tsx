@@ -27,14 +27,26 @@ const YouthCalendar: React.FC = () => {
   };
   const titleIconStyle = { fontSize: 20, marginRight: 8 };
 
+  //달력 생성
   const generateCalendar = (): React.ReactNode[] => {
     const cells: React.ReactNode[] = [];
 
     // 빈 셀 먼저 채우기
     for (let i = 0; i < firstDay; i++) {
-      cells.push(<td key={`empty-${i}`}></td>);
+      cells.push(
+      <td 
+      key={`empty-${i}`}
+      style={{
+        border: "1px solid #ddd",        
+        padding: "8px 0",  // 높이 균일하게
+        textAlign: "center",                
+        //backgroundColor: "#f9f9f9",         // 연한 배경색 
+      }}
+      ></td>
+    );
     }
 
+    //실제 날짜 채우기 
     for (let day = 1; day <= totalDays; day++) {
       const weekday = (firstDay + day - 1) % 7;
       const isSunday = weekday === 0;
@@ -45,17 +57,38 @@ const YouthCalendar: React.FC = () => {
         <td
           key={day}
           style={{
-            color: isToday ? "#fff" : isSunday ? "#e53935" : isSaturday ? "#0b0b61" : "#333",
-            backgroundColor: isToday ? "#0b0b61" : "transparent",
-            borderRadius: isToday ? "50%" : "none",
+            color: isToday ? "#333" : isSunday ? "#e53935" : isSaturday ? "#3d3d81" : "#333",
+            //backgroundColor: isToday ? "#0b0b61" : "transparent",
+            backgroundColor: "transparent",
+            //borderRadius: isToday ? "50%" : "none",
+            borderRadius: "none",
             textAlign: "center",
             padding: "8px 0",
-            fontWeight: isToday ? "bold" : "normal"
+            //fontWeight: isToday ? "bold" : "normal", //오늘 날짜만 선 굵게 표시
+            border: "1px solid #ddd" 
           }}
         >
           {day}
         </td>
       );
+    }
+
+    // 부족한 셀 추가해서 35칸(7x5) 맞추기
+    const totalCells = firstDay + totalDays;
+    const remaining = 35 - totalCells;
+
+    for (let i = 0; i < remaining; i++) {
+        cells.push(
+        <td
+            key={`empty-after-${i}`}
+            style={{
+            border: "1px solid #ddd",
+            padding: "8px 0",
+            textAlign: "center",
+            //backgroundColor: "#f9f9f9",
+            }}
+        ></td>
+        );
     }
 
     // 줄로 나누기
@@ -65,7 +98,7 @@ const YouthCalendar: React.FC = () => {
     }
 
     return rows;
-  };
+  }; //달력 생성 끝
 
   return (
     <div style={pageBgStyle}>
@@ -133,27 +166,29 @@ const YouthCalendar: React.FC = () => {
                     >
 
                         <h2 style={{ fontSize: 20, marginBottom: 24 }}>
-                        청춘 일정 - {year}년 {month + 1}월
+                        청춘 일정 - {month + 1}월
                         </h2>
 
                         <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                        <thead>
-                            <tr>
-                            {days.map((day, i) => (
-                                <th
-                                key={day}
-                                style={{
-                                    padding: "8px 0",
-                                    color: i === 0 ? "#e53935" : i === 6 ? "#0b0b61" : "#333",
-                                    fontWeight: 600
-                                }}
-                                >
-                                {day}
-                                </th>
-                            ))}
-                            </tr>
-                        </thead>
-                        <tbody>{generateCalendar()}</tbody>
+                            <thead>
+                                <tr>
+                                {days.map((day, i) => (
+                                    <th
+                                    key={day}
+                                    style={{
+                                        padding: "8px 0",
+                                        color: i === 0 ? "#e53935" : i === 6 ? "#0b0b61" : "#333",
+                                        fontWeight: 600,
+                                    }}
+                                    >
+                                    {day}
+                                    </th>
+                                ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {generateCalendar()}
+                            </tbody>
                         </table>
 
                     </div>
