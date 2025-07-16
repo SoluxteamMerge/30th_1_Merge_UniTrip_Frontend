@@ -1,7 +1,7 @@
 import type { FC } from 'react'; 
 import './LoginPage.css';
 import logo from '../../assets/header/logo.svg';
-import Google from '../../assets/Google_Logo.svg.svg';
+import Google from '../../assets/Google_Logo.svg';
 import { getGoogleLogin } from '../../api/login';
 
 
