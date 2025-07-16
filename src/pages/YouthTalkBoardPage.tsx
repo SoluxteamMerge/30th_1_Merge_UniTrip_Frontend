@@ -133,7 +133,7 @@ const YouthTalkBoardPage: React.FC = () => {
       {/* 플로팅 버튼 */}
       <button
         className="yt-floating-write-btn"
-        onClick={() => navigate("/review-write")}
+        onClick={() => navigate("/review-write?category=청춘톡")}
         aria-label="게시글 작성"
       >
         <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />

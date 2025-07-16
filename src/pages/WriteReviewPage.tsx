@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import writeIcon from "../assets/write-icon.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import list1Icon from "../assets/toolbar/list1.svg";
 import list2Icon from "../assets/toolbar/list2.svg";
 import tagIcon from "../assets/toolbar/tag.svg";
@@ -18,6 +18,7 @@ import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 const WriteReviewPage: React.FC = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // 메모 입력값(프론트에서만 사용)
   const [memo, setMemo] = useState("");
@@ -32,7 +33,15 @@ const WriteReviewPage: React.FC = () => {
     "카테고리별-해외교환학생"
   ];
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(categories[2]);
+  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+
+  // URL 파라미터에서 카테고리 읽어오기
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && categories.includes(categoryParam)) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams]);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleInput, setScheduleInput] = useState("");
   const [showTagModal, setShowTagModal] = useState(false);
@@ -44,6 +53,11 @@ const WriteReviewPage: React.FC = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  // 이메일 인증 상태
+  const isEmailVerified = localStorage.getItem('isEmailVerified') === 'true';
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
@@ -138,28 +152,72 @@ const WriteReviewPage: React.FC = () => {
     setShowPublishModal(true);
   };
 
-  const handlePublishConfirm = () => {
-    // 카테고리에 따라 다른 URL로 이동
-    switch (selectedCategory) {
-      case "청춘톡":
-        navigate('/youth-talk');
-        break;
-      case "MT여정지도":
-        navigate('/mt-journey');
-        break;
-      case "함께해요-동행구해요":
-      case "함께해요-번개모임":
-      case "함께해요-졸업/휴학여행":
-      case "함께해요-국내학점교류":
-        navigate('/together');
-        break;
-      case "카테고리별-해외교환학생":
-        navigate('/exchange-student');
-        break;
-      default:
-        navigate('/youth-talk');
+  const handlePublishConfirm = async () => {
+    try {
+      // 게시글 데이터 수집
+      const postData = {
+        title: title || "제목 없음",
+        description: content || "내용 없음",
+        travelType: getTravelType(selectedCategory),
+        startDate: scheduleInput.split(' ~ ')[0] || "",
+        endDate: scheduleInput.split(' ~ ')[1] || "",
+        companions: tags.join(', '),
+        isPublic: !isPrivate,
+        category: selectedCategory,
+        rating: rating,
+        memo: memo
+      };
+
+      // 백엔드 API 호출 (예시)
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData)
+      });
+
+      if (response.ok) {
+        // 성공 시 해당 카테고리 페이지로 이동
+        switch (selectedCategory) {
+          case "청춘톡":
+            navigate('/youth-talk');
+            break;
+          case "MT여정지도":
+            navigate('/mt-journey');
+            break;
+          case "함께해요-동행구해요":
+          case "함께해요-번개모임":
+          case "함께해요-졸업/휴학여행":
+          case "함께해요-국내학점교류":
+            navigate('/together');
+            break;
+          case "카테고리별-해외교환학생":
+            navigate('/exchange-student');
+            break;
+          default:
+            navigate('/youth-talk');
+        }
+      } else {
+        alert('게시글 등록에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('게시글 등록 오류:', error);
+      alert('게시글 등록 중 오류가 발생했습니다.');
     }
+    
     setShowPublishModal(false);
+  };
+
+  const getTravelType = (category: string) => {
+    switch (category) {
+      case "MT여정지도":
+        return "국내";
+      case "카테고리별-해외교환학생":
+        return "해외";
+      default:
+        return "기타";
+    }
   };
 
   const handlePublishCancel = () => {
@@ -174,7 +232,12 @@ const WriteReviewPage: React.FC = () => {
     }
   };
 
-  const isEmailVerified = true; // todo
+  // 이메일 인증 상태 확인 및 날짜 모달 자동 표시
+  useEffect(() => {
+    if (isEmailVerified) {
+      setShowScheduleModal(true);
+    }
+  }, [isEmailVerified]);
 
   return (
     <div className="wr-bg">
@@ -739,7 +802,13 @@ const WriteReviewPage: React.FC = () => {
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
               </div>
               <div className="wr-title-row">
-                <input className="wr-title-input" placeholder="제목을 입력하세요." disabled={!isEmailVerified} />
+                <input 
+                  className="wr-title-input" 
+                  placeholder="제목을 입력하세요." 
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  disabled={!isEmailVerified} 
+                />
                 <div className="wr-private-row">
                   <span className="wr-private-label">비공개</span>
                   <div
@@ -756,7 +825,13 @@ const WriteReviewPage: React.FC = () => {
               </div>
               <hr className="wr-divider" />
               <div className="wr-content-area">
-                <textarea className="wr-content-input" placeholder="내용을 입력하세요..." disabled={!isEmailVerified} />
+                <textarea 
+                  className="wr-content-input" 
+                  placeholder="내용을 입력하세요..." 
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  disabled={!isEmailVerified} 
+                />
               </div>
             </div>
           </div>
