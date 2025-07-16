@@ -8,7 +8,6 @@ import MainPage from "../pages/mainpage/MainPage";
 import RecordedYouthPage from "../pages/mypage/RecordedYouthPage";
 import ScrappedYouthPage from "../pages/mypage/ScrappedYouth";
 import YouthCalendar from "../pages/mypage/YouthCalendar";
-import MTJourneyMap from "../pages/MTJourneyMap";
 
 
 const AppRoutes = () => (
@@ -23,7 +22,6 @@ const AppRoutes = () => (
     <Route path="/recorded-youth/scrapped-youth" element={<ScrappedYouthPage />} />
     <Route path="/recorded-youth/youth-calendar" element={<YouthCalendar />} />
 
-    <Route path="/mt-journey" element={<MTJourneyMap />} />
 
     {/* 다른 페이지 라우트도 여기에 추가 */}
 
