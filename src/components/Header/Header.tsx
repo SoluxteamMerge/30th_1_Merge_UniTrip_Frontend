@@ -12,7 +12,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
   const location = useLocation();
   const menuLinks = [
     { to: "/cjdcnsqkfwkrnr", label: "청춘 발자국" },
-    { to: "/dpaxlduwjdwleh", label: "MT여정지도" },
+    { to: "/mt-journey", label: "MT여정지도" },
     { to: "/gkaRpgody", label: "함께해요" },
     { to: "/youth-talk", label: "청춘톡" },
     { to: "/youth-drawer", label: "청춘서랍", last: true }
@@ -31,6 +31,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
         .header-right { display: flex; align-items: center; }
         .header-username { color: #0b0b61; font-weight: 600; margin-right: 12px; }
         .header-username-link { color: #0b0b61; font-weight: 600; text-decoration: none; }
+        .header-username-link.active { color: #bbb; cursor: default; }
         .header-username-gap { display: inline-block; width: 24px; }
         .header-profile-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #eee; border: 1.5px solid #ccc; }
         .header-login-link { color: #0b0b61; font-weight: 600; margin-right: 16px; text-decoration: none; }
@@ -50,7 +51,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
                 className={
                   "header-nav-link" +
                   (last ? " last" : "") +
-                  (location.pathname === to ? " active" : "")
+                  (location.pathname === to || (to === "/youth-talk" && location.pathname.startsWith("/youth-talk")) ? " active" : "")
                 }
               >
                 {label}
@@ -62,7 +63,13 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
           {isLoggedIn ? (
             <>
               <span className="header-username">
-                <Link to="/recorded-youth" className="header-username-link">
+                <Link 
+                  to="/recorded-youth" 
+                  className={
+                    "header-username-link" +
+                    (location.pathname.startsWith("/recorded-youth") ? " active" : "")
+                  }
+                >
                   기록한 청춘
                 </Link>
                 <span className="header-username-gap" />

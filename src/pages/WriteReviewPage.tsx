@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import writeIcon from "../assets/write-icon.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import list1Icon from "../assets/toolbar/list1.svg";
 import list2Icon from "../assets/toolbar/list2.svg";
 import tagIcon from "../assets/toolbar/tag.svg";
@@ -11,10 +11,14 @@ import starIcon from "../assets/toolbar/star.svg";
 import leftlistIcon from "../assets/toolbar/leftlist.svg";
 import middlelistIcon from "../assets/toolbar/middlelist.svg";
 import rightlistIcon from "../assets/toolbar/rightlist.svg";
+import closeIcon from "../assets/module/close.svg";
+import starWishIcon from "../assets/module/star_wish.svg";
+import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 
 const WriteReviewPage: React.FC = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // 메모 입력값(프론트에서만 사용)
   const [memo, setMemo] = useState("");
@@ -29,14 +33,211 @@ const WriteReviewPage: React.FC = () => {
     "카테고리별-해외교환학생"
   ];
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(categories[2]);
+  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+
+  // URL 파라미터에서 카테고리 읽어오기
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && categories.includes(categoryParam)) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams]);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleInput, setScheduleInput] = useState("");
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  // 이메일 인증 상태
+  const isEmailVerified = localStorage.getItem('isEmailVerified') === 'true';
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
     setCategoryOpen(false);
+    
+    // MT여정지도가 선택되면 MT일정 모달을, 나머지는 여행일정 모달을 표시
+    if (cat === "MT여정지도") {
+      setShowScheduleModal(true);
+    } else {
+      setShowScheduleModal(true);
+    }
   };
 
-  const isEmailVerified = true; // todo
+  const handleScheduleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // 숫자만 허용
+    const numbersOnly = value.replace(/[^0-9]/g, '');
+    
+    if (numbersOnly.length <= 12) { // 최대 12자리 (YYMMDDYYMMDD)
+      let formatted = '';
+      
+      // 숫자를 2자리씩 그룹화하여 하이픈과 물결표 추가
+      for (let i = 0; i < numbersOnly.length; i++) {
+        if (i === 2 || i === 4) {
+          formatted += '-';
+        } else if (i === 6) {
+          formatted += ' ~ ';
+        } else if (i === 8 || i === 10) {
+          formatted += '-';
+        }
+        formatted += numbersOnly[i];
+      }
+      
+      setScheduleInput(formatted);
+    }
+  };
+
+  const handleTagInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleTagSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
+      const newTag = `#${tagInput.trim()}`;
+      setTags([...tags, newTag]);
+      setTagInput("");
+    }
+  };
+
+  const handleTagButtonClick = () => {
+    setShowTagModal(true);
+  };
+
+  const handleImageButtonClick = () => {
+    setShowImageModal(true);
+  };
+
+  const handleFileUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        setSelectedImage(file.name);
+      }
+    };
+    input.click();
+  };
+
+  const handleImageRemove = () => {
+    setSelectedImage("");
+  };
+
+  const handleRatingButtonClick = () => {
+    setShowRatingModal(true);
+  };
+
+  const handleStarClick = (starIndex: number) => {
+    setRating(starIndex + 1);
+  };
+
+  const handleStarHover = (starIndex: number) => {
+    setHoverRating(starIndex + 1);
+  };
+
+  const handleStarLeave = () => {
+    setHoverRating(0);
+  };
+
+  const handlePublishClick = () => {
+    setShowPublishModal(true);
+  };
+
+  const handlePublishConfirm = async () => {
+    try {
+      // 게시글 데이터 수집
+      const postData = {
+        title: title || "제목 없음",
+        description: content || "내용 없음",
+        travelType: getTravelType(selectedCategory),
+        startDate: scheduleInput.split(' ~ ')[0] || "",
+        endDate: scheduleInput.split(' ~ ')[1] || "",
+        companions: tags.join(', '),
+        isPublic: !isPrivate,
+        category: selectedCategory,
+        rating: rating,
+        memo: memo
+      };
+
+      // 백엔드 API 호출 (예시)
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData)
+      });
+
+      if (response.ok) {
+        // 성공 시 해당 카테고리 페이지로 이동
+        switch (selectedCategory) {
+          case "청춘톡":
+            navigate('/youth-talk');
+            break;
+          case "MT여정지도":
+            navigate('/mt-journey');
+            break;
+          case "함께해요-동행구해요":
+          case "함께해요-번개모임":
+          case "함께해요-졸업/휴학여행":
+          case "함께해요-국내학점교류":
+            navigate('/together');
+            break;
+          case "카테고리별-해외교환학생":
+            navigate('/exchange-student');
+            break;
+          default:
+            navigate('/youth-talk');
+        }
+      } else {
+        alert('게시글 등록에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('게시글 등록 오류:', error);
+      alert('게시글 등록 중 오류가 발생했습니다.');
+    }
+    
+    setShowPublishModal(false);
+  };
+
+  const getTravelType = (category: string) => {
+    switch (category) {
+      case "MT여정지도":
+        return "국내";
+      case "카테고리별-해외교환학생":
+        return "해외";
+      default:
+        return "기타";
+    }
+  };
+
+  const handlePublishCancel = () => {
+    setShowPublishModal(false);
+  };
+
+  const getModalMessage = () => {
+    if (selectedCategory === "MT여정지도") {
+      return "MT 일정을 입력해주세요";
+    } else {
+      return "여행 일정을 입력해주세요";
+    }
+  };
+
+  // 이메일 인증 상태 확인 및 날짜 모달 자동 표시
+  useEffect(() => {
+    if (isEmailVerified) {
+      setShowScheduleModal(true);
+    }
+  }, [isEmailVerified]);
 
   return (
     <div className="wr-bg">
@@ -73,8 +274,8 @@ const WriteReviewPage: React.FC = () => {
         .wr-category-dropdown {
           position: absolute;
           top: 48px;
-          left: 75px;
-          width: 80%;
+          left: 40px;
+          width: 81%;
           background: #fff;
           border: 1.5px solid #bbb;
           border-radius: 12px;
@@ -117,7 +318,7 @@ const WriteReviewPage: React.FC = () => {
         .wr-memo-textarea::placeholder {
           line-height: 32px;
         }
-        .wr-main { flex: 1; background: #fff; border-radius: 0 0 0 0; box-shadow: 0 1px 6px #0001; border: 1.5px solid #e0e0e0; padding: 0; min-height: 600px; display: flex; flex-direction: column; }
+        .wr-main { flex: 1; background: #fff; border-radius: 0; box-shadow: 0 1px 6px #0001; border: 1.5px solid #e0e0e0; padding: 0; min-height: 600px; display: flex; flex-direction: column; }
         .wr-toolbar { display: flex; align-items: center; border-bottom: 1px solid #dedede; padding: 18px 32px 10px 32px; gap: 30px; font-size: 22px; color: #222; }
         .wr-toolbar-btn { background: none; border: none; font-size: 30px; cursor: pointer; color: #222; margin-right: 10px; }
         .wr-toolbar-btn:last-child { margin-right: 0; }
@@ -258,6 +459,14 @@ const WriteReviewPage: React.FC = () => {
           flex-direction: column;
           align-items: center;
         }
+        .wr-modal.schedule {
+          padding: 80px 120px 20px 120px;
+          min-width: 400px;
+          min-height: 400px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
         .wr-modal-text {
           font-size: 20px;
           color: #black;
@@ -276,10 +485,262 @@ const WriteReviewPage: React.FC = () => {
           padding: 12px 48px;
           cursor: pointer;
         }
-        .wr-disabled-area {
-          pointer-events: none;
-          opacity: 0.45;
-          filter: blur(0.5px);
+        .wr-modal-btn.schedule {
+          width: 150%;
+          padding: 12px 80px;
+        }
+        .wr-schedule-input-container {
+          margin-bottom: 50px;
+          width: 150%;
+        }
+        .wr-schedule-label {
+          display: block;
+          margin-bottom: 10px;
+          font-size: 16px;
+          font-weight: 400;
+          color: #bbb;
+          text-align: left;
+        }
+        .wr-schedule-input {
+          width: 100%;
+          padding: 0px;
+          font-size: 10px;
+          box-sizing: border-box;
+        }
+        .wr-schedule-input::placeholder {
+          color: #999;
+          opacity: 1;
+        }
+        .wr-date-row {
+          display: flex;
+          justify-content: center;
+        }
+        .wr-date-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .wr-modal.tag {
+          position: fixed;
+          top: 160px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #fff;
+          border-radius: 25px;
+          box-shadow: 0 4px 32px 0 rgba(0,0,0,0.13);
+          padding: 40px;
+          z-index: 300;
+          min-width: 600px;
+        }
+        .wr-tag-header {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 20px;
+          gap: 470px;
+        }
+        .wr-tag-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #838383;
+        }
+        .wr-tag-close {
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+          background: none;
+          border: none;
+          padding: 0;
+        }
+        .wr-tag-input-container {
+          width: 110%;
+          padding: 0 20px;
+        }
+        .wr-tag-input-wrapper {
+          margin-bottom: 15px;
+          border-radius: 30px;
+          background: #dedede;
+          padding: 2px;
+        }
+        .wr-tag-input {
+          width: 100%;
+          padding: 10px;
+          border: none;
+          border-radius: 15px;
+          font-size: 16px;
+          box-sizing: border-box;
+          outline: none;
+        }
+        .wr-tag-input::placeholder {
+          color: #999;
+          opacity: 1;
+        }
+        .wr-tags-display {
+          margin-top: 15px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .wr-tag-badge {
+          display: inline-flex;
+          align-items: center;
+          background: #0b0b61;
+          color: #fff;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 14px;
+          font-weight: 300;
+        }
+        .wr-tag-remove {
+          background: none;
+          border: none;
+          color: #fff;
+          margin-left: 8px;
+          cursor: pointer;
+          font-size: 20px;
+          font-weight: 200;
+          padding: 0;
+          width: 16px;
+          height: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .wr-image-upload-row {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        .wr-image-input-wrapper {
+          flex: 1;
+          position: relative;
+          border-bottom: 1px solid #bbb;
+          padding-bottom: 10px;
+        }
+        .wr-image-input {
+          width: 100%;
+          padding: 10px 0px 0px 10px;
+          border: none;
+          outline: none;
+          font-size: 15px;
+          font-weight: 500;
+          color: #999;
+          background: none;
+        }
+        .wr-image-remove {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: #999;
+          cursor: pointer;
+          font-size: 18px;
+          padding: 0;
+        }
+        .wr-file-upload-btn {
+          background: #fff;
+          border: 2px solid #bbb;
+          border-radius: 11px;
+          padding: 12px 24px;
+          font-size: 16px;
+          font-weight: 700;
+          color: #101010;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        .wr-rating-upload-row {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        .wr-rating-input-wrapper {
+          flex: 1;
+          position: relative;
+          border-bottom: 1px solid #bbb;
+          padding-bottom: 10px;
+        }
+        .wr-rating-display {
+          display: flex;
+          gap: 25px;
+          padding: 10px 0px 0px 10px;
+        }
+        .wr-star-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+        }
+        .wr-star-img {
+          width: 40px;
+          height: 40px;
+          transition: all 0.2s;
+        }
+        .wr-rating-confirm-btn {
+          background: #fff;
+          border: 2px solid #bbb;
+          border-radius: 11px;
+          padding: 12px 24px;
+          font-size: 16px;
+          font-weight: 700;
+          color: #101010;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        .wr-modal.publish {
+          padding: 120px 120px 20px 120px;
+          min-width: 400px;
+          min-height: 400px;
+          text-align: center;
+        }
+        .wr-publish-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 60px;
+        }
+        .wr-publish-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #333;
+        }
+        .wr-publish-close {
+          background: none;
+          border: none;
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+          padding: 0;
+          position: absolute;
+          right: 20px;
+          top: 20px;
+        }
+        .wr-publish-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          align-items: center;
+        }
+        .wr-publish-confirm-btn {
+          background: #0b0b61;
+          color: #fff;
+          border: none;
+          border-radius: 10px;
+          padding: 12px 68px;
+          font-size: 20px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .wr-publish-cancel-btn {
+          background: #fff;
+          color: #333;
+          border: 2px solid #838383;
+          border-radius: 10px;
+          padding: 12px 48px;
+          font-size: 20px;
+          font-weight: 600;
+          cursor: pointer;
         }
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
@@ -332,16 +793,22 @@ const WriteReviewPage: React.FC = () => {
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><b><s>S</s></b></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list1Icon} alt="리스트1" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list2Icon} alt="리스트2" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleTagButtonClick}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleImageButtonClick}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleRatingButtonClick}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={leftlistIcon} alt="왼쪽정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={middlelistIcon} alt="가운데정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
               </div>
               <div className="wr-title-row">
-                <input className="wr-title-input" placeholder="제목을 입력하세요." disabled={!isEmailVerified} />
+                <input 
+                  className="wr-title-input" 
+                  placeholder="제목을 입력하세요." 
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  disabled={!isEmailVerified} 
+                />
                 <div className="wr-private-row">
                   <span className="wr-private-label">비공개</span>
                   <div
@@ -358,15 +825,21 @@ const WriteReviewPage: React.FC = () => {
               </div>
               <hr className="wr-divider" />
               <div className="wr-content-area">
-                <textarea className="wr-content-input" placeholder="내용을 입력하세요..." disabled={!isEmailVerified} />
+                <textarea 
+                  className="wr-content-input" 
+                  placeholder="내용을 입력하세요..." 
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  disabled={!isEmailVerified} 
+                />
               </div>
             </div>
           </div>
           {/* 플로팅 버튼 */}
           <button
             className="wr-floating-write-btn"
-            onClick={() => isEmailVerified && navigate(-1)}
-            aria-label="뒤로가기"
+            onClick={() => isEmailVerified && handlePublishClick()}
+            aria-label="게시하기"
             disabled={!isEmailVerified}
           >
             <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
@@ -380,6 +853,158 @@ const WriteReviewPage: React.FC = () => {
                 해당 게시판은 작성 전<br />학교 이메일 인증이 필요합니다.
               </div>
               <button className="wr-modal-btn" onClick={() => navigate('/cjdcnstjfkq')}>인증하기</button>
+            </div>
+          </>
+        )}
+        {showScheduleModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal schedule">
+              <div className="wr-modal-text">
+                {getModalMessage()}
+              </div>
+              <div className="wr-schedule-input-container">
+                <label className="wr-schedule-label">날짜</label>
+                <input 
+                  type="text" 
+                  className="wr-schedule-input"
+                  placeholder="YY-MM-DD ~ YY-MM-DD"
+                  value={scheduleInput}
+                  onChange={handleScheduleInput}
+                />
+              </div>
+              <button className="wr-modal-btn schedule" onClick={() => setShowScheduleModal(false)}>확인</button>
+            </div>
+          </>
+        )}
+        {showTagModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal tag">
+              <div className="wr-tag-header">
+                <span className="wr-tag-title">태그</span>
+                <button className="wr-tag-close" onClick={() => setShowTagModal(false)}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-tag-input-container">
+                <div className="wr-tag-input-wrapper">
+                  <input 
+                    type="text" 
+                    className="wr-tag-input"
+                    placeholder="태그를 입력해주세요... 입력 후 엔터 또는 콤마"
+                    value={tagInput}
+                    onChange={handleTagInput}
+                    onKeyPress={handleTagSubmit}
+                  />
+                </div>
+                <div className="wr-tags-display">
+                  {tags.map((tag, index) => (
+                    <span key={index} className="wr-tag-badge">
+                      {tag}
+                      <button 
+                        className="wr-tag-remove" 
+                        onClick={() => {
+                          setTags(tags.filter((_, i) => i !== index));
+                          if (tags.length === 1) {
+                            setShowTagModal(false);
+                          }
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {showImageModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal tag">
+              <div className="wr-tag-header">
+                <span className="wr-tag-title">이미지</span>
+                <button className="wr-tag-close" onClick={() => setShowImageModal(false)}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-tag-input-container">
+                <div className="wr-image-upload-row">
+                  <div className="wr-image-input-wrapper">
+                    <input 
+                      type="text" 
+                      className="wr-image-input"
+                      placeholder="image1.png"
+                      value={selectedImage}
+                      readOnly
+                    />
+                    <button className="wr-image-remove" onClick={handleImageRemove}>×</button>
+                  </div>
+                  <button className="wr-file-upload-btn" onClick={handleFileUpload}>파일업로드</button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+                {showRatingModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal tag">
+              <div className="wr-tag-header">
+                <span className="wr-tag-title">별점</span>
+                <button className="wr-tag-close" onClick={() => setShowRatingModal(false)}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-tag-input-container">
+                <div className="wr-rating-upload-row">
+                  <div className="wr-rating-input-wrapper">
+                    <div className="wr-rating-display">
+                      {[0, 1, 2, 3, 4].map((index) => (
+                        <button
+                          key={index}
+                          className="wr-star-btn"
+                          onClick={() => handleStarClick(index)}
+                          onMouseEnter={() => handleStarHover(index)}
+                          onMouseLeave={handleStarLeave}
+                        >
+                          <img 
+                            src={(hoverRating || rating) > index ? starWishFillIcon : starWishIcon} 
+                            alt="별" 
+                            className="wr-star-img"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <button className="wr-rating-confirm-btn" onClick={() => setShowRatingModal(false)}>
+                    확인
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {showPublishModal && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal publish">
+              <div className="wr-publish-header">
+                <span className="wr-publish-title">게시하시겠습니까?</span>
+                <button className="wr-publish-close" onClick={handlePublishCancel}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-publish-buttons">
+                <button className="wr-publish-confirm-btn" onClick={handlePublishConfirm}>
+                  예
+                </button>
+                <button className="wr-publish-cancel-btn" onClick={handlePublishCancel}>
+                  아니요
+                </button>
+              </div>
             </div>
           </>
         )}
