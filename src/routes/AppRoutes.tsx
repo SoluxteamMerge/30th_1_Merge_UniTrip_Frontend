@@ -9,7 +9,6 @@ import MainPage from "../pages/mainpage/MainPage";
 import RecordedYouthPage from "../pages/mypage/RecordedYouthPage";
 import ScrappedYouthPage from "../pages/mypage/ScrappedYouth";
 import YouthCalendar from "../pages/mypage/YouthCalendar";
-import MTJourneyMap from "../pages/MTJourneyMap";
 import YouthDrawer from "../pages/editprofile/YouthDrawer";
 
 const AppRoutes = () => (
@@ -25,7 +24,6 @@ const AppRoutes = () => (
     <Route path="/youth-drawer" element={<YouthDrawer />} />
     <Route path="/recorded-youth/scrapped-youth" element={<ScrappedYouthPage />} />
     <Route path="/recorded-youth/youth-calendar" element={<YouthCalendar />} />
-    <Route path="/mt-journey-map" element={<MTJourneyMap />} />
 
     {/* 다른 페이지 라우트도 여기에 추가 */}
   </Routes>
