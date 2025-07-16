@@ -31,6 +31,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
         .header-right { display: flex; align-items: center; }
         .header-username { color: #0b0b61; font-weight: 600; margin-right: 12px; }
         .header-username-link { color: #0b0b61; font-weight: 600; text-decoration: none; }
+        .header-username-link.active { color: #bbb; cursor: default; }
         .header-username-gap { display: inline-block; width: 24px; }
         .header-profile-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #eee; border: 1.5px solid #ccc; }
         .header-login-link { color: #0b0b61; font-weight: 600; margin-right: 16px; text-decoration: none; }
@@ -62,7 +63,13 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
           {isLoggedIn ? (
             <>
               <span className="header-username">
-                <Link to="/recorded-youth" className="header-username-link">
+                <Link 
+                  to="/recorded-youth" 
+                  className={
+                    "header-username-link" +
+                    (location.pathname.startsWith("/recorded-youth") ? " active" : "")
+                  }
+                >
                   기록한 청춘
                 </Link>
                 <span className="header-username-gap" />
