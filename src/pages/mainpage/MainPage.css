@@ -1,12 +1,12 @@
 
-.main-background {
+.mainpage-background {
   min-height: 100vh;
   padding-top: 80px;  
   box-sizing: border-box;
   background: linear-gradient(to bottom, #DEE8E8, #FBFBFB);
 }
 
-.section-title {
+.mainpage-sectiontitle {
   font-size: 32px;
   margin-left: 152px;
   margin-bottom: 46px;
@@ -15,7 +15,7 @@
   font-family: 'Pretendard', sans-serif;
 }
 
-.search-container {
+.mainpage-search-container {
   width: calc(100vw - 320px);
   height: 100px;
   margin: 0 auto;      
@@ -30,7 +30,7 @@
 }
 
 
-.search-icon {
+.mainpage-search-icon {
   width: 30px;
   height: 30px;
   flex-shrink: 0;
@@ -38,7 +38,7 @@
 }
 
 /* 회색 input 박스 */
-.search-input {
+.mainpage-search-input {
   height: 80%;
   flex: 1;
   background-color: #BBBBBB !important;
@@ -51,25 +51,27 @@
   font-size: 30px;
 }
 
-.search-input::placeholder {
-  color: #838383;
-  font-size: 30px;
+.mainpage-search-input::placeholder {
+  color: transparent;
 }
 
-.suggest-section {
+
+
+
+.mainpage-suggest-section {
   margin-top: 25px !important;
   padding: 0 80px;
   font-family: 'Pretendard', sans-serif;
 }
 
-.suggest-label {
+.mainpage-suggest-label {
   font-size: 24px;
   font-weight: 700;
   color: #0B0B61;
   text-align: left;
 }
 
-.suggest-card {
+.mainpage-suggest-card {
   background-color: white;
   flex-direction: column;
   border: 1px solid #BBBBBB;
@@ -81,27 +83,15 @@
 }
 
 
-.search-icon {
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
-  pointer-events: none;
-}
 
-
-.search-input::placeholder {
-  color: #333;
-  font-size: 18px;
-}
-
-.suggest-section {
+.mainpage-suggest-section {
   margin-top: 60px;
   padding: 0 160px;
   font-family: 'Pretendard', sans-serif;
 }
 
 
-.suggest-content-wrapper {
+.mainpage-suggest-content-wrapper {
   display: flex;
   flex-direction: row !important;
   align-items: center;
@@ -109,14 +99,14 @@
 }
 
 /* 텍스트 영역 */
-.suggest-text {
+.mainpage-suggest-text {
   flex: 1 1 auto;
   max-width: calc(100% - 400px); /* 이미지보다 살짝 더 여유 있게 */
   margin-top: 80px;
 }
 
 
-.recommend-title {
+.mainpage-recommend-title {
   font-size: 32px;
   font-weight: 600;
   margin-bottom: 22px;
@@ -127,7 +117,7 @@
   text-overflow: ellipsis;
 }
 
-.recommend-summary {
+.mainpage-recommend-summary {
   font-size: 20px;
   color: #838383;
   white-space: nowrap;
@@ -137,13 +127,13 @@
 }
 
 /* 이미지 */
-.suggest-image-wrapper {
+.mainpage-suggest-image-wrapper {
   flex-shrink: 0;
   max-width: 380px;
   overflow: hidden;
 }
 
-.suggest-img {
+.mainpage-suggest-img {
   width: 380px;
   height: 247px;
   object-fit: cover;
@@ -224,41 +214,251 @@
   transition: background-color 0.2s ease;
 }
 
+
+
+/*-----핸드폰 용------*/
+/*
 @media (max-width: 768px) {
-  .suggest-img {
+  .mainpage-background {
+    padding-top: 60px;
+  }
+
+  .mainpage-sectiontitle {
+    font-size: 24px;
+    margin-left: 20px;
+    margin-bottom: 30px;
+  }
+
+  .mainpage-search-container {
+    width: calc(100% - 40px);
+    padding: 0 12px;
+    height: 50px;
+  }
+
+  .mainpage-search-input {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .mainpage-search-input::placeholder {
+    font-size: 16px;
+  }
+
+  .mainpage-suggest-section {
+    padding: 0 20px;
+    margin-top: 30px;
+  }
+
+  .mainpage-suggest-card {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .mainpage-suggest-content-wrapper {
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .mainpage-suggest-text {
+    margin-top: 0;
+    max-width: 100%;
+  }
+
+  .mainpage-recommend-title {
+    font-size: 20px;
+    white-space: normal;
+  }
+
+  .mainpage-recommend-summary {
+    font-size: 16px;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .mainpage-suggest-image-wrapper {
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-img {
+    width: 100%;
+    height: auto;
+  }
+
+  .roulette-wrapper {
+    padding: 0 20px;
+  }
+
+  .roulette-button {
+    height: 60px;
+    font-size: 18px;
+    max-width: 100%;
+  }
+
+  .today-wrapper {
+    padding: 0 20px;
+    margin-top: 40px;
+    padding-bottom: 60px;
+  }
+
+  .today-board {
+    padding: 20px;
+  }
+
+  .today-section {
+    font-size: 20px;
+  }
+
+  .review-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .more-link {
+    font-size: 14px;
+  }
+
+  .mainpage-recommend-title {
+    font-size: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mainpage-recommend-summary {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-content-wrapper {
+    flex-direction: column !important;
+    align-items: flex-start;
+  }
+
+  .mainpage-suggest-image-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-img {
     width: 100%;
     height: auto;
     max-width: 100%;
   }
+
 }
+*/
 
-@media (max-width: 768px) {
-  .suggest-section {
-    padding: 0 20px; /* ✅ 모바일에선 좌우 20px만 */
-  }
-}
-
-
-/*@media (max-width: 768px) {
-  .search-container {
-    height: 50px;
-    padding: 0 12px;
+/* ------패드용------ */
+/*
+@media (min-width: 769px) and (max-width: 1024px) {
+  .mainpage-background {
+    padding-top: 70px;
   }
 
-  .search-input {
-    font-size: 14px;
-    padding: 16px;
+  .mainpage-sectiontitle {
+    font-size: 28px;
+    margin-left: 40px;
+    margin-bottom: 40px;
   }
 
-  .search-icon {
-    width: 24px;
-    height: 24px;
+  .mainpage-search-container {
+    width: calc(100% - 80px);
+    padding: 0 20px;
+    height: 70px;
   }
 
-  .suggest-card {
+  .mainpage-search-input {
+    font-size: 20px;
+    padding: 14px;
+  }
+
+  .mainpage-search-input::placeholder {
+    font-size: 20px;
+  }
+
+  .mainpage-suggest-section {
+    padding: 0 40px;
+    margin-top: 40px;
+  }
+
+  .mainpage-suggest-card {
     flex-direction: column;
+    padding: 28px;
+  }
+
+  .mainpage-suggest-content-wrapper {
+    flex-direction: column !important;
+    margin-top: 20px;
     align-items: flex-start;
-    gap: 16px;
+  }
+
+  .mainpage-suggest-text {
+    margin-top: 0;
+    max-width: 100%;
+  }
+
+  .mainpage-recommend-title {
+    font-size: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mainpage-recommend-summary {
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-image-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .roulette-wrapper {
+    padding: 0 40px;
+  }
+
+  .roulette-button {
+    height: 80px;
+    font-size: 24px;
+    max-width: 100%;
+  }
+
+  .today-wrapper {
+    padding: 0 40px;
+    margin-top: 50px;
+    padding-bottom: 80px;
+  }
+
+  .today-board {
+    padding: 28px;
+  }
+
+  .today-section {
+    font-size: 24px;
+  }
+
+  .review-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .more-link {
+    font-size: 16px;
   }
 }
-*/ 
+*/

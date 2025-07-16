@@ -4,7 +4,7 @@
   box-sizing: border-box;
 }
 
-html,body, #root {
+html, body, #root {
   width: 100%;
   min-height: 100vh;
 }
@@ -14,87 +14,111 @@ html,body, #root {
   justify-content: center;
   align-items: center;
   background: linear-gradient(to bottom, #C2E4E4, #DEE8E8, #FBFBFB);
-  padding: 40px 160px; /* 데스크탑 기준 좌우 여백 */
+  padding: 40px 24px; 
   box-sizing: border-box;
   min-height: 100vh;
   max-width: 1920px;
   margin: 0 auto;
 }
 
-
 /* 카드 박스 */
 .signup-card {
   display: flex;
   flex-direction: column;
-  width: 90%;
-  min-height: 593px;
+  align-items: center;
+  width: 100%;
   max-width: 500px;
+  min-width: 280px; /*최소 너비 설정 */
   background-color: white;
   border: 1px solid #BBBBBB;
   border-radius: 16px;
-  margin: 0px 0px;
-
+  padding: 0 16px;
 }
 
-.logo {
+.signup-logo {
   display: block;
-  margin: 54px 112px 0 122px;
-  width: 266px;
-  height: 68px;
+  width: 100%;
+  max-width: 266px;
+  height: auto;
+  margin: 54px auto 0 auto; /* 가운데 정렬 */
 }
 
-.title {
+.signup-title {
   text-align: center;
   font-family: 'Pretendard', sans-serif;
   font-size: 20px;
-  font-weight: 700; /*bold*/
+  font-weight: 700;
   color: #0B0B61;
-  line-height: 100%;
   margin-top: 19px;
 }
 
-.description {
+.signup-description {
   text-align: center;
   font-family: 'Pretendard', sans-serif;
   font-size: 18px;
-  line-height: 1.6; /*글씨가 너무 붙어보여서 1.0에서 1.4로 수정*/
+  line-height: 1.6;
   font-weight: 300;
   color: #838383;
   margin-top: 5px;
-  letter-spacing: 0;
-
 }
 
 .signup-form {
-  width: 360px;
-  height: auto;
+  width: 100%;
+  max-width: 360px;
   display: flex;
   flex-direction: column;
-  display:flex;
-  padding: 45px 4px 51px;
-  margin: 0px 70px;
+  padding: 45px 0 51px;
+  margin: 0 auto;
   gap: 32px;
 }
 
-.check-duplicate {
-  font-size: 13px;
-  font-weight: 300;
-  line-height: 100%;
-  color: #8BCECE
+.signup-form-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-.row-with-button {
+.signup-form-row-left {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.signup-form-row input {
+  border: none;
+  border-bottom: 1px solid #BBBBBB;
+  background-color: transparent;
+  outline: none;
+  height: 40px;
+  width: 100%;
+  font-size: 16px;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.signup-form-row label {
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  color: #838383;
+}
+
+.signup-check-duplicate {
+  font-size: 13px;
+  font-weight: 300;
+  color: #8BCECE;
+}
+
+.signup-row-with-button {
   display: flex;
   align-items: center;
   justify-content: flex-end;
 }
 
-.row-with-button input {
+.signup-row-with-button input {
   flex: 1;
 }
 
-.check-btn,
-.upload-btn {
+.signup-upload-btn {
   border: 0.69px solid #BBBBBB;
   background-color: white;
   padding: 4px 8px;
@@ -105,64 +129,33 @@ html,body, #root {
   width: 75px;
   height: 27px;
   font-family: 'Pretendard', sans-serif;
-  margin: 0px 0px 5px;
 }
 
-.form-row {
-  display: flex;
-  flex-direction: column; /* 🔥 입력창을 아래로 */
-  width: 100%;
-  width: 360px;
-  height: 58px;
-}
-
-.form-row-left {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.form-row input {
-  border: none;                /* 테두리 없애기 */
-  border-bottom: 1px solid #BBBBBB; /* 밑줄만 */
-  background-color: transparent;
-  outline: none;
-  height: 40px;
-  width: 360px;
-  padding:0 0px;
-  font-size: 16px;
-  font-family: 'Pretendard', sans-serif;
-  box-sizing: border-box;
-}
-
-.form-row label {
-  font-family: 'Pretendard', sans-serif;
-  font-weight: 300;
-  font-size: 15px;
-  line-height: 1;
-  color: #838383;
-
-}
-
-/* 파일명 표시 */
-.file-name {
+.signup-file-name {
   font-size: 12px;
   color: #c4c3c3;
   flex: 1;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  padding: 7px 0px 0px;
+  padding: 7px 0 0;
 }
-/* 밑줄 */
-.underline {
+
+.signup-underline {
   width: 100%;
   height: 1px;
   background-color: #BBBBBB;
-  margin-top: 2px;
+  margin-top: 0px;
 }
 
-/* input 태그 스타일 */
+.signup-form-row:nth-of-type(3) .signup-underline { /*프로필 사진 underline */
+  width: 100%;
+  height: 1px;
+  background-color: #BBBBBB;
+  margin-top: 4px;
+  
+}
+
 input[type="text"],
 input[type="password"],
 input[type="email"] {
@@ -176,30 +169,29 @@ input[type="email"] {
 input::placeholder {
   color: white;
   font-size: 14px;
-  opacity: 1;
 }
 
-.hidden-file {
+.signup-hidden-file {
   display: none;
 }
 
-.label {
-  display: inline-flex;       /* 텍스트 + 아이콘 한 줄에 정렬 */
-  align-items: center;        /* 세로 가운데 정렬 */
-  gap: 7px;                   /* 텍스트와 아이콘 사이 간격 */
+.signup-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: #838383;
 }
 
-.label-check-icon {
+.signup-label-check-icon {
   width: 12px;
   height: 12px;
-  
 }
 
-.submit-btn {
-  width: 360px;
+.signup-submit-btn {
+  width: 100%;
+  max-width: 360px;
   height: 60px;
   background-color: #0B0B61;
   color: white;
@@ -210,8 +202,33 @@ input::placeholder {
   font-weight: 700;
   cursor: pointer;
   margin: 0 auto 51px;
-
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media (max-width: 400px) {
+  .signup-page {
+    padding: 20px;
+  }
+
+  .signup-logo {
+    width: 80%;
+    max-width: 200px;
+    margin-top: 30px;
+  }
+
+  .signup-form {
+    padding: 20px 0;
+    gap: 24px;
+  }
+
+  .signup-form-row input {
+    font-size: 14px;
+  }
+
+  .signup-submit-btn {
+    height: 50px;
+    font-size: 14px;
+  }
 }
