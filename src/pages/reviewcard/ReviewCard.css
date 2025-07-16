@@ -44,3 +44,30 @@
   color: #0B0B61;
   margin-right: 6px;
 }
+
+/*
+
+@media (max-width: 768px) {
+  .review-card {
+    max-width: 320px;  
+    height: auto;      
+  }
+
+  .card-img {
+    height: 200px;    
+  }
+
+  .card-content {
+    padding: 10px 16px; 
+  }
+
+  .card-title {
+    font-size: 18px !important;
+  }
+
+  .card-content p {
+    font-size: 14px;
+  }
+}
+
+*/
