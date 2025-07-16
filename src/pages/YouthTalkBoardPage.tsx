@@ -93,7 +93,7 @@ const YouthTalkBoardPage: React.FC = () => {
           <div className="yt-board-title">게시글 모음</div>
           <div className="yt-post-list">
             {posts.map(post => (
-              <div key={post.id} className="yt-post-card">
+              <div key={post.id} className="yt-post-card" onClick={() => navigate(`/youth-talk/${post.id}`)} style={{ cursor: 'pointer' }}>
                 {/* 상단: 프로필/닉네임/날짜(왼쪽) + 태그(오른쪽) */}
                 <div className="yt-post-top-row">
                   <div className="yt-post-info-row">

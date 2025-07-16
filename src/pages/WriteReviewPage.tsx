@@ -318,7 +318,7 @@ const WriteReviewPage: React.FC = () => {
         .wr-memo-textarea::placeholder {
           line-height: 32px;
         }
-        .wr-main { flex: 1; background: #fff; border-radius: 0 0 0 0; box-shadow: 0 1px 6px #0001; border: 1.5px solid #e0e0e0; padding: 0; min-height: 600px; display: flex; flex-direction: column; }
+        .wr-main { flex: 1; background: #fff; border-radius: 0; box-shadow: 0 1px 6px #0001; border: 1.5px solid #e0e0e0; padding: 0; min-height: 600px; display: flex; flex-direction: column; }
         .wr-toolbar { display: flex; align-items: center; border-bottom: 1px solid #dedede; padding: 18px 32px 10px 32px; gap: 30px; font-size: 22px; color: #222; }
         .wr-toolbar-btn { background: none; border: none; font-size: 30px; cursor: pointer; color: #222; margin-right: 10px; }
         .wr-toolbar-btn:last-child { margin-right: 0; }

@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import YouthTalkBoardPage from "../pages/YouthTalkBoardPage";
+import YouthTalkDetailPage from "../pages/YouthTalkDetailPage";
 import MTJourneyPage from "../pages/MTJourneyPage";
 import WriteReviewPage from "../pages/WriteReviewPage";
 import SignupPage from "../pages/signuppage/SignupPage";
@@ -19,6 +20,7 @@ const AppRoutes = () => (
     <Route path="/login" element={<LoginPage />} />
     <Route path="/signup" element={<SignupPage />} />
     <Route path="/youth-talk" element={<YouthTalkBoardPage />} />
+    <Route path="/youth-talk/:id" element={<YouthTalkDetailPage />} />
     <Route path="/mt-journey" element={<MTJourneyPage />} />
     <Route path="/review-write" element={<WriteReviewPage />} />
     <Route path="/recorded-youth" element={<RecordedYouthPage />} />

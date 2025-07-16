@@ -51,7 +51,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
                 className={
                   "header-nav-link" +
                   (last ? " last" : "") +
-                  (location.pathname === to ? " active" : "")
+                  (location.pathname === to || (to === "/youth-talk" && location.pathname.startsWith("/youth-talk")) ? " active" : "")
                 }
               >
                 {label}
