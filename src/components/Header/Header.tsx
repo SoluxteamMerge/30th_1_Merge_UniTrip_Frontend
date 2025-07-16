@@ -15,7 +15,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
     { to: "/dpaxlduwjdwleh", label: "MT여정지도" },
     { to: "/gkaRpgody", label: "함께해요" },
     { to: "/youth-talk", label: "청춘톡" },
-    { to: "/cjdcnstjfkq", label: "청춘서랍", last: true }
+    { to: "/youth-drawer", label: "청춘서랍", last: true }
   ];
 
   return (

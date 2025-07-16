@@ -2,10 +2,18 @@ import type { FC } from 'react';
 import './LoginPage.css';
 import logo from '../../assets/header/logo.svg';
 import Google from '../../assets/Google_Logo.svg.svg';
-
+import { getGoogleLogin } from '../../api/login';
 
 
 const LoginPage: FC = () => {
+    const handleGoogleLogin = async () => {
+        const result = await getGoogleLogin();
+        alert(result.message);
+
+        if (result.success) {
+            window.location.href='/'
+        }
+    };
     return (
         <div className="login-page">
             <div className="login-card">
@@ -31,7 +39,7 @@ const LoginPage: FC = () => {
                 </div>
                 <button 
                     className="login-btn"
-                    onClick={() => (window.location.href = "#")}>
+                    onClick={handleGoogleLogin}>
                     <img src={ Google } alt="로고" className="google-icon"/>
                     <span className="login-text">구글 계정으로 로그인</span>
                 </button>
