@@ -16,6 +16,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+  const [showUrlCopyModal, setShowUrlCopyModal] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState([
@@ -56,11 +57,16 @@ const YouthTalkDetailPage: React.FC = () => {
   const handleCopyUrl = () => {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl).then(() => {
-      alert('URL이 복사되었습니다.');
+      setShowUrlCopyModal(true);
     }).catch(() => {
       alert('URL 복사에 실패했습니다.');
     });
     setShowMoreMenu(false);
+  };
+
+  // URL 복사 모달 닫기
+  const handleUrlCopyModalClose = () => {
+    setShowUrlCopyModal(false);
   };
 
   // 삭제 확인 모달 열기
@@ -522,6 +528,23 @@ const YouthTalkDetailPage: React.FC = () => {
               </button>
               <button className="ytd-modal-btn confirm" onClick={handleDeleteConfirm}>
                 삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* URL 복사 완료 모달 */}
+      {showUrlCopyModal && (
+        <div className="ytd-modal-overlay">
+          <div className="ytd-modal">
+            <div className="ytd-modal-title">URL 복사 완료</div>
+            <div className="ytd-modal-content">
+              게시글 URL이 클립보드에 복사되었습니다.
+            </div>
+            <div className="ytd-modal-buttons">
+              <button className="ytd-modal-btn success" onClick={handleUrlCopyModalClose}>
+                확인
               </button>
             </div>
           </div>
