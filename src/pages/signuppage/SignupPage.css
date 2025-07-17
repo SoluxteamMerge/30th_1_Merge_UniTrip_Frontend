@@ -116,7 +116,12 @@ html, body, #root {
 }
 
 .signup-row-with-button input {
-  flex: none;
+  flex: 1;
+  padding: 4px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: transparent;
 }
 
 .signup-upload-btn {
@@ -220,6 +225,7 @@ input::placeholder {
   font-size: 14px;
   color: #333;
   margin-top: 8px;
+  margin-bottom: 8px;
   display: block;
 }
 
@@ -230,6 +236,36 @@ input::placeholder {
   display: block;
 }
 
+.signup-select {
+  width: 100%;
+  padding: 8px 16px;
+  border: 1px solid #BBBBBB;
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: 'Pretendard', sans-serif;
+  appearance: none;  /* 기본 화살표 없애기 */
+  background: white url('/src/assets/dropdown_arrow.svg') no-repeat right 16px center;
+  background-size: 16px;
+  cursor: pointer;
+  margin-top: 3px;
+}
+
+.signup-email-verify-btn {
+  display: inline-block; /* 라벨로 수정했기 때문에 있어야 버튼처럼 보임 */
+  text-align: center;
+  border: 0.69px solid #BBBBBB;
+  background-color: white;
+  padding: 4px 8px;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 75px;
+  height: 27px;
+  font-family: 'Pretendard', sans-serif;
+  text-align: center;
+  color: #101010 !important;
+}
 
 @media (max-width: 400px) {
   .signup-page {
