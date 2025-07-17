@@ -109,7 +109,7 @@ const MTJourneyPage: React.FC = () => {
           <div className="mt-board-title">리뷰모음</div>
           <div className="mt-post-list">
             {posts.map(post => (
-              <div key={post.id} className="mt-post-card">
+              <div key={post.id} className="mt-post-card" onClick={() => navigate(`/review/${post.id}?category=MT여정지도`)} style={{ cursor: 'pointer' }}>
                 {/* 상단: 프로필/닉네임/날짜 */}
                 <div className="mt-post-top-row">
                   <div className="mt-post-info-row">
