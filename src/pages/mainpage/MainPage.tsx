@@ -16,7 +16,14 @@ const recommended = {
 
 function MainPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(6); //6개만 보이게 제한
+  const [isMoreClicked, setIsMoreClicked] = useState(false); //더 보기 버튼 제한
   const navigate = useNavigate(); // 추가
+
+  const handleMoreClick = () => {
+    setVisibleCount((prev) => prev + 3);
+    setIsMoreClicked(true);
+  }
 
   return (
     <>
@@ -68,10 +75,10 @@ function MainPage() {
           <div className="today-board">
             <div className="section-header">
               <h2 className="today-section">오늘의 청춘</h2>
-              <a href="/review" className="more-link">더보기 {'>'} </a>
+              <a href="youth-talk" className="more-link">전체보기 {'>'} </a>
             </div>
             <div className="review-grid">
-              {reviewData.map((review) => (
+              {reviewData.slice(0, visibleCount).map((review) => ( /*6개 제한*/
                 <ReviewCard
                   key={review.id}
                   title={review.title}
@@ -81,6 +88,9 @@ function MainPage() {
                 />
               ))}
             </div>
+            {!isMoreClicked && (
+              <button className="more-button" onClick={handleMoreClick}> 더보기 </button>
+            )}
           </div>
         </section>
       </div>
