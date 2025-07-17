@@ -3,7 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header/Header";
 import commentIcon from "../assets/interaction/comment.svg";
 import heartIcon from "../assets/interaction/empathy.svg";
+import heartFillIcon from "../assets/interaction/empathy_fill.svg";
 import starIcon from "../assets/interaction/scrap.svg";
+import starFillIcon from "../assets/interaction/scrap_fill.svg";
 import moreIcon from "../assets/interaction/more.svg";
 
 const YouthTalkDetailPage: React.FC = () => {
@@ -159,7 +161,9 @@ const YouthTalkDetailPage: React.FC = () => {
         .yt-info-divider { width: 1px; height: 18px; background: #bbb; margin: 0 12px; }
         .ytd-date { color: #838383; font-size: 16px; font-family: inherit; }
         .ytd-interactions { display: flex; align-items: center; gap: 8px; }
-        .ytd-interaction-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; color: #333; font-size: 20px; font-weight: 700; padding: 8px; transition: background 0.2s; font-family: inherit; }
+        .ytd-interaction-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; color: #333; font-size: 20px; font-weight: 700; padding: 8px; transition: all 0.2s; font-family: inherit; }
+        .ytd-interaction-btn.active { color: #0b0b61; }
+        .ytd-interaction-btn.active .ytd-interaction-count { color: #0b0b61; }
         .ytd-more-btn { background: none; border: none; cursor: pointer; color: #666; font-size: 18px; padding: 8px; border-radius: 8px; transition: background 0.2s; font-family: inherit; }
         .ytd-post-image { width: 1000px; height: 600px; object-fit: cover; margin-top: 100px; margin-left: 100px; }
         .ytd-post-content { padding: 80px 100px 80px 100px; }
@@ -402,15 +406,15 @@ const YouthTalkDetailPage: React.FC = () => {
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
                   onClick={handleLike}
                 >
-                  <img src={heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
-                  {post.likeCount + (isLiked ? 1 : 0)}
+                  <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
+                  <span className="ytd-interaction-count">{post.likeCount + (isLiked ? 1 : 0)}</span>
                 </button>
                 <button 
                   className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
                   onClick={handleStar}
                 >
-                  <img src={starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
-                  {post.starCount + (isStarred ? 1 : 0)}
+                  <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
+                  <span className="ytd-interaction-count">{post.starCount + (isStarred ? 1 : 0)}</span>
                 </button>
                 <div style={{ position: 'relative' }}>
                   <button 
@@ -421,6 +425,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   </button>
                                       {showMoreMenu && (
                       <div className="ytd-more-menu">
+                        <div style={{ borderTop: '1px solid #bbb', marginBottom: 0 }} />
                         <div className="ytd-more-menu-item">수정하기</div>
                         <div className="ytd-more-menu-item" onClick={handleCopyUrl}>URL 복사</div>
                         <div className="ytd-more-menu-item danger" onClick={handleDeleteClick}>삭제하기</div>
