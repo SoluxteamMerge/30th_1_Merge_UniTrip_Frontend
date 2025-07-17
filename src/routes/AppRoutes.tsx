@@ -13,7 +13,6 @@ import YouthCalendar from "../pages/mypage/YouthCalendar";
 const AppRoutes = () => (
   <Routes>
     {<Route path="/" element={<MainPage />} />}
-
     <Route path="/login" element={<LoginPage />} />
     <Route path="/signup" element={<SignupPage />} />
     <Route path="/youth-talk" element={<YouthTalkBoardPage />} />
