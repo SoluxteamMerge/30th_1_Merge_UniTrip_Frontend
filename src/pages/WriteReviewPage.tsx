@@ -35,8 +35,13 @@ const WriteReviewPage: React.FC = () => {
   // URL 파라미터에서 카테고리 읽어오기
   useEffect(() => {
     const categoryParam = searchParams.get('category');
-    if (categoryParam && categories.includes(categoryParam)) {
-      setSelectedCategory(categoryParam);
+    if (categoryParam) {
+      // 함께해요 카테고리인 경우 "함께해요-" 접두사 추가
+      if (["동행구해요", "번개모임", "졸업/휴학여행", "국내학점교류", "해외교환학생"].includes(categoryParam)) {
+        setSelectedCategory(`함께해요-${categoryParam}`);
+      } else if (categories.includes(categoryParam)) {
+        setSelectedCategory(categoryParam);
+      }
     }
   }, [searchParams]);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -184,13 +189,19 @@ const WriteReviewPage: React.FC = () => {
             navigate('/mt-journey');
             break;
           case "함께해요-동행구해요":
-          case "함께해요-번개모임":
-          case "함께해요-졸업/휴학여행":
-          case "함께해요-국내학점교류":
-            navigate('/together');
+            navigate('/together?category=동행구해요');
             break;
-          case "카테고리별-해외교환학생":
-            navigate('/exchange-student');
+          case "함께해요-번개모임":
+            navigate('/together?category=번개모임');
+            break;
+          case "함께해요-졸업/휴학여행":
+            navigate('/together?category=졸업/휴학여행');
+            break;
+          case "함께해요-국내학점교류":
+            navigate('/together?category=국내학점교류');
+            break;
+          case "함께해요-해외교환학생":
+            navigate('/together?category=해외교환학생');
             break;
           default:
             navigate('/youth-talk');
@@ -210,7 +221,7 @@ const WriteReviewPage: React.FC = () => {
     switch (category) {
       case "MT여정지도":
         return "국내";
-      case "카테고리별-해외교환학생":
+      case "함께해요-해외교환학생":
         return "해외";
       default:
         return "기타";
@@ -296,7 +307,7 @@ const WriteReviewPage: React.FC = () => {
           margin-bottom: 0px;
         }
         .wr-category-select {
-          width: 200px;
+          width: 220px;
           position: relative;
         }
         .wr-category-btn {

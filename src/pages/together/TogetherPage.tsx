@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import SortDropdown from "../../components/SortDropdown";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import writeIcon from "../../assets/write-icon.svg";
 import starWishIcon from "../../assets/module/star_wish.svg";
 import starWishFillIcon from "../../assets/module/star_wish_fill.svg";
@@ -75,6 +75,15 @@ const TogetherPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
   const [selectedCategory, setSelectedCategory] = useState("동행구해요");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // URL 파라미터에서 카테고리 읽어오기
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && categories.includes(categoryParam)) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams]);
 
   const filteredPosts = posts.filter(post => post.category === selectedCategory);
 
