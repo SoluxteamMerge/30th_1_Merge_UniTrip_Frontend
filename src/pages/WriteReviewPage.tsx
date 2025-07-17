@@ -20,9 +20,6 @@ const WriteReviewPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // 메모 입력값(프론트에서만 사용)
-  const [memo, setMemo] = useState("");
-
   const categories = [
     "청춘톡",
     "MT여정지도",
@@ -30,7 +27,7 @@ const WriteReviewPage: React.FC = () => {
     "함께해요-번개모임",
     "함께해요-졸업/휴학여행",
     "함께해요-국내학점교류",
-    "카테고리별-해외교환학생"
+    "함께해요-해외교환학생"
   ];
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
@@ -165,7 +162,7 @@ const WriteReviewPage: React.FC = () => {
         isPublic: !isPrivate,
         category: selectedCategory,
         rating: rating,
-        memo: memo
+
       };
 
       // 백엔드 API 호출 (예시)
@@ -255,69 +252,7 @@ const WriteReviewPage: React.FC = () => {
           align-items: center;
           z-index: 10;
         }
-        @media (max-width: 900px) {
-          .wr-left {
-            width: 140px;
-            min-width: 100px;
-            left: 10px;
-            padding-left: 0;
-          }
-          .wr-memo-box {
-            padding-left: 10px;
-            padding-right: 6px;
-          }
-        }
-        .wr-container { max-width: 1500px; margin: 0 auto; padding: 0 0px 0px 300px; min-height: 100vh; display: flex; flex-direction: column; }
-        .wr-category-select { width: 100%; margin-bottom: 24px; position: relative; }
-        .wr-category-btn { width: 80%; margin-left: 40px; background: #fff; border: 1px solid #bbb; border-radius: 8px; padding: 10px 16px; font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; display: flex; align-items: center; position: relative; z-index: 2; }
-        .wr-category-arrow { margin-left: auto; transition: transform 0.2s; }
-        .wr-category-dropdown {
-          position: absolute;
-          top: 48px;
-          left: 40px;
-          width: 81%;
-          background: #fff;
-          border: 1.5px solid #bbb;
-          border-radius: 12px;
-          box-shadow: 0 2px 12px #0002;
-          z-index: 10;
-          padding: 6px 0;
-        }
-        .wr-category-item {
-          padding: 12px 18px;
-          font-size: 16px;
-          color: #222;
-          cursor: pointer;
-          transition: background 0.15s;
-        }
-        .wr-category-item.selected {
-          background: #ededed;
-          font-weight: 700;
-        }
-        .wr-category-item:hover {
-          background: #f5f5f5;
-        }
-        .wr-memo-box { width: 90%; background: #fff; border-radius: 15px; border: 1px solid #bbb; padding: 30px 20px 0px 50px; min-height: 500px; margin-bottom: 0; position: relative; height: auto; }
-        .wr-memo-label-abs { position: absolute; left: 16px; top: 50%; color: #838383; font-size: 15px; transform: translateY(-50%); }
-        .wr-memo-textarea {
-          width: 95%;
-          height: 320px;
-          min-height: 500px;
-          max-height: 500px;
-          font-size: 15px;
-          color: #333;
-          border: none;
-          outline: none;
-          background: repeating-linear-gradient(to bottom, #fff, #fff 31px, #bbb 31px, #fff 32px);
-          line-height: 32px;
-          padding: 0 0 0 10px;
-          box-sizing: border-box;
-          resize: none;
-          overflow-y: auto;
-        }
-        .wr-memo-textarea::placeholder {
-          line-height: 32px;
-        }
+        .wr-container { max-width: 1200px; margin: 0 auto; padding: 0px; min-height: 100vh; display: flex; flex-direction: column; }
         .wr-main { flex: 1; background: #fff; border-radius: 0; box-shadow: 0 1px 6px #0001; border: 1.5px solid #e0e0e0; padding: 0; min-height: 600px; display: flex; flex-direction: column; }
         .wr-toolbar { display: flex; align-items: center; border-bottom: 1px solid #dedede; padding: 18px 32px 10px 32px; gap: 30px; font-size: 22px; color: #222; }
         .wr-toolbar-btn { background: none; border: none; font-size: 30px; cursor: pointer; color: #222; margin-right: 10px; }
@@ -330,7 +265,7 @@ const WriteReviewPage: React.FC = () => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 80px 0 0 0;
+          padding: 0 0 0 0;
           margin-bottom: 24px;
           position: relative;
         }
@@ -352,14 +287,70 @@ const WriteReviewPage: React.FC = () => {
           text-align: left;
           font-size: 32px;
         }
+        .wr-category-row {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          margin-top: 40px;
+          padding: 0 40px;
+          margin-bottom: 0px;
+        }
+        .wr-category-select {
+          width: 200px;
+          position: relative;
+        }
+        .wr-category-btn {
+          width: 100%;
+          background: #fff;
+          border: 1px solid #bbb;
+          border-radius: 8px;
+          padding: 10px 16px;
+          font-size: 16px;
+          font-weight: 500;
+          text-align: left;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          position: relative;
+          z-index: 2;
+        }
+        .wr-category-arrow {
+          margin-left: auto;
+          transition: transform 0.2s;
+        }
+        .wr-category-dropdown {
+          position: absolute;
+          top: 48px;
+          left: 0;
+          width: 100%;
+          background: #fff;
+          border: 1.5px solid #bbb;
+          border-radius: 12px;
+          box-shadow: 0 2px 12px #0002;
+          z-index: 10;
+          padding: 6px 0;
+        }
+        .wr-category-item {
+          padding: 12px 18px;
+          font-size: 16px;
+          color: #222;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+        .wr-category-item.selected {
+          background: #ededed;
+          font-weight: 700;
+        }
+        .wr-category-item:hover {
+          background: #f5f5f5;
+        }
         .wr-private-row {
           display: flex;
           align-items: center;
           gap: 12px;
-          margin-right: 40px;
-          position: absolute;
-          right: 10px;
-          top: 130px;
+          justify-content: flex-end;
+          padding: 0 40px;
+          margin-bottom: 0px;
         }
         .wr-private-label {
           font-size: 20px;
@@ -747,43 +738,7 @@ const WriteReviewPage: React.FC = () => {
       <div className="wr-content-root" style={{ position: 'relative' }}>
         <div className={isEmailVerified ? undefined : "wr-disabled-area"}>
           <div className="wr-left">
-            <div className="wr-category-select">
-              <button
-                className="wr-category-btn"
-                onClick={() => setCategoryOpen(o => !o)}
-                type="button"
-                disabled={!isEmailVerified}
-              >
-                <span>{selectedCategory}</span>
-                <span className="wr-category-arrow" style={{ transform: categoryOpen ? "rotate(180deg)" : undefined }}>▼</span>
-              </button>
-              {categoryOpen && (
-                <div className="wr-category-dropdown">
-                  {categories.map(cat => (
-                    <div
-                      key={cat}
-                      className={"wr-category-item" + (cat === selectedCategory ? " selected" : "")}
-                      onClick={() => handleCategorySelect(cat)}
-                    >
-                      {cat}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="wr-memo-box">
-              <span className="wr-memo-label-abs">메모</span>
-              <textarea
-                className="wr-memo-textarea"
-                value={memo}
-                onChange={e => setMemo(e.target.value)}
-                placeholder=""
-                spellCheck={false}
-                autoComplete="off"
-                style={{ resize: "none" }}
-                disabled={!isEmailVerified}
-              />
-            </div>
+
           </div>
           <div className="wr-container">
             <div className="wr-main">
@@ -801,6 +756,32 @@ const WriteReviewPage: React.FC = () => {
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={middlelistIcon} alt="가운데정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
               </div>
+              <div className="wr-category-row">
+                <div className="wr-category-select">
+                  <button
+                    className="wr-category-btn"
+                    onClick={() => setCategoryOpen(o => !o)}
+                    type="button"
+                    disabled={!isEmailVerified}
+                  >
+                    <span>{selectedCategory}</span>
+                    <span className="wr-category-arrow" style={{ transform: categoryOpen ? "rotate(180deg)" : undefined }}>▼</span>
+                  </button>
+                  {categoryOpen && (
+                    <div className="wr-category-dropdown">
+                      {categories.map(cat => (
+                        <div
+                          key={cat}
+                          className={"wr-category-item" + (cat === selectedCategory ? " selected" : "")}
+                          onClick={() => handleCategorySelect(cat)}
+                        >
+                          {cat}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className="wr-title-row">
                 <input 
                   className="wr-title-input" 
@@ -809,18 +790,18 @@ const WriteReviewPage: React.FC = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   disabled={!isEmailVerified} 
                 />
-                <div className="wr-private-row">
-                  <span className="wr-private-label">비공개</span>
-                  <div
-                    className={"wr-switch" + (isPrivate ? " on" : "")}
-                    onClick={() => isEmailVerified && setIsPrivate(v => !v)}
-                    role="button"
-                    tabIndex={0}
-                    aria-checked={isPrivate}
-                    style={{ outline: "none" }}
-                  >
-                    <div className="wr-switch-circle" />
-                  </div>
+              </div>
+              <div className="wr-private-row">
+                <span className="wr-private-label">비공개</span>
+                <div
+                  className={"wr-switch" + (isPrivate ? " on" : "")}
+                  onClick={() => isEmailVerified && setIsPrivate(v => !v)}
+                  role="button"
+                  tabIndex={0}
+                  aria-checked={isPrivate}
+                  style={{ outline: "none" }}
+                >
+                  <div className="wr-switch-circle" />
                 </div>
               </div>
               <hr className="wr-divider" />
