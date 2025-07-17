@@ -1,21 +1,464 @@
 
-.main-background {
+.mainpage-background {
   min-height: 100vh;
   padding-top: 80px;  
   box-sizing: border-box;
-  background-color: #C2E4E4;
+  background: linear-gradient(to bottom, #DEE8E8, #FBFBFB);
 }
 
-.section-title {
+.mainpage-sectiontitle {
   font-size: 32px;
   margin-left: 152px;
+  margin-bottom: 46px;
   font-weight: 600;
   color: #0B0B61;
   font-family: 'Pretendard', sans-serif;
 }
 
-@media screen and (max-width: 768px) {
-  .section-title {
-    margin-left: 24px;
+.mainpage-search-container {
+  width: calc(100vw - 320px);
+  height: 100px;
+  margin: 0 auto;      
+  border-radius: 59px;
+  background-color: white;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 20px;
+  gap: 12px;
+  border: 1px solid #BBBBBB;
+}
+
+
+.mainpage-search-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* 회색 input 박스 */
+.mainpage-search-input {
+  height: 80%;
+  flex: 1;
+  background-color: #BBBBBB !important;
+  border: none;
+  border-radius: 59px;
+  padding: 20px;
+  font-size: 16px;
+  outline: none;
+  color: #333;
+  font-size: 30px;
+}
+
+.mainpage-search-input::placeholder {
+  color: transparent;
+}
+
+
+
+
+.mainpage-suggest-section {
+  margin-top: 25px !important;
+  padding: 0 80px;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.mainpage-suggest-label {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0B0B61;
+  text-align: left;
+}
+
+.mainpage-suggest-card {
+  background-color: white;
+  flex-direction: column;
+  border: 1px solid #BBBBBB;
+  border-radius: 25px;
+  padding: 28px 28.5px 51px 39px !important;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+
+
+.mainpage-suggest-section {
+  margin-top: 60px;
+  padding: 0 160px;
+  font-family: 'Pretendard', sans-serif;
+}
+
+
+.mainpage-suggest-content-wrapper {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 텍스트 영역 */
+.mainpage-suggest-text {
+  flex: 1 1 auto;
+  max-width: calc(100% - 400px); /* 이미지보다 살짝 더 여유 있게 */
+  margin-top: 80px;
+}
+
+
+.mainpage-recommend-title {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 22px;
+  color: #101010;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mainpage-recommend-summary {
+  font-size: 20px;
+  color: #838383;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 680px;
+}
+
+/* 이미지 */
+.mainpage-suggest-image-wrapper {
+  flex-shrink: 0;
+  max-width: 380px;
+  overflow: hidden;
+}
+
+.mainpage-suggest-img {
+  width: 380px;
+  height: 247px;
+  object-fit: cover;
+  max-width: 380px;
+}
+
+
+.roulette-wrapper {
+  padding: 0 110px;
+  display: flex;
+  justify-content: center;
+  margin: 40px 0; 
+  box-sizing: border-box;
+}
+
+.roulette-button {
+  width: 100%;
+  max-width: calc(100vw - 220px);
+  height: 110px;
+  background-color: #FBFBFB;
+  color: #101010;
+  font-size: 32px;
+  font-weight: 600;
+  border: 1px solid #BBBBBB;
+  border-radius: 25px;
+  cursor: pointer;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.today-wrapper {
+  padding: 0 110px;
+  margin-top: 60px;
+  box-sizing: border-box;
+  padding-bottom: 100px;
+}
+
+.today-board {
+  background-color: white;
+  border-radius: 25px;
+  padding: 35px 51px;
+  border: 1px solid #BBBBBB;
+}
+
+
+
+.today-section {
+  color:#0B0B61;
+  font-family: 'Pretendard', sans-serif;
+  
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 0 8px; /* 있으면 살짝 띄우기 */
+  margin-bottom: 24px;
+}
+
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 465px); 
+  gap: 65px 85px;
+  background-color: transparent;
+  padding: 0px !important;
+  justify-items: center;  /* 카드 하나하나 중앙 정렬 */
+  justify-content: center;
+}
+
+.more-link {
+  font-size: 18px;
+  color:#8BCECE;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+
+
+/*-----핸드폰 용------*/
+/*
+@media (max-width: 768px) {
+  .mainpage-background {
+    padding-top: 60px;
+  }
+
+  .mainpage-sectiontitle {
+    font-size: 24px;
+    margin-left: 20px;
+    margin-bottom: 30px;
+  }
+
+  .mainpage-search-container {
+    width: calc(100% - 40px);
+    padding: 0 12px;
+    height: 50px;
+  }
+
+  .mainpage-search-input {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .mainpage-search-input::placeholder {
+    font-size: 16px;
+  }
+
+  .mainpage-suggest-section {
+    padding: 0 20px;
+    margin-top: 30px;
+  }
+
+  .mainpage-suggest-card {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .mainpage-suggest-content-wrapper {
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .mainpage-suggest-text {
+    margin-top: 0;
+    max-width: 100%;
+  }
+
+  .mainpage-recommend-title {
+    font-size: 20px;
+    white-space: normal;
+  }
+
+  .mainpage-recommend-summary {
+    font-size: 16px;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .mainpage-suggest-image-wrapper {
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-img {
+    width: 100%;
+    height: auto;
+  }
+
+  .roulette-wrapper {
+    padding: 0 20px;
+  }
+
+  .roulette-button {
+    height: 60px;
+    font-size: 18px;
+    max-width: 100%;
+  }
+
+  .today-wrapper {
+    padding: 0 20px;
+    margin-top: 40px;
+    padding-bottom: 60px;
+  }
+
+  .today-board {
+    padding: 20px;
+  }
+
+  .today-section {
+    font-size: 20px;
+  }
+
+  .review-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .more-link {
+    font-size: 14px;
+  }
+
+  .mainpage-recommend-title {
+    font-size: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mainpage-recommend-summary {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-content-wrapper {
+    flex-direction: column !important;
+    align-items: flex-start;
+  }
+
+  .mainpage-suggest-image-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+}
+*/
+
+/* ------패드용------ */
+/*
+@media (min-width: 769px) and (max-width: 1024px) {
+  .mainpage-background {
+    padding-top: 70px;
+  }
+
+  .mainpage-sectiontitle {
+    font-size: 28px;
+    margin-left: 40px;
+    margin-bottom: 40px;
+  }
+
+  .mainpage-search-container {
+    width: calc(100% - 80px);
+    padding: 0 20px;
+    height: 70px;
+  }
+
+  .mainpage-search-input {
+    font-size: 20px;
+    padding: 14px;
+  }
+
+  .mainpage-search-input::placeholder {
+    font-size: 20px;
+  }
+
+  .mainpage-suggest-section {
+    padding: 0 40px;
+    margin-top: 40px;
+  }
+
+  .mainpage-suggest-card {
+    flex-direction: column;
+    padding: 28px;
+  }
+
+  .mainpage-suggest-content-wrapper {
+    flex-direction: column !important;
+    margin-top: 20px;
+    align-items: flex-start;
+  }
+
+  .mainpage-suggest-text {
+    margin-top: 0;
+    max-width: 100%;
+  }
+
+  .mainpage-recommend-title {
+    font-size: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mainpage-recommend-summary {
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-image-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mainpage-suggest-img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .roulette-wrapper {
+    padding: 0 40px;
+  }
+
+  .roulette-button {
+    height: 80px;
+    font-size: 24px;
+    max-width: 100%;
+  }
+
+  .today-wrapper {
+    padding: 0 40px;
+    margin-top: 50px;
+    padding-bottom: 80px;
+  }
+
+  .today-board {
+    padding: 28px;
+  }
+
+  .today-section {
+    font-size: 24px;
+  }
+
+  .review-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .more-link {
+    font-size: 16px;
   }
 }
+*/

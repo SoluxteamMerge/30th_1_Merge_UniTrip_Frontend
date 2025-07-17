@@ -93,7 +93,7 @@ const YouthTalkBoardPage: React.FC = () => {
           <div className="yt-board-title">게시글 모음</div>
           <div className="yt-post-list">
             {posts.map(post => (
-              <div key={post.id} className="yt-post-card">
+              <div key={post.id} className="yt-post-card" onClick={() => navigate(`/youth-talk/${post.id}`)} style={{ cursor: 'pointer' }}>
                 {/* 상단: 프로필/닉네임/날짜(왼쪽) + 태그(오른쪽) */}
                 <div className="yt-post-top-row">
                   <div className="yt-post-info-row">
@@ -133,7 +133,7 @@ const YouthTalkBoardPage: React.FC = () => {
       {/* 플로팅 버튼 */}
       <button
         className="yt-floating-write-btn"
-        onClick={() => navigate("/review-write")}
+        onClick={() => navigate("/review-write?category=청춘톡")}
         aria-label="게시글 작성"
       >
         <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
