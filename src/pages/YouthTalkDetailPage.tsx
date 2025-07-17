@@ -14,6 +14,17 @@ const YouthTalkDetailPage: React.FC = () => {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [comments, setComments] = useState([
+    {
+      id: 1,
+      username: "이게머지",
+      date: "2025.05.06 12:53",
+      content: "정말 재밌었을 것 같아요! 저도 다녀오고 싶네요"
+    }
+  ]);
+  const commentInputRef = React.useRef<HTMLTextAreaElement>(null);
 
   // 실제로는 API에서 데이터를 가져올 예정
   const post = {
@@ -73,6 +84,50 @@ const YouthTalkDetailPage: React.FC = () => {
     navigate('/youth-talk');
   };
 
+  // 댓글 토글
+  const handleCommentClick = () => {
+    setShowComments(!showComments);
+    // 댓글 섹션이 열릴 때 입력창에 포커스
+    if (!showComments) {
+      setTimeout(() => {
+        commentInputRef.current?.focus();
+      }, 100);
+    }
+  };
+
+  // 댓글 입력 처리
+  const handleCommentInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentText(e.target.value);
+  };
+
+  // 댓글 등록
+  const handleCommentSubmit = () => {
+    if (commentText.trim()) {
+      const newComment = {
+        id: comments.length + 1,
+        username: "김눈송",
+        date: new Date().toLocaleString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        content: commentText.trim()
+      };
+      setComments([...comments, newComment]);
+      setCommentText("");
+    }
+  };
+
+  // Enter 키로 댓글 등록
+  const handleCommentKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleCommentSubmit();
+    }
+  };
+
   // 드롭다운 메뉴 외부 클릭 시 닫기
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as Element;
@@ -91,27 +146,27 @@ const YouthTalkDetailPage: React.FC = () => {
   return (
     <div className="ytd-bg">
       <style>{`
-        .ytd-bg { background: #e8f0f2; min-height: 100vh; }
+        .ytd-bg { background: #e8f0f2; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; }
         .ytd-container { max-width: 1200px; margin: 0 auto; padding: 0px; min-height: 100vh; box-shadow: 0 1px 6px #0001; border: 1.5px solid #e0e0e0; }
         .ytd-post-card { background: #fff; border-radius: 0px; overflow: hidden; min-height: 100vh; }
         .ytd-post-header { padding: 100px 20px 30px 20px; border-bottom: 1px solid #bbb; margin: 0 80px; }
-        .ytd-public-badge { display: inline-block; font-size: 15px; font-weight: 300; margin-bottom: 12px; }
-        .ytd-post-title { font-weight: 700; font-size: 24px; color: #black; margin-bottom: 25px; line-height: 1.4; }
+        .ytd-public-badge { display: inline-block; font-size: 15px; font-weight: 300; margin-bottom: 12px; font-family: inherit; }
+        .ytd-post-title { font-weight: 700; font-size: 24px; color: #black; margin-bottom: 25px; line-height: 1.4; font-family: inherit; }
         .ytd-user-info { display: flex; align-items: center; }
         .ytd-profile { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 15px; background: #eee; }
         .ytd-profile-default { background: #bbb; }
-        .ytd-username { color: #838383; font-size: 16px; }
+        .ytd-username { color: #838383; font-size: 16px; font-family: inherit; }
         .yt-info-divider { width: 1px; height: 18px; background: #bbb; margin: 0 12px; }
-        .ytd-date { color: #838383; font-size: 16px; }
+        .ytd-date { color: #838383; font-size: 16px; font-family: inherit; }
         .ytd-interactions { display: flex; align-items: center; gap: 8px; }
-        .ytd-interaction-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; color: #333; font-size: 20px; font-weight: 700; padding: 8px; transition: background 0.2s; }
-        .ytd-more-btn { background: none; border: none; cursor: pointer; color: #666; font-size: 18px; padding: 8px; border-radius: 8px; transition: background 0.2s; }
+        .ytd-interaction-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; color: #333; font-size: 20px; font-weight: 700; padding: 8px; transition: background 0.2s; font-family: inherit; }
+        .ytd-more-btn { background: none; border: none; cursor: pointer; color: #666; font-size: 18px; padding: 8px; border-radius: 8px; transition: background 0.2s; font-family: inherit; }
         .ytd-post-image { width: 1000px; height: 600px; object-fit: cover; margin-top: 100px; margin-left: 100px; }
         .ytd-post-content { padding: 80px 100px 80px 100px; }
-        .ytd-content-text { color: #black; font-size: 18px; line-height: 1.5; white-space: pre-line; margin-bottom: 20px; }
+        .ytd-content-text { color: #black; font-size: 18px; line-height: 1.5; white-space: pre-line; margin-bottom: 20px; font-family: inherit; }
         .ytd-tags-container { display: flex; gap: 10px; margin-top: 40px; }
-        .ytd-tag { border-radius: 20px; padding: 6px 18px; font-size: 14px; font-weight: 500; }
-        .ytd-tag-main { background: #0b0b61; color: #fff; }
+        .ytd-tag { border-radius: 20px; padding: 6px 18px; font-size: 14px; font-weight: 500; font-family: inherit; }
+        .ytd-tag-main { background: #0b0b61; color: #fff; position: relative; }
         .ytd-tag-sub { background: #fff; border: 1.5px solid #0b0b61; color: #0b0b61; }
         .ytd-more-menu {
           position: absolute;
@@ -132,6 +187,7 @@ const YouthTalkDetailPage: React.FC = () => {
           color: #333;
           cursor: pointer;
           transition: background 0.2s;
+          font-family: inherit;
         }
         .ytd-more-menu-item:hover {
           background: #f5f5f5;
@@ -172,12 +228,14 @@ const YouthTalkDetailPage: React.FC = () => {
           text-align: center;
           margin-bottom: 30px;
           line-height: 1.5;
+          font-family: inherit;
         }
         .ytd-modal-content {
           font-size: 16px;
           color: #666;
           margin-bottom: 50px;
           line-height: 1.5;
+          font-family: inherit;
         }
         .ytd-modal-buttons {
           display: flex;
@@ -193,6 +251,7 @@ const YouthTalkDetailPage: React.FC = () => {
           border-radius: 10px;
           padding: 12px 48px;
           cursor: pointer;
+          font-family: inherit;
         }
         .ytd-modal-btn.cancel {
           background: #f5f5f5;
@@ -222,6 +281,88 @@ const YouthTalkDetailPage: React.FC = () => {
           z-index: 100;
           transition: all 0.2s;
           box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          font-family: inherit;
+        }
+        .ytd-comments-section {
+          padding: 0px 100px 80px 100px;
+        }
+        .ytd-comments-title {
+          font-size: 24px;
+          font-weight: 700;
+          color: #000;
+          margin-bottom: 0;
+          font-family: inherit;
+        }
+        .ytd-comments-header {
+          border-bottom: 2px solid #838383;
+          padding-bottom: 20px;
+          margin-bottom: 50px;
+        }
+        .ytd-comment-input-container {
+          display: flex;
+          gap: 20px;
+          margin-bottom: 40px;
+        }
+        .ytd-comment-input {
+          flex: 1;
+          padding: 12px 16px;
+          border: 1px solid #bbb;
+          border-radius: 8px;
+          font-size: 14px;
+          resize: none;
+          min-height: 60px;
+          outline: none;
+          font-family: inherit;
+        }
+        .ytd-comment-input:focus {
+          border-color: #0b0b61;
+        }
+        .ytd-comment-submit-btn {
+          background: #0b0b61;
+          color: #fff;
+          border: none;
+          border-radius: 15px;
+          padding: 20px 40px;
+          font-size: 24px;
+          font-weight: 600;
+          cursor: pointer;
+          align-self: flex-end;
+          font-family: inherit;
+        }
+        .ytd-comment-item {
+          background: #fff;
+          border-radius: 0px;
+          border: 1px solid #bbb;
+          padding: 20px;
+          margin-bottom: 12px;
+        }
+        .ytd-comment-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .ytd-comment-username {
+          color: #0b0b61;
+          font-weight: 600;
+          font-size: 16px;
+          font-family: inherit;
+        }
+        .ytd-comment-divider {
+          width: 1px;
+          height: 14px;
+          background: #ccc;
+          margin: 0 8px;
+        }
+        .ytd-comment-date {
+          color: #838383;
+          font-size: 13px;
+          font-family: inherit;
+        }
+        .ytd-comment-content {
+          color: #101010;
+          font-size: 14px;
+          line-height: 1.5;
+          font-family: inherit;
         }
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
@@ -253,9 +394,9 @@ const YouthTalkDetailPage: React.FC = () => {
                 </div>
               </div>
               <div className="ytd-interactions">
-                <button className="ytd-interaction-btn">
+                <button className="ytd-interaction-btn" onClick={handleCommentClick}>
                   <img src={commentIcon} alt="댓글" style={{ width: 30, height: 30 }} />
-                  {post.commentCount}
+                  {comments.length}
                 </button>
                 <button 
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
@@ -308,6 +449,56 @@ const YouthTalkDetailPage: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* 댓글 섹션 */}
+          {showComments && (
+            <>
+              <div className="ytd-comments-section">
+                <div className="ytd-comments-header">
+                  <div className="ytd-comments-title">댓글 {comments.length}</div>
+                </div>
+                {/* 댓글 입력 */}
+                <div className="ytd-comment-input-container">
+                  <textarea
+                    ref={commentInputRef}
+                    className="ytd-comment-input"
+                    placeholder="댓글을 작성해주세요..."
+                    value={commentText}
+                    onChange={handleCommentInput}
+                    onKeyPress={handleCommentKeyPress}
+                  />
+                  <button className="ytd-comment-submit-btn" onClick={handleCommentSubmit}>
+                    등록
+                  </button>
+                </div>
+
+                {/* 댓글 목록 */}
+                {comments.length > 0 ? (
+                  comments.map(comment => (
+                    <div key={comment.id} className="ytd-comment-item">
+                      <div className="ytd-comment-header">
+                        <span className="ytd-comment-username">{comment.username}</span>
+                        <div className="ytd-comment-divider" />
+                        <span className="ytd-comment-date">{comment.date}</span>
+                      </div>
+                      <div className="ytd-comment-content">{comment.content}</div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ 
+                    textAlign: 'center', 
+                    padding: '40px 0', 
+                    color: '#838383',
+                    fontFamily: 'inherit',
+                    fontSize: '16px'
+                  }}>
+                    아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
+                  </div>
+                )}
+              </div>
+              <div className="ytd-comments-divider" />
+            </>
+          )}
         </div>
       </div>
 
