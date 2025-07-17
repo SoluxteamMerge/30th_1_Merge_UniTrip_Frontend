@@ -20,6 +20,7 @@ const LoginPage: FC = () => {
                     <p>로그인하고<br />유니트립을 즐겨보세요</p>
                 </div>
                 
+                {/*
                 <div className="login-form">
                     <div className="input-group">
                         <label>아이디</label>
@@ -30,10 +31,12 @@ const LoginPage: FC = () => {
                         <input type="password" placeholder="비밀번호를 입력하세요" />
                     </div>
                 </div>
-
+                */}
+                {/*
                 <div className="forgot-password">
                     <a href="#" style={{ textDecoration: 'underline' }}>비밀번호를 잊으셨나요?</a>
                 </div>
+                */}
 
                 <button className="login-btn" onClick={handleGoogleLogin}>
                     <img src={Google} alt="로고" className="google-icon"/>
