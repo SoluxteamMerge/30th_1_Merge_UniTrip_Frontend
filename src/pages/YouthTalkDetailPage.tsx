@@ -19,14 +19,16 @@ const YouthTalkDetailPage: React.FC = () => {
   const [showUrlCopyModal, setShowUrlCopyModal] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      username: "이게머지",
-      date: "2025.05.06 12:53",
-      content: "정말 재밌었을 것 같아요! 저도 다녀오고 싶네요"
-    }
-  ]);
+  const [comments, setComments] = useState<Array<{
+    id: number;
+    username: string;
+    date: string;
+    content: string;
+    likes: number;
+    isLiked: boolean;
+    isEditing: boolean;
+    editText: string;
+  }>>([]);
   const commentInputRef = React.useRef<HTMLTextAreaElement>(null);
 
   // 실제로는 API에서 데이터를 가져올 예정
@@ -121,7 +123,11 @@ const YouthTalkDetailPage: React.FC = () => {
           hour: '2-digit',
           minute: '2-digit'
         }),
-        content: commentText.trim()
+        content: commentText.trim(),
+        likes: 0,
+        isLiked: false,
+        isEditing: false,
+        editText: ""
       };
       setComments([...comments, newComment]);
       setCommentText("");
@@ -134,6 +140,56 @@ const YouthTalkDetailPage: React.FC = () => {
       e.preventDefault();
       handleCommentSubmit();
     }
+  };
+
+  // 댓글 좋아요 토글
+  const handleCommentLike = (commentId: number) => {
+    setComments(comments.map(comment => 
+      comment.id === commentId 
+        ? { ...comment, isLiked: !comment.isLiked, likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1 }
+        : comment
+    ));
+  };
+
+  // 댓글 수정 모드 시작
+  const handleCommentEdit = (commentId: number) => {
+    setComments(comments.map(comment => 
+      comment.id === commentId 
+        ? { ...comment, isEditing: true, editText: comment.content }
+        : comment
+    ));
+  };
+
+  // 댓글 수정 취소
+  const handleCommentEditCancel = (commentId: number) => {
+    setComments(comments.map(comment => 
+      comment.id === commentId 
+        ? { ...comment, isEditing: false, editText: "" }
+        : comment
+    ));
+  };
+
+  // 댓글 수정 완료
+  const handleCommentEditSubmit = (commentId: number) => {
+    setComments(comments.map(comment => 
+      comment.id === commentId 
+        ? { ...comment, content: comment.editText, isEditing: false, editText: "" }
+        : comment
+    ));
+  };
+
+  // 댓글 삭제
+  const handleCommentDelete = (commentId: number) => {
+    setComments(comments.filter(comment => comment.id !== commentId));
+  };
+
+  // 댓글 수정 텍스트 변경
+  const handleCommentEditChange = (commentId: number, value: string) => {
+    setComments(comments.map(comment => 
+      comment.id === commentId 
+        ? { ...comment, editText: value }
+        : comment
+    ));
   };
 
   // 드롭다운 메뉴 외부 클릭 시 닫기
@@ -374,6 +430,61 @@ const YouthTalkDetailPage: React.FC = () => {
           line-height: 1.5;
           font-family: inherit;
         }
+        .ytd-comment-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 5px;
+        }
+        .ytd-comment-action-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #838383;
+          font-size: 12px;
+          font-family: inherit;
+          padding: 4px 8px;
+          border-radius: 4px;
+          transition: all 0.2s;
+        }
+        .ytd-comment-action-btn:hover {
+          background: #f5f5f5;
+          color: #0b0b61;
+        }
+        .ytd-comment-action-btn.liked {
+          color: #0b0b61;
+        }
+        .ytd-comment-edit-input {
+          width: 100%;
+          padding: 8px 12px;
+          border: 1px solid #bbb;
+          border-radius: 6px;
+          font-size: 14px;
+          font-family: inherit;
+          outline: none;
+          margin-bottom: 8px;
+        }
+        .ytd-comment-edit-input:focus {
+          border-color: #0b0b61;
+        }
+        .ytd-comment-edit-buttons {
+          display: flex;
+          gap: 8px;
+        }
+        .ytd-comment-edit-btn {
+          background: #0b0b61;
+          color: #fff;
+          border: none;
+          border-radius: 6px;
+          padding: 6px 12px;
+          font-size: 12px;
+          font-family: inherit;
+          cursor: pointer;
+        }
+        .ytd-comment-edit-btn.cancel {
+          background: #f5f5f5;
+          color: #666;
+        }
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
       
@@ -492,7 +603,59 @@ const YouthTalkDetailPage: React.FC = () => {
                         <div className="ytd-comment-divider" />
                         <span className="ytd-comment-date">{comment.date}</span>
                       </div>
-                      <div className="ytd-comment-content">{comment.content}</div>
+                      
+                      {comment.isEditing ? (
+                        <div>
+                          <textarea
+                            className="ytd-comment-edit-input"
+                            value={comment.editText}
+                            onChange={(e) => handleCommentEditChange(comment.id, e.target.value)}
+                            rows={3}
+                          />
+                          <div className="ytd-comment-edit-buttons">
+                            <button 
+                              className="ytd-comment-edit-btn" 
+                              onClick={() => handleCommentEditSubmit(comment.id)}
+                            >
+                              완료
+                            </button>
+                            <button 
+                              className="ytd-comment-edit-btn cancel" 
+                              onClick={() => handleCommentEditCancel(comment.id)}
+                            >
+                              취소
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="ytd-comment-content">{comment.content}</div>
+                      )}
+                      
+                      <div className="ytd-comment-actions">
+                        <button 
+                          className={`ytd-comment-action-btn ${comment.isLiked ? 'liked' : ''}`}
+                          onClick={() => handleCommentLike(comment.id)}
+                        >
+                          <img 
+                            src={comment.isLiked ? heartFillIcon : heartIcon} 
+                            alt="좋아요" 
+                            style={{ width: 16, height: 16, marginRight: 4, marginTop: 3 }} 
+                          />
+                          <span style={{ display: 'inline-block', verticalAlign: 'top', marginTop: 3 }}>{comment.likes}</span>
+                        </button>
+                        <button 
+                          className="ytd-comment-action-btn"
+                          onClick={() => handleCommentEdit(comment.id)}
+                        >
+                          수정
+                        </button>
+                        <button 
+                          className="ytd-comment-action-btn"
+                          onClick={() => handleCommentDelete(comment.id)}
+                        >
+                          삭제
+                        </button>
+                      </div>
                     </div>
                   ))
                 ) : (
