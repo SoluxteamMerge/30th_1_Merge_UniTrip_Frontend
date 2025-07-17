@@ -3,6 +3,7 @@ import YouthTalkBoardPage from "../pages/YouthTalkBoardPage";
 import YouthTalkDetailPage from "../pages/YouthTalkDetailPage";
 import MTJourneyPage from "../pages/MTJourneyPage";
 import WriteReviewPage from "../pages/WriteReviewPage";
+import TogetherPage from "../pages/together/TogetherPage";
 import SignupPage from "../pages/signuppage/SignupPage";
 import LoginPage from "../pages/loginpage/LoginPage";
 import MainPage from "../pages/mainpage/MainPage";
@@ -20,6 +21,7 @@ const AppRoutes = () => (
     <Route path="/youth-talk" element={<YouthTalkBoardPage />} />
     <Route path="/youth-talk/:id" element={<YouthTalkDetailPage />} />
     <Route path="/mt-journey" element={<MTJourneyPage />} />
+    <Route path="/together" element={<TogetherPage />} />
     <Route path="/review-write" element={<WriteReviewPage />} />
     <Route path="/recorded-youth" element={<RecordedYouthPage />} />
     <Route path="/youth-drawer" element={<YouthDrawer />} />
