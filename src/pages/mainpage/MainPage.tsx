@@ -6,6 +6,7 @@ import { ReviewCard } from '../../pages/reviewcard/ReviewCard';
 import Header from '../../components/Header/Header';
 import './MainPage.css';
 import searchIcon from '../../assets/search_icon.svg';
+import { useNavigate } from "react-router-dom";
 
 const recommended = {
   title: '동기들과 함께 제주도 3박 4일 여행 다녀왔습니다',
@@ -15,6 +16,7 @@ const recommended = {
 
 function MainPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate(); // 추가
 
   return (
     <>
@@ -34,6 +36,7 @@ function MainPage() {
               type="text"
               placeholder="검색어를 입력하세요"
               className="mainpage-search-input"
+              onClick={() => navigate("/search")} // 클릭하면 SearchPage.tsx 페이지로 넘어감
             />
           </div>
         </section>

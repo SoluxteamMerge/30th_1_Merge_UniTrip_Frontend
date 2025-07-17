@@ -15,12 +15,12 @@
 
 .login-card {
   width: 100%;
-  max-width: 500px;
+  max-width: 350px;
   max-height: 700px;
   background-color: white;
   border: 1px solid #BBBBBB;
   border-radius: 16px;
-  padding: 24px 70px 35px;
+  padding: 24px 50px 35px;
 }
 
 .logo-wrapper {
@@ -51,13 +51,14 @@
   flex-direction: column;
   gap: 32px;
   margin-bottom: 13px;
+  /*align-items: center;*/
+  width: 100%;
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
   width: 100%;
-  width: 360px;
   height: 58px;
 }
 
@@ -75,12 +76,12 @@
   font-size: 16px;
   background-color: transparent;
   font-family: 'Pretendard' sans-serif;
-  width: 360px;
+  width: 100%;
   height: 40px;
 }
 
 .input-group label {
-  font-size: 15px; /* 🔥 폰트 크기 여기서 조정 */
+  font-size: 15px; 
   color: #838383;
   font-family: 'Pretendard', sans-serif;
 }
@@ -88,10 +89,12 @@
 .forgot-password {
   display: flex;
   justify-content: flex-end;
+  width: 100%;
   margin-bottom: 40px;
   font-weight: 700;
   font-size: 17px;
   line-height: 100%;
+  align-items: center;
 }
 
 .forgot-password a {
@@ -103,7 +106,7 @@
 }
 
 .login-btn {
-  width: 360px;
+  width: 100%;
   height: 60px;
   background-color: #FFFFFF; /*원래는 #FBFBFB*/
   color: #0B0B61;
@@ -112,24 +115,23 @@
   font-family: 'Pretendard', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  overflow: pointer;
+  /*overflow: pointer;*/
   margin-bottom: 15px;
   display: flex;
   align-items: center;
-  position: relative;
-
-}
-
-.login-text {
-  flex: 1;
-  align-items: center;
+  justify-content: center;
 }
 
 .google-icon {
-  width: 44px;
-  height: 44px;
-  position: absolute;
-  left: 19px;
+  margin-right: 10px;
+  height: 30px;
+  width: 30px;
+  position: static;
+}
+
+.login-text {
+  align-items: center;
+  font-size: 16px;
 }
 
 
@@ -155,11 +157,13 @@ input::placeholder {
 
 .signup-link span {
   color: #838383;
+  font-size: 12px;
 }
 
 
 .signup-link a {
-  color: #0B0B61; /* 피그마 기준 짙은 보라색 계열로 추정 */
+  color: #0B0B61; 
   text-decoration: none;
   font-weight: 300;
+  font-size: 12px;
 }
