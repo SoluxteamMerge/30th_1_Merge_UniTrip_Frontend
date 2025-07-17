@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 
@@ -26,6 +26,9 @@ const YouthCalendar: React.FC = () => {
     marginBottom: 16
   };
   const titleIconStyle = { fontSize: 20, marginRight: 8 };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
   //달력 생성
   const generateCalendar = (): React.ReactNode[] => {
@@ -56,7 +59,12 @@ const YouthCalendar: React.FC = () => {
       cells.push(
         <td
           key={day}
+          onClick={() => {
+                setSelectedDate(day);
+                setIsModalOpen(true);
+            }}
           style={{
+            cursor: "pointer", 
             color: isToday ? "#333" : isSunday ? "#e53935" : isSaturday ? "#3d3d81" : "#333",
             //backgroundColor: isToday ? "#0b0b61" : "transparent",
             backgroundColor: "transparent",
@@ -213,6 +221,96 @@ const YouthCalendar: React.FC = () => {
           boxShadow: "0 4px 8px rgba(0,0,0,0.2)"
         }}
       ></button>
+
+      {isModalOpen && (
+    <div style={{
+        position: "fixed",
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.3)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 999
+    }}>
+        <div style={{
+        backgroundColor: "#fff",
+        borderRadius: 16,
+        padding: 32,
+        width: 400,
+        boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+        position: "relative"
+        }}>
+        {/* 닫기 버튼 */}
+        <button onClick={() => setIsModalOpen(false)} style={{
+            position: "absolute", top: 12, right: 12,
+            background: "none", border: "none", fontSize: 20, cursor: "pointer"
+        }}>✕</button>
+
+        <h3 style={{ marginBottom: 16 }}>일정 추가</h3>
+
+        <p style={{ fontSize: 14, color: "#666" }}>
+            {month + 1}월 {selectedDate}일
+        </p>
+
+        <input
+            type="text"
+            placeholder="일정 제목을 입력해주세요..."
+            style={{
+            width: "100%",
+            padding: "10px",
+            marginTop: 12,
+            marginBottom: 16,
+            borderRadius: 6,
+            border: "1px solid #ccc"
+            }}
+        />
+
+        <p style={{ fontSize: 14, marginBottom: 8 }}>메모</p>
+        <textarea
+            rows={3}
+            placeholder="내용을 입력하세요"
+            style={{
+            width: "100%",
+            padding: "10px",
+            borderRadius: 6,
+            border: "1px solid #ccc",
+            resize: "none"
+            }}
+        />
+
+        {/* 색상 선택 */}
+        <div style={{ margin: "16px 0", display: "flex", gap: 8 }}>
+            {["#f44336", "#ff9800", "#ffeb3b", "#4caf50", "#03a9f4", "#3f51b5", "#9c27b0", "#ccc"].map((color, index) => (
+            <div key={index}
+                style={{
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                backgroundColor: color,
+                cursor: "pointer"
+                }}
+            ></div>
+            ))}
+        </div>
+
+        <button
+            onClick={() => setIsModalOpen(false)}
+            style={{
+            width: "100%",
+            backgroundColor: "#0b0b61",
+            color: "#fff",
+            border: "none",
+            padding: "12px 0",
+            borderRadius: 8,
+            fontWeight: 600,
+            marginTop: 8
+            }}
+        >
+            저장
+        </button>
+        </div>
+    </div>
+    )}
 
     </div>
   );
