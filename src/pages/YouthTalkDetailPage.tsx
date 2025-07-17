@@ -7,16 +7,21 @@ import heartFillIcon from "../assets/interaction/empathy_fill.svg";
 import starIcon from "../assets/interaction/scrap.svg";
 import starFillIcon from "../assets/interaction/scrap_fill.svg";
 import moreIcon from "../assets/interaction/more.svg";
+import closeIcon from "../assets/module/close.svg";
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
   const [isStarred, setIsStarred] = useState(false);
+  
+  // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
+  const currentUser = "루룰루";
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
   const [showUrlCopyModal, setShowUrlCopyModal] = useState(false);
+  const [showScrapModal, setShowScrapModal] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Array<{
@@ -53,6 +58,10 @@ const YouthTalkDetailPage: React.FC = () => {
 
   const handleStar = () => {
     setIsStarred(!isStarred);
+    // 다른 사용자가 스크랩할 때 모달 표시
+    if (!isStarred && currentUser !== post.username) {
+      setShowScrapModal(true);
+    }
   };
 
   // URL 복사 함수
@@ -69,6 +78,17 @@ const YouthTalkDetailPage: React.FC = () => {
   // URL 복사 모달 닫기
   const handleUrlCopyModalClose = () => {
     setShowUrlCopyModal(false);
+  };
+
+  // 스크랩 모달 닫기
+  const handleScrapModalClose = () => {
+    setShowScrapModal(false);
+  };
+
+  // 스크랩 모달에서 글쓰기 페이지로 이동
+  const handleScrapModalWrite = () => {
+    setShowScrapModal(false);
+    navigate('/review-write?category=청춘톡');
   };
 
   // 삭제 확인 모달 열기
@@ -115,7 +135,7 @@ const YouthTalkDetailPage: React.FC = () => {
     if (commentText.trim()) {
       const newComment = {
         id: comments.length + 1,
-        username: "김눈송",
+        username: currentUser,
         date: new Date().toLocaleString('ko-KR', {
           year: 'numeric',
           month: '2-digit',
@@ -331,6 +351,60 @@ const YouthTalkDetailPage: React.FC = () => {
           background: #0b0b61;
           color: #fff;
         }
+        .ytd-modal.publish {
+          padding: 80px 150px 20px 150px;
+          min-width: 400px;
+          min-height: 370px;
+          text-align: center;
+        }
+        .ytd-publish-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 60px;
+        }
+        .ytd-publish-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #333;
+        }
+        .ytd-publish-close {
+          background: none;
+          border: none;
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+          padding: 0;
+          position: absolute;
+          right: 20px;
+          top: 20px;
+        }
+        .ytd-publish-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          align-items: center;
+        }
+        .ytd-publish-confirm-btn {
+          background: #0b0b61;
+          color: #fff;
+          border: none;
+          border-radius: 10px;
+          padding: 12px 68px;
+          font-size: 20px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .ytd-publish-cancel-btn {
+          background: #fff;
+          color: #333;
+          border: 2px solid #838383;
+          border-radius: 10px;
+          padding: 12px 48px;
+          font-size: 20px;
+          font-weight: 600;
+          cursor: pointer;
+        }
         .ytd-back-btn {
           position: fixed;
           left: 40px;
@@ -543,9 +617,13 @@ const YouthTalkDetailPage: React.FC = () => {
                                       {showMoreMenu && (
                       <div className="ytd-more-menu">
                         <div style={{ borderTop: '1px solid #bbb', marginBottom: 0 }} />
-                        <div className="ytd-more-menu-item">수정하기</div>
+                        {currentUser === post.username && (
+                          <div className="ytd-more-menu-item">수정하기</div>
+                        )}
                         <div className="ytd-more-menu-item" onClick={handleCopyUrl}>URL 복사</div>
-                        <div className="ytd-more-menu-item danger" onClick={handleDeleteClick}>삭제하기</div>
+                        {currentUser === post.username && (
+                          <div className="ytd-more-menu-item danger" onClick={handleDeleteClick}>삭제하기</div>
+                        )}
                       </div>
                     )}
                 </div>
@@ -643,18 +721,22 @@ const YouthTalkDetailPage: React.FC = () => {
                           />
                           <span style={{ display: 'inline-block', verticalAlign: 'top', marginTop: 3 }}>{comment.likes}</span>
                         </button>
-                        <button 
-                          className="ytd-comment-action-btn"
-                          onClick={() => handleCommentEdit(comment.id)}
-                        >
-                          수정
-                        </button>
-                        <button 
-                          className="ytd-comment-action-btn"
-                          onClick={() => handleCommentDelete(comment.id)}
-                        >
-                          삭제
-                        </button>
+                        {currentUser === comment.username && (
+                          <>
+                            <button 
+                              className="ytd-comment-action-btn"
+                              onClick={() => handleCommentEdit(comment.id)}
+                            >
+                              수정
+                            </button>
+                            <button 
+                              className="ytd-comment-action-btn"
+                              onClick={() => handleCommentDelete(comment.id)}
+                            >
+                              삭제
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))
@@ -708,6 +790,28 @@ const YouthTalkDetailPage: React.FC = () => {
             <div className="ytd-modal-buttons">
               <button className="ytd-modal-btn success" onClick={handleUrlCopyModalClose}>
                 확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 스크랩 완료 모달 */}
+      {showScrapModal && (
+        <div className="ytd-modal-overlay">
+          <div className="ytd-modal publish">
+            <div className="ytd-publish-header">
+              <span className="ytd-publish-title">스크랩하셨네요!<br />나도 작성해볼까요?</span>
+              <button className="ytd-publish-close" onClick={handleScrapModalClose}>
+                <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+              </button>
+            </div>
+            <div className="ytd-publish-buttons">
+              <button className="ytd-publish-confirm-btn" onClick={handleScrapModalWrite}>
+                예
+              </button>
+              <button className="ytd-publish-cancel-btn" onClick={handleScrapModalClose}>
+                아니요
               </button>
             </div>
           </div>

@@ -689,9 +689,9 @@ const WriteReviewPage: React.FC = () => {
           white-space: nowrap;
         }
         .wr-modal.publish {
-          padding: 120px 120px 20px 120px;
+          padding: 100px 150px 20px 150px;
           min-width: 400px;
-          min-height: 400px;
+          min-height: 350px;
           text-align: center;
         }
         .wr-publish-header {
