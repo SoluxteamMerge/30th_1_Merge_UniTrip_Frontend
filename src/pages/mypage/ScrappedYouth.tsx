@@ -1,6 +1,8 @@
 import React from "react";
 import Header from "../../components/Header/Header";
 import { Link, useNavigate } from "react-router-dom";
+import defaultProfile from "../../assets/header/default-profile.svg";
+
 
 const ScrappedYouthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ const ScrappedYouthPage: React.FC = () => {
 
       <div style={containerStyle}>
 
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", alignItems: "flex-start" }}>
           {/* 사이드바 - 양식 통일) */}
           <div
             style={{
@@ -39,24 +41,38 @@ const ScrappedYouthPage: React.FC = () => {
               marginTop: 48
             }}
           >
-            <div
+            <img
+              src={defaultProfile}
+              alt="기본 프로필"
               style={{
                 width: 100,
                 height: 100,
                 borderRadius: "50%",
-                background: "#e0e0e0",
-                margin: "0 auto 12px"
+                objectFit: "cover",
+                margin: "0 auto 12px",
+                display: "block"
               }}
             />
 
-            <p style={{ fontWeight: "bold", marginBottom: 24 }}>{username}</p>
+            <p style={{ fontWeight: "bold", marginBottom: 24, color: "#0B0B61" }}>{username}</p>
             <ul style={{ listStyle: "none", padding: 0, textAlign: "left", fontSize: 14, color: "#888" }}>
               <li style={{ marginBottom: 12 }}>
                 <Link to="/recorded-youth" style={{ color: "#888", textDecoration: "none" }}>
                   · 내가 만든 청춘
                 </Link>
               </li>
-              <li style={{ marginBottom: 12, fontWeight: 700, color: "#333" }}>• 스크랩한 청춘</li>
+              <li 
+              style={{ 
+                  marginBottom: 12,
+                  fontWeight: 700,
+                  color: "#333",
+                  backgroundColor: "#e0e0e0",
+                  padding: "4px 12px",
+                  borderRadius: 5, 
+                }}
+                >
+                • 스크랩한 청춘
+              </li>
               <li>
                 <Link to="/recorded-youth/youth-calendar" style={{ color: "#888", textDecoration: "none" }}>
                   · 청춘 일정
@@ -78,29 +94,33 @@ const ScrappedYouthPage: React.FC = () => {
                 background: "#fff",
                 borderRadius: 12,
                 padding: "32px 48px",
-                boxShadow: "0 0 8px rgba(0,0,0,0.05)"
+                boxShadow: "0 0 8px rgba(0,0,0,0.05)",
+                minHeight: "580px",
+                position: "relative",
               }}
             >
-              <h2 style={{ marginBottom: 8, fontSize: 20 }}>스크랩한 청춘</h2>
-              <p style={{ marginBottom: 48, fontSize: 14, color: "#888" }}>스크랩한 게시글</p>
+              <h2 style={{ marginBottom: 8, fontSize: 20, color: "#0B0B61"}}>스크랩한 청춘</h2>
+              <p style={{ marginBottom: 0, fontSize: 14, color: "#0B0B61" }}>스크랩한 게시글</p>
 
-              <p style={{ fontSize: 16, color: "#555", textAlign: "center", marginTop: 80 }}>
-                아직 스크랩한 청춘이 없어요
-              </p>
-              
-              <p
-                style={{
-                  fontSize: 14,
-                  color: "#888",
-                  textAlign: "center",
-                  marginTop: 8,
-                  cursor: "pointer",
-                  textDecoration: "underline"
-                }}
-                onClick={() => navigate("/youth-search")}
+              <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    textAlign: "center"
+                  }}
               >
-                청춘을 스크랩하러 가볼까요? &gt;
-              </p>
+                <p style={{ fontSize: 16, color: "#0B0B61", fontWeight: 600, margin: 0, }}>
+                  아직 스크랩한 청춘이 없어요
+                </p>
+                
+                <p style={{fontSize: 14, color: "#888", marginTop: 8}}>
+                  <Link to="/mt-journey" style={{ color: "#888", textDecoration: "underline" }}>
+                    청춘을 스크랩하러 가볼까요? &gt;
+                  </Link>
+                </p>
+              </div>
 
             </div>
           </div>
