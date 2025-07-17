@@ -13,7 +13,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
   const menuLinks = [
     { to: "/cjdcnsqkfwkrnr", label: "청춘 발자국" },
     { to: "/mt-journey", label: "MT여정지도" },
-    { to: "/gkaRpgody", label: "함께해요" },
+    { to: "/together", label: "함께해요" },
     { to: "/youth-talk", label: "청춘톡" },
     { to: "/youth-drawer", label: "청춘서랍", last: true }
   ];

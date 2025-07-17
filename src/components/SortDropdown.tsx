@@ -14,16 +14,15 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
     <div style={{ position: "relative", display: "inline-block" }}>
       <button
         style={{
-          border: "1px solid #bbb",
+          border: "1.5px solid #bbb",
           borderRadius: 10,
-          padding: "8px 24px 8px 16px",
+          padding: "8px 16px",
           background: "#fff",
           fontWeight: 600,
           fontSize: 14,
           cursor: "pointer",
           minWidth: 120,
-          textAlign: "center",
-          boxShadow: open ? "0 2px 8px #0001" : undefined
+          textAlign: "center"
         }}
         onClick={() => setOpen((o) => !o)}
       >
@@ -33,28 +32,34 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
         <div
           style={{
             position: "absolute",
-            top: 40,
-            left: 0,
+            top: "100%",
+            right: 0,
             background: "#fff",
-            border: "1px solid #ddd",
+            border: "1.5px solid #bbb",
             borderRadius: 10,
-            boxShadow: "0 2px 8px #0001",
             zIndex: 10,
             minWidth: 120,
-            overflow: "hidden"
+            padding: "8px 0"
           }}
         >
-          {options.map((opt) => (
+          {options.map((opt, index) => (
             <div
               key={opt}
               style={{
-                padding: "10px 10px",
-                background: value === opt ? "#f2f2f2" : "#fff",
-                fontWeight: value === opt ? 700 : 400,
+                padding: "8px 16px",
+                borderTop: index === 0 ? "1px solid #bbb" : undefined,
+                borderBottom: "1px solid #bbb",
                 fontSize: 14,
+                color: "#333",
                 cursor: "pointer",
-                textAlign: "center",
-                borderBottom: opt !== options[options.length - 1] ? "1px solid #eee" : undefined
+                transition: "background 0.2s",
+                textAlign: "center"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#f5f5f5";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#fff";
               }}
               onClick={() => {
                 onChange(opt);
