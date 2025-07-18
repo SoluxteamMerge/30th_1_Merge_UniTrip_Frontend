@@ -65,7 +65,7 @@
   flex-direction: column;
   border: 1px solid #BBBBBB;
   border-radius: 20px;
-  padding: 20px 20px 30px 24px !important;
+  padding: 20px 30px 30px 24px !important;
   display: flex;
   justify-content: space-between;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -74,7 +74,7 @@
 .mainpage-suggest-content-wrapper {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 
 .mainpage-suggest-text {
@@ -99,7 +99,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 350px;
+  max-width: 640px;
 }
 
 .mainpage-suggest-image-wrapper {
@@ -110,7 +110,7 @@
 
 .mainpage-suggest-img {
   width: 220px;
-  height: 150px;
+  height: 180px;
   object-fit: cover;
 }
 
@@ -178,6 +178,9 @@
   border-radius: 6px;
 }
 
+.more-button {
+  margin: 10px;
+}
 
 
 

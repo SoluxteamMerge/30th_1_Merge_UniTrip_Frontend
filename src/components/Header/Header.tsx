@@ -12,7 +12,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const menuLinks = [
-    { to: "/cjdcnsqkfwkrnr", label: "청춘 발자국" },
+    { to: "/", label: "청춘 발자국" },
     { to: "/mt-journey", label: "MT여정지도" },
     { to: "/together", label: "함께해요" },
     { to: "/youth-talk", label: "청춘톡" },

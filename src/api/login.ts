@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const getGoogleLogin = async () => {
-  try {
+  try { /*api/google/login으로 GET 요청*/
     const response = await axios.get('/api/google/login', {
       withCredentials: true,
     });

@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import defaultProfile from "../../assets/header/default-profile.svg";
+import writeIcon from "../../assets/write-icon.svg";
+
+
 
 const YouthCalendar: React.FC = () => {
+    const navigate = useNavigate(); 
+  
   const username = "김눈송";
   const today = new Date();
 
@@ -114,7 +121,7 @@ const YouthCalendar: React.FC = () => {
 
         <div style={containerStyle}>
 
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex", alignItems: "flex-start" }}>
                 {/* 사이드바 */}
                 <div
                 style={{
@@ -129,30 +136,43 @@ const YouthCalendar: React.FC = () => {
                 }}>
 
                     {/* 프로필 컨테이너 */}
-                    <div
-                    style={{
+                    <img
+                      src={defaultProfile}
+                      alt="기본 프로필"
+                      style={{
                         width: 100,
                         height: 100,
                         borderRadius: "50%",
-                        background: "#e0e0e0",
-                        margin: "0 auto 12px"
-                    }}
+                        objectFit: "cover",
+                        margin: "0 auto 12px",
+                        display: "block"
+                      }}
                     />
-                    <p style={{ fontWeight: "bold", marginBottom: 24 }}>{username}</p>
+                    <p style={{ fontWeight: "bold", marginBottom: 24, color: "#0B0B61" }}>{username}</p>
                     
                     {/* 사이드바 메뉴 */}
                     <ul style={{ listStyle: "none", padding: 0, textAlign: "left", fontSize: 14, color: "#888" }}>
-                    <li style={{ marginBottom: 12 }}>
-                        <Link to="/recorded-youth" style={{ color: "#888", textDecoration: "none" }}>
-                        · 내가 만든 청춘
-                        </Link>
-                    </li>
-                    <li style={{ marginBottom: 12 }}>
-                        <Link to="/recorded-youth/scrapped-youth" style={{ color: "#888", textDecoration: "none" }}>
-                        · 스크랩한 청춘
-                        </Link>
-                    </li>
-                    <li style={{ marginBottom: 12, fontWeight: 700, color: "#333" }}>• 청춘 일정</li>
+                      <li style={{ marginBottom: 12 }}>
+                          <Link to="/recorded-youth" style={{ color: "#888", textDecoration: "none" }}>
+                          · 내가 만든 청춘
+                          </Link>
+                      </li>
+                      <li style={{ marginBottom: 12 }}>
+                          <Link to="/recorded-youth/scrapped-youth" style={{ color: "#888", textDecoration: "none" }}>
+                          · 스크랩한 청춘
+                          </Link>
+                      </li>
+                      <li 
+                      style={{ 
+                        marginBottom: 12,
+                        fontWeight: 700,
+                        color: "#333",
+                        backgroundColor: "#e0e0e0",
+                        padding: "4px 12px",
+                        borderRadius: 5,
+                        }}
+                        >• 청춘 일정
+                        </li>
                     </ul>
                 </div>
 
@@ -169,7 +189,8 @@ const YouthCalendar: React.FC = () => {
                         background: "#fff",
                         borderRadius: 12,
                         padding: "32px 48px",
-                        boxShadow: "0 0 8px rgba(0,0,0,0.05)"
+                        boxShadow: "0 0 8px rgba(0,0,0,0.05)",
+                        minHeight: "calc(100vh - 320px)" //요소 최소 높이 = 화면 전체 높이 - 320px
                         }}
                     >
 
@@ -206,21 +227,39 @@ const YouthCalendar: React.FC = () => {
 
       {/* Floating 버튼 */}
       <button
+        onClick={() => navigate("/review-write")}  // 이 줄 추가!
         style={{
           position: "fixed",
-          bottom: 32,
-          right: 32,
-          background: "#2c3e50",
-          color: "#fff",
-          width: 56,
-          height: 56,
+          right: 60,
+          bottom: 60,
+          width: 100,
+          height: 100,
           borderRadius: "50%",
-          border: "none",
-          fontSize: 28,
+          border: "none", 
+    
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           cursor: "pointer",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.2)"
+          padding: 0,
+          background: "transparent", 
+          overflow: "hidden"  // 이미지 삐져나가지 않게
         }}
-      ></button>
+        aria-label="게시글 작성"
+      >
+        <img
+          src={writeIcon}
+          alt="글쓰기 아이콘"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",  // 이미지가 버튼 원형에 꽉 차게
+            borderRadius: "50%",  // 이미지도 원형으로
+            display: "block",
+          }}
+        />
+      </button>
+      {/* Floating 버튼 끝 */}
 
       {isModalOpen && (
     <div style={{
