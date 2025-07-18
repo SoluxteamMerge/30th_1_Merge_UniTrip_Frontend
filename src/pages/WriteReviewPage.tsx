@@ -146,16 +146,77 @@ const WriteReviewPage: React.FC = () => {
     setShowRatingModal(true);
   };
 
-  const handleStarClick = (starIndex: number) => {
-    setRating(starIndex + 1);
+  const handleStarClick = (starIndex: number, isHalf: boolean = false) => {
+    const newRating = starIndex + (isHalf ? 0.5 : 1);
+    setRating(newRating);
   };
 
-  const handleStarHover = (starIndex: number) => {
-    setHoverRating(starIndex + 1);
+  const handleStarHover = (starIndex: number, isHalf: boolean = false) => {
+    const newHoverRating = starIndex + (isHalf ? 0.5 : 1);
+    setHoverRating(newHoverRating);
   };
 
   const handleStarLeave = () => {
     setHoverRating(0);
+  };
+
+  // 별점 요소 렌더링 함수
+  const renderStarElement = (index: number, currentRating: number) => {
+    const starValue = index + 1;
+    const halfStarValue = index + 0.5;
+    
+    if (currentRating >= starValue) {
+      // 완전히 채워진 별
+      return (
+        <img 
+          src={starWishFillIcon} 
+          alt="별" 
+          className="wr-star-img"
+          style={{ position: 'relative', zIndex: 1 }}
+        />
+      );
+         } else if (currentRating >= halfStarValue) {
+       // 반만 채워진 별
+       return (
+         <div className="wr-star-half">
+           <img 
+             src={starWishFillIcon} 
+             alt="별" 
+             style={{ 
+               position: 'absolute', 
+               left: 0, 
+               top: 0, 
+               width: '50%', 
+               height: '100%',
+               objectFit: 'cover',
+               objectPosition: 'left center'
+             }}
+           />
+           <img 
+             src={starWishIcon} 
+             alt="별" 
+             style={{ 
+               position: 'absolute', 
+               left: 0, 
+               top: 0, 
+               width: '100%', 
+               height: '100%',
+               zIndex: -1
+             }}
+           />
+         </div>
+       );
+    } else {
+      // 빈 별
+      return (
+        <img 
+          src={starWishIcon} 
+          alt="별" 
+          className="wr-star-img"
+          style={{ position: 'relative', zIndex: 1 }}
+        />
+      );
+    }
   };
 
   const handlePublishClick = () => {
@@ -700,6 +761,23 @@ const WriteReviewPage: React.FC = () => {
           height: 40px;
           transition: all 0.2s;
         }
+        .wr-star-half {
+          position: relative;
+          overflow: hidden;
+          width: 40px;
+          height: 40px;
+        }
+        .wr-star-half::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 50%;
+          height: 100%;
+          background: url(${starWishFillIcon}) no-repeat left center;
+          background-size: 40px 40px;
+          z-index: 1;
+        }
         .wr-rating-confirm-btn {
           background: #fff;
           border: 2px solid #bbb;
@@ -1010,19 +1088,46 @@ const WriteReviewPage: React.FC = () => {
                   <div className="wr-rating-input-wrapper">
                     <div className="wr-rating-display">
                       {[0, 1, 2, 3, 4].map((index) => (
-                        <button
-                          key={index}
-                          className="wr-star-btn"
-                          onClick={() => handleStarClick(index)}
-                          onMouseEnter={() => handleStarHover(index)}
-                          onMouseLeave={handleStarLeave}
-                        >
-                          <img 
-                            src={(hoverRating || rating) > index ? starWishFillIcon : starWishIcon} 
-                            alt="별" 
-                            className="wr-star-img"
+                        <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+                          {/* 왼쪽 반쪽 별 (클릭 시 0.5점) */}
+                          <button
+                            className="wr-star-btn"
+                            style={{ 
+                              position: 'absolute', 
+                              left: 0, 
+                              top: 0, 
+                              width: '50%', 
+                              height: '100%',
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              zIndex: 2
+                            }}
+                            onClick={() => handleStarClick(index, true)}
+                            onMouseEnter={() => handleStarHover(index, true)}
+                            onMouseLeave={handleStarLeave}
                           />
-                        </button>
+                          {/* 오른쪽 반쪽 별 (클릭 시 1점) */}
+                          <button
+                            className="wr-star-btn"
+                            style={{ 
+                              position: 'absolute', 
+                              right: 0, 
+                              top: 0, 
+                              width: '50%', 
+                              height: '100%',
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              zIndex: 2
+                            }}
+                            onClick={() => handleStarClick(index, false)}
+                            onMouseEnter={() => handleStarHover(index, false)}
+                            onMouseLeave={handleStarLeave}
+                          />
+                          {/* 별 이미지 */}
+                          {renderStarElement(index, hoverRating || rating)}
+                        </div>
                       ))}
                     </div>
                   </div>

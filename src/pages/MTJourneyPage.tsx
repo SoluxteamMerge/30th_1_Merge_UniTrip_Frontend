@@ -15,7 +15,7 @@ const posts = [
     title: "제목칸",
     content: "내용칸",
     tags: ["#가평", "#대성리", "#40명이상 숙소"],
-    rating: 4,
+    rating: 2.5,
     imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
     profileUrl: ""
   },
@@ -37,14 +37,61 @@ const MTJourneyPage: React.FC = () => {
   const navigate = useNavigate();
 
   const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, index) => (
-      <img
-        key={index}
-        src={index < rating ? starWishFillIcon : starWishIcon}
-        alt={index < rating ? "채워진 별" : "빈 별"}
-        style={{ width: 25, height: 25, marginRight: 13 }}
-      />
-    ));
+    return Array.from({ length: 5 }, (_, index) => {
+      const starValue = index + 1;
+      const halfStarValue = index + 0.5;
+      
+      if (rating >= starValue) {
+        // 완전히 채워진 별
+        return (
+          <img
+            key={index}
+            src={starWishFillIcon}
+            alt="채워진 별"
+            style={{ width: 25, height: 25, marginRight: 13 }}
+          />
+        );
+      } else if (rating >= halfStarValue) {
+        // 반만 채워진 별
+        return (
+          <div key={index} style={{ position: 'relative', display: 'inline-block', width: 25, height: 25, marginRight: 13 }}>
+            <img 
+              src={starWishIcon} 
+              alt="빈 별" 
+              style={{ 
+                position: 'absolute', 
+                left: 0, 
+                top: 0, 
+                width: '100%', 
+                height: '100%'
+              }}
+            />
+            <img 
+              src={starWishFillIcon} 
+              alt="반채워진 별" 
+              style={{ 
+                position: 'absolute', 
+                left: 0, 
+                top: 0, 
+                width: '100%', 
+                height: '100%',
+                clipPath: 'inset(0 50% 0 0)'
+              }}
+            />
+          </div>
+        );
+      } else {
+        // 빈 별
+        return (
+          <img
+            key={index}
+            src={starWishIcon}
+            alt="빈 별"
+            style={{ width: 25, height: 25, marginRight: 13 }}
+          />
+        );
+      }
+    });
   };
 
   return (
