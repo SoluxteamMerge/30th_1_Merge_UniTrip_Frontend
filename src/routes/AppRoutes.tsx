@@ -14,8 +14,7 @@ import SearchPage from "../pages/SearchPage";
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<MainPage />} />*/
-
+    <Route path="/" element={<MainPage />} />
     <Route path="/login" element={<LoginPage />} />
     <Route path="/signup" element={<SignupPage />} />
     <Route path="/youth-talk" element={<YouthTalkBoardPage />} />

@@ -13,13 +13,6 @@ const YouthCalendar: React.FC = () => {
   const username = "김눈송";
   const today = new Date();
 
-  const year = today.getFullYear();
-  const month = today.getMonth(); // 0-indexed (0 = Jan)
-  const date = today.getDate();
-
-  const firstDay = new Date(year, month, 1).getDay(); // 0 (Sun) ~ 6 (Sat)
-  const totalDays = new Date(year, month + 1, 0).getDate(); // 이번 달 총 일 수
-
   const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
@@ -30,28 +23,36 @@ const YouthCalendar: React.FC = () => {
     color: "#0b0b61",
     display: "flex",
     alignItems: "center",
-    marginBottom: 16
+    marginBottom: 16,
+    justifyContent: "space-between"  // ← 버튼 오른쪽 정렬
   };
   const titleIconStyle = { fontSize: 20, marginRight: 8 };
 
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0 (Sun) ~ 6 (Sat)
+  const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); // 이번 달 총 일 수
 
   //달력 생성
   const generateCalendar = (): React.ReactNode[] => {
     const cells: React.ReactNode[] = [];
+    const baseCellStyle = {
+      width: `${100 / 7}%`,            // 열 너비를 1/7로 고정
+      height: 85,
+      border: "1px solid #ddd",
+      verticalAlign: "top",   // ← 위쪽 정렬 (세로)
+      padding: 6,
+    };
 
     // 빈 셀 먼저 채우기
     for (let i = 0; i < firstDay; i++) {
       cells.push(
       <td 
       key={`empty-${i}`}
-      style={{
-        border: "1px solid #ddd",        
-        padding: "8px 0",  // 높이 균일하게
-        textAlign: "center",                
-        //backgroundColor: "#f9f9f9",         // 연한 배경색 
-      }}
+      style={baseCellStyle}
       ></td>
     );
     }
@@ -61,7 +62,10 @@ const YouthCalendar: React.FC = () => {
       const weekday = (firstDay + day - 1) % 7;
       const isSunday = weekday === 0;
       const isSaturday = weekday === 6;
-      const isToday = day === date;
+      const isToday =
+          day === today.getDate() &&
+          currentMonth === today.getMonth() &&
+          currentYear === today.getFullYear();
 
       cells.push(
         <td
@@ -71,19 +75,13 @@ const YouthCalendar: React.FC = () => {
                 setIsModalOpen(true);
             }}
           style={{
-            cursor: "pointer", 
-            color: isToday ? "#333" : isSunday ? "#e53935" : isSaturday ? "#3d3d81" : "#333",
-            //backgroundColor: isToday ? "#0b0b61" : "transparent",
-            backgroundColor: "transparent",
-            //borderRadius: isToday ? "50%" : "none",
-            borderRadius: "none",
-            textAlign: "center",
-            padding: "8px 0",
-            //fontWeight: isToday ? "bold" : "normal", //오늘 날짜만 선 굵게 표시
-            border: "1px solid #ddd" 
+            ...baseCellStyle,
+            cursor: "pointer",
+            color: isSunday ? "#e53935" : isSaturday ? "#3d3d81" : "#333",
+            fontWeight: isToday ? "bold" : "normal",
           }}
         >
-          {day}
+          <div style={{ textAlign: "left", padding: 4 }}>{day}</div>
         </td>
       );
     }
@@ -96,12 +94,7 @@ const YouthCalendar: React.FC = () => {
         cells.push(
         <td
             key={`empty-after-${i}`}
-            style={{
-            border: "1px solid #ddd",
-            padding: "8px 0",
-            textAlign: "center",
-            //backgroundColor: "#f9f9f9",
-            }}
+            style={baseCellStyle}
         ></td>
         );
     }
@@ -114,6 +107,27 @@ const YouthCalendar: React.FC = () => {
 
     return rows;
   }; //달력 생성 끝
+
+  //이전 달 
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(prev => prev - 1);
+    } else {
+      setCurrentMonth(prev => prev - 1);
+    }
+  };
+
+  //다음 달
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(prev => prev + 1);
+    } else {
+      setCurrentMonth(prev => prev + 1);
+    }
+  };
+
 
   return (
     <div style={pageBgStyle}>
@@ -180,25 +194,40 @@ const YouthCalendar: React.FC = () => {
                 <div style={{ flex: 1 }}>
 
                     <div style={titleBoxStyle}>
-                        <span style={titleIconStyle}>▶</span>기록한 청춘
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <span style={titleIconStyle}>▶</span>기록한 청춘
+                        </div>
                     </div>
                     
-                    <div
-                        style={{
+                    <div  style={{
                         flex: 1,
                         background: "#fff",
                         borderRadius: 12,
                         padding: "32px 48px",
                         boxShadow: "0 0 8px rgba(0,0,0,0.05)",
-                        minHeight: "calc(100vh - 320px)" //요소 최소 높이 = 화면 전체 높이 - 320px
+                        //minHeight: "580px"
                         }}
                     >
 
-                        <h2 style={{ fontSize: 20, marginBottom: 24 }}>
-                        청춘 일정 - {month + 1}월
+                      <div style={{
+                          display: "flex",
+                          justifyContent: "space-between",   // 텍스트와 버튼을 좌우 정렬
+                          alignItems: "center",
+                          marginBottom: 24
+                        }}
+                      >
+
+                        <h2 style={{ fontSize: 20, marginBottom: 24, display: "flex", alignItems: "center", color: "#0b0b61" }}>
+                          청춘 일정 - {currentMonth + 1}월
                         </h2>
 
-                        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                        <div>
+                          <button onClick={handlePrevMonth} style={{ marginRight: 12, fontSize: 18 }}>&lt;</button>
+                          <button onClick={handleNextMonth} style={{ fontSize: 18 }}>&gt;</button>
+                        </div>
+                      </div>
+
+                        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                             <thead>
                                 <tr>
                                 {days.map((day, i) => (
@@ -288,7 +317,7 @@ const YouthCalendar: React.FC = () => {
         <h3 style={{ marginBottom: 16 }}>일정 추가</h3>
 
         <p style={{ fontSize: 14, color: "#666" }}>
-            {month + 1}월 {selectedDate}일
+            {currentMonth + 1}월 {selectedDate}일
         </p>
 
         <input
