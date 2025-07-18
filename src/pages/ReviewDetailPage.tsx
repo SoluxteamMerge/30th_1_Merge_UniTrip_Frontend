@@ -364,7 +364,7 @@ const YouthTalkDetailPage: React.FC = () => {
         .ytd-post-image { width: 1000px; height: 600px; object-fit: cover; margin-top: 100px; margin-left: 100px; }
         .ytd-post-image-with-location { margin-left: 0; }
         .ytd-image-location-container { display: flex; gap: 0px; align-items: flex-start; margin-top: 100px; margin-left: 100px; }
-        .ytd-location-info { position: absolute; right: 320px; top: 380px; padding: 15px; background-color: #fff; min-width: 200px; text-align: right; }
+        .ytd-location-info { position: absolute; right: 330px; top: 380px; padding: 15px; min-width: 200px; text-align: right; }
         .ytd-location-name { font-size: 16px; font-weight: bold; margin-bottom: 5px; color: #333; }
         .ytd-location-address { font-size: 14px; color: #666; line-height: 1.4; }
         .ytd-post-content { padding: 80px 100px 80px 100px; }

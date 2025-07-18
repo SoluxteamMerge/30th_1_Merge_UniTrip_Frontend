@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "../components/Header/Header";
 import LocationModal from "../components/LocationModal";
 import writeIcon from "../assets/write-icon.svg";
@@ -66,6 +66,9 @@ const WriteReviewPage: React.FC = () => {
     lng: number;
   } | null>(null);
 
+  // textarea ref
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   // 이메일 인증 상태
   // const isEmailVerified = localStorage.getItem('isEmailVerified') === 'true';
   const isEmailVerified = true; // 임시로 항상 true로 설정
@@ -73,6 +76,9 @@ const WriteReviewPage: React.FC = () => {
   // 디버깅용 콘솔 로그
   // console.log('localStorage isEmailVerified 값:', localStorage.getItem('isEmailVerified'));
   // console.log('isEmailVerified 상태:', isEmailVerified);
+  console.log('selectedImage:', selectedImage);
+  console.log('selectedLocation:', selectedLocation);
+  console.log('tags:', tags);
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
@@ -137,7 +143,9 @@ const WriteReviewPage: React.FC = () => {
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        setSelectedImage(file.name);
+        // 파일을 URL로 변환
+        const imageUrl = URL.createObjectURL(file);
+        setSelectedImage(imageUrl);
       }
     };
     input.click();
@@ -316,7 +324,14 @@ const WriteReviewPage: React.FC = () => {
   };
 
   const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
+    console.log('장소 선택됨:', location);
     setSelectedLocation(location);
+  };
+
+  // textarea 높이 자동 조정 함수
+  const adjustTextareaHeight = (element: HTMLTextAreaElement) => {
+    element.style.height = "auto";
+    element.style.height = element.scrollHeight + "px";
   };
 
   const getModalMessage = () => {
@@ -333,6 +348,13 @@ const WriteReviewPage: React.FC = () => {
       setShowScheduleModal(true);
     }
   }, [isEmailVerified]);
+
+  // textarea 높이 자동 조정
+  useEffect(() => {
+    if (textareaRef.current) {
+      adjustTextareaHeight(textareaRef.current);
+    }
+  }, [content]);
 
   return (
     <div className="wr-bg">
@@ -496,9 +518,14 @@ const WriteReviewPage: React.FC = () => {
           justify-content: flex-start;
           padding: 60px 0 0 0;
         }
+        .wr-content-wrapper {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+        }
         .wr-content-input {
-          width: 87%;
-          min-height: 180px;
+          width: 93%;
+          min-height: 100px;
           border: none;
           outline: none;
           font-size: 18px;
@@ -506,11 +533,71 @@ const WriteReviewPage: React.FC = () => {
           background: none;
           resize: none;
           text-align: left;
-          padding-left: 80px;
+          padding-left: 90px;
+          word-wrap: break-word;
+          white-space: pre-wrap;
+          overflow-y: visible;
         }
         .wr-content-input::placeholder {
           color: #bbb;
           text-align: left;
+        }
+        
+        .wr-media-section {
+          margin-top: 20px;
+          margin-left: 100px;
+        }
+        .wr-location-container {
+          position: relative;
+          margin-bottom: 20px;
+        }
+        .wr-image-container {
+          position: relative;
+          margin-bottom: 60px;
+        }
+        .wr-post-image {
+          width: 1000px;
+          height: 600px;
+          object-fit: cover;
+        }
+        .wr-location-info {
+          padding: 15px;
+          background-color: #fff;
+          min-width: 200px;
+          text-align: right;
+          margin-right: 90px;
+        }
+        .wr-location-name {
+          font-size: 16px;
+          font-weight: bold;
+          margin-bottom: 5px;
+          color: #333;
+        }
+        .wr-location-address {
+          font-size: 14px;
+          color: #666;
+          line-height: 1.4;
+        }
+        .wr-tags-container {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 50px;
+        }
+        .wr-tag {
+          border-radius: 20px;
+          padding: 6px 18px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+        .wr-tag-main {
+          background: #0b0b61;
+          color: #fff;
+          position: relative;
+        }
+        .wr-tag-sub {
+          background: #fff;
+          border: 1.5px solid #0b0b61;
+          color: #0b0b61;
         }
         .wr-floating-write-btn {
           position: fixed;
@@ -936,13 +1023,60 @@ const WriteReviewPage: React.FC = () => {
               </div>
               <hr className="wr-divider" />
               <div className="wr-content-area">
-                <textarea 
-                  className="wr-content-input" 
-                  placeholder="최근 다녀온 곳을 지도와 함께 기록해 보세요!" 
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  disabled={!isEmailVerified} 
-                />
+                <div className="wr-content-wrapper">
+                  <textarea 
+                    ref={textareaRef}
+                    className="wr-content-input" 
+                    placeholder="최근 다녀온 곳을 지도와 함께 기록해 보세요!" 
+                    value={content}
+                    onChange={(e) => {
+                      setContent(e.target.value);
+                      adjustTextareaHeight(e.target);
+                    }}
+                    disabled={!isEmailVerified} 
+                  />
+                  
+                  {/* 미디어 섹션 (장소, 이미지, 태그) */}
+                  {(selectedImage || selectedLocation || tags.length > 0) && (
+                    <div className="wr-media-section">
+                      {/* 장소 정보 */}
+                      {selectedLocation && (
+                        <div className="wr-location-container">
+                          <div className="wr-location-info">
+                            <div className="wr-location-name">
+                              {selectedLocation.name}
+                            </div>
+                            <div className="wr-location-address">
+                              {selectedLocation.address}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* 이미지 */}
+                      {selectedImage && (
+                        <div className="wr-image-container">
+                          <img src={selectedImage} alt="업로드된 이미지" className="wr-post-image" />
+                        </div>
+                      )}
+                      
+                      {/* 태그들 */}
+                      {tags.length > 0 && (
+                        <div className="wr-tags-container">
+                          {tags.map((tag, idx) => (
+                            <span
+                              key={tag}
+                              className={idx === 0 ? "wr-tag wr-tag-main" : "wr-tag wr-tag-sub"}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
               </div>
             </div>
           </div>
@@ -1047,8 +1181,8 @@ const WriteReviewPage: React.FC = () => {
                     <input 
                       type="text" 
                       className="wr-image-input"
-                      placeholder="image1.png"
-                      value={selectedImage}
+                      placeholder="이미지를 선택해주세요"
+                      value={selectedImage ? "이미지가 선택되었습니다" : ""}
                       readOnly
                     />
                     <button className="wr-image-remove" onClick={handleImageRemove}>×</button>
@@ -1059,25 +1193,7 @@ const WriteReviewPage: React.FC = () => {
             </div>
           </>
         )}
-        {selectedLocation && (
-          <>
-            <div className="wr-overlay" />
-            <div className="wr-modal tag">
-              <div className="wr-tag-header">
-                <span className="wr-tag-title">선택된 장소</span>
-                <button className="wr-tag-close" onClick={() => setSelectedLocation(null)}>
-                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
-                </button>
-              </div>
-              <div className="wr-tag-input-container">
-                <div className="wr-location-display">
-                  <div className="wr-location-name">{selectedLocation.name}</div>
-                  <div className="wr-location-address">{selectedLocation.address}</div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+
         {showRatingModal && (
           <>
             <div className="wr-overlay" />
@@ -1167,7 +1283,11 @@ const WriteReviewPage: React.FC = () => {
         )}
         <LocationModal
           isOpen={showLocationModal}
-          onClose={() => setShowLocationModal(false)}
+          onClose={() => {
+            console.log('모달 닫기 전 selectedLocation:', selectedLocation);
+            setShowLocationModal(false);
+            console.log('모달 닫기 후 selectedLocation:', selectedLocation);
+          }}
           onLocationSelect={handleLocationSelect}
         />
       </div>
