@@ -220,7 +220,7 @@ const TogetherPage: React.FC = () => {
           <div className="together-board-title">{selectedCategory}</div>
           <div className="together-post-list">
             {filteredPosts.map(post => (
-              <div key={post.id} className="together-post-card">
+              <div key={post.id} className="together-post-card" onClick={() => navigate(`/review/${post.id}?category=${selectedCategory}`)} style={{ cursor: 'pointer' }}>
                 {/* 상단: 프로필/닉네임/날짜 */}
                 <div className="together-post-top-row">
                   <div className="together-post-info-row">

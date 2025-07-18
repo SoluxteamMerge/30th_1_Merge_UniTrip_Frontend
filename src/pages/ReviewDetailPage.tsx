@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header/Header";
 import commentIcon from "../assets/interaction/comment.svg";
 import heartIcon from "../assets/interaction/empathy.svg";
@@ -8,15 +8,18 @@ import starIcon from "../assets/interaction/scrap.svg";
 import starFillIcon from "../assets/interaction/scrap_fill.svg";
 import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
+import starWishIcon from "../assets/module/star_wish.svg";
+import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLiked, setIsLiked] = useState(false);
   const [isStarred, setIsStarred] = useState(false);
   
   // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
-  const currentUser = "루룰루";
+  const currentUser = "김눈송 님";
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
@@ -36,21 +39,134 @@ const YouthTalkDetailPage: React.FC = () => {
   }>>([]);
   const commentInputRef = React.useRef<HTMLTextAreaElement>(null);
 
-  // 실제로는 API에서 데이터를 가져올 예정
-  const post = {
-    id: id || "1",
-    title: "동기들과 함께 제주도 3박 4일 여행 다녀왔습니다",
-    content: "동기들과 함께 제주도에 다녀왔습니다!\n\n바닷바람이 너무 심해서 날아가는 줄 알았지만 근처에 있는 한옥을 모티브로 한 베이커리 카페가 정말 맛있었습니다. 기회가 된다면 다녀오시는 걸 추천할게요!",
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-    profileUrl: "",
-    isPublic: true,
-    commentCount: 1,
-    likeCount: 2,
-    starCount: 2,
-    tags: ["#제주도", "#4인여행"]
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, index) => (
+      <img
+        key={index}
+        src={index < rating ? starWishFillIcon : starWishIcon}
+        alt={index < rating ? "채워진 별" : "빈 별"}
+        style={{ width: 25, height: 25, marginRight: 13 }}
+      />
+    ));
   };
+
+  // 카테고리별 게시글 데이터
+  const getPostData = (category: string) => {
+    switch (category) {
+      case "MT여정지도":
+        return {
+          id: id || "1",
+          title: "MT여정지도 제목",
+          content: "주소\n예산\n인원\n입 · 퇴실시간",
+          username: "김눈송",
+          date: "2025.05.06 12:01",
+          imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          rating: 4,
+          tags: ["#가평", "#대성리", "#40명이상 숙소"]
+        };
+      case "동행구해요":
+        return {
+          id: id || "1",
+          title: "동행구해요 제목",
+          content: "내용칸",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          tags: ["#가평", "#대성리", "#40명이상 숙소"]
+        };
+      case "번개모임":
+        return {
+          id: id || "1",
+          title: "번개모임 제목",
+          content: "내용칸",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          tags: ["#제주도", "#4인", "#펜션"]
+        };
+      case "졸업/휴학여행":
+        return {
+          id: id || "1",
+          title: "졸업여행 제목",
+          content: "주소\n예산\n인원\n입 · 퇴실시간",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          rating: 5,
+          tags: ["#유럽", "#3주", "#백팩"]
+        };
+      case "국내학점교류":
+        return {
+          id: id || "1",
+          title: "국내학점교류 제목",
+          content: "주소\n예산\n인원\n입 · 퇴실시간",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          rating: 4,
+          tags: ["#서울대", "#1학기", "#기숙사"]
+        };
+      case "해외교환학생":
+        return {
+          id: id || "1",
+          title: "해외교환학생 제목",
+          content: "주소\n예산\n인원\n입 · 퇴실시간",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          rating: 5,
+          tags: ["#미국", "#1년", "#캠퍼스"]
+        };
+      default: // 청춘톡
+        return {
+          id: id || "1",
+          title: "동기들과 함께 제주도 3박 4일 여행 다녀왔습니다",
+          content: "동기들과 함께 제주도에 다녀왔습니다!\n\n바닷바람이 너무 심해서 날아가는 줄 알았지만 근처에 있는 한옥을 모티브로 한 베이커리 카페가 정말 맛있었습니다. 기회가 된다면 다녀오시는 걸 추천할게요!",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          tags: ["#제주도", "#4인여행"]
+        };
+    }
+  };
+
+  const category = searchParams.get('category') || '청춘톡';
+  const post = getPostData(category);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -317,6 +433,7 @@ const YouthTalkDetailPage: React.FC = () => {
           font-family: inherit;
         }
         .ytd-modal-content {
+          text-align: center;
           font-size: 16px;
           color: #666;
           margin-bottom: 50px;
@@ -586,6 +703,12 @@ const YouthTalkDetailPage: React.FC = () => {
                   <div className="ytd-username">{post.username}</div>
                   <div className="yt-info-divider" />
                   <div className="ytd-date">{post.date}</div>
+                  {/* 별점 (MT여정지도, 졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
+                  {(category === "MT여정지도" || category === "졸업/휴학여행" || category === "국내학점교류" || category === "해외교환학생") && post.rating && (
+                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '20px' }}>
+                      {renderStars(post.rating)}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="ytd-interactions">
@@ -632,7 +755,9 @@ const YouthTalkDetailPage: React.FC = () => {
           </div>
 
           {/* 게시글 이미지 */}
-          <img src={post.imageUrl} alt="게시글 이미지" className="ytd-post-image" />
+          {post.imageUrl && (
+            <img src={post.imageUrl} alt="게시글 이미지" className="ytd-post-image" />
+          )}
 
           {/* 게시글 내용 */}
           <div className="ytd-post-content">

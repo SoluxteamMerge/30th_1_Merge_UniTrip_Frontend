@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import defaultProfile from "../../assets/header/default-profile.svg";
 
 interface HeaderProps {
@@ -10,6 +10,7 @@ interface HeaderProps {
 
 function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderProps): React.JSX.Element {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const menuLinks = [
     { to: "/", label: "청춘 발자국" },
     { to: "/mt-journey", label: "MT여정지도" },
@@ -17,6 +18,9 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
     { to: "/youth-talk", label: "청춘톡" },
     { to: "/youth-drawer", label: "청춘서랍", last: true }
   ];
+
+  // 현재 카테고리 확인
+  const currentCategory = searchParams.get('category');
 
   return (
     <>
@@ -44,19 +48,38 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
             <img src="/src/assets/header/logo.svg" alt="로고" className="header-logo" />
           </span>
           <nav>
-            {menuLinks.map(({ to, label, last }) => (
-              <Link
-                key={to}
-                to={to}
-                className={
-                  "header-nav-link" +
-                  (last ? " last" : "") +
-                  (location.pathname === to || (to === "/youth-talk" && location.pathname.startsWith("/youth-talk")) ? " active" : "")
+            {menuLinks.map(({ to, label, last }) => {
+              // 링크 활성화 조건 확인
+              let isActive = false;
+              
+              if (location.pathname === to) {
+                isActive = true;
+              } else if (to === "/youth-talk" && (location.pathname.startsWith("/youth-talk") || location.pathname.startsWith("/review"))) {
+                // 청춘톡 상세 페이지에서 카테고리가 청춘톡이거나 없을 때만 활성화
+                if (!currentCategory || currentCategory === "청춘톡") {
+                  isActive = true;
                 }
-              >
-                {label}
-              </Link>
-            ))}
+              } else if (to === "/mt-journey" && (location.pathname.startsWith("/youth-talk") || location.pathname.startsWith("/review")) && currentCategory === "MT여정지도") {
+                isActive = true;
+              } else if (to === "/together" && (location.pathname.startsWith("/youth-talk") || location.pathname.startsWith("/review")) && 
+                ["동행구해요", "번개모임", "졸업/휴학여행", "국내학점교류", "해외교환학생"].includes(currentCategory || "")) {
+                isActive = true;
+              }
+              
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className={
+                    "header-nav-link" +
+                    (last ? " last" : "") +
+                    (isActive ? " active" : "")
+                  }
+                >
+                  {label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
         <div className="header-right">
