@@ -5,6 +5,7 @@ import heartIcon from "../assets/interaction/empathy.svg";
 import heartFillIcon from "../assets/interaction/empathy_fill.svg";
 import starIcon from "../assets/interaction/scrap.svg";
 import starFillIcon from "../assets/interaction/scrap_fill.svg";
+import starRatingIcon from "../assets/interaction/star.svg";
 import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
@@ -16,6 +17,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [isLiked, setIsLiked] = useState(false);
   const [isStarred, setIsStarred] = useState(false);
+  const [isRated, setIsRated] = useState(false);
   
   // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
   const currentUser = "김눈송 님";
@@ -38,64 +40,6 @@ const YouthTalkDetailPage: React.FC = () => {
   }>>([]);
   const commentInputRef = React.useRef<HTMLTextAreaElement>(null);
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, index) => {
-      const starValue = index + 1;
-      const halfStarValue = index + 0.5;
-      
-      if (rating >= starValue) {
-        // 완전히 채워진 별
-        return (
-          <img
-            key={index}
-            src={starWishFillIcon}
-            alt="채워진 별"
-            style={{ width: 25, height: 25, marginRight: 13 }}
-          />
-        );
-      } else if (rating >= halfStarValue) {
-        // 반만 채워진 별
-        return (
-          <div key={index} style={{ position: 'relative', display: 'inline-block', width: 25, height: 25, marginRight: 13 }}>
-            <img 
-              src={starWishIcon} 
-              alt="빈 별" 
-              style={{ 
-                position: 'absolute', 
-                left: 0, 
-                top: 0, 
-                width: '100%', 
-                height: '100%'
-              }}
-            />
-            <img 
-              src={starWishFillIcon} 
-              alt="반채워진 별" 
-              style={{ 
-                position: 'absolute', 
-                left: 0, 
-                top: 0, 
-                width: '100%', 
-                height: '100%',
-                clipPath: 'inset(0 50% 0 0)'
-              }}
-            />
-          </div>
-        );
-      } else {
-        // 빈 별
-        return (
-          <img
-            key={index}
-            src={starWishIcon}
-            alt="빈 별"
-            style={{ width: 25, height: 25, marginRight: 13 }}
-          />
-        );
-      }
-    });
-  };
-
   // 카테고리별 게시글 데이터
   const getPostData = (category: string) => {
     switch (category) {
@@ -112,7 +56,7 @@ const YouthTalkDetailPage: React.FC = () => {
           commentCount: 1,
           likeCount: 2,
           starCount: 2,
-          rating: 4,
+          rating: 4.5,
           tags: ["#가평", "#대성리", "#40명이상 숙소"]
         };
       case "동행구해요":
@@ -224,6 +168,10 @@ const YouthTalkDetailPage: React.FC = () => {
     if (!isStarred && currentUser !== post.username) {
       setShowScrapModal(true);
     }
+  };
+
+  const handleRating = () => {
+    setIsRated(!isRated);
   };
 
   // URL 복사 함수
@@ -747,15 +695,17 @@ const YouthTalkDetailPage: React.FC = () => {
                   <div className="ytd-username">{post.username}</div>
                   <div className="yt-info-divider" />
                   <div className="ytd-date">{post.date}</div>
-                  {/* 별점 (MT여정지도, 졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
-                  {(category === "MT여정지도" || category === "졸업/휴학여행" || category === "국내학점교류" || category === "해외교환학생") && post.rating && (
-                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '20px' }}>
-                      {renderStars(post.rating)}
-                    </div>
-                  )}
+
                 </div>
               </div>
               <div className="ytd-interactions">
+                <button 
+                  className={`ytd-interaction-btn ${isRated ? 'active' : ''}`}
+                  onClick={handleRating}
+                >
+                  <img src={starRatingIcon} alt="별점" style={{ width: 35, height: 35 }} />
+                  <span className="ytd-interaction-count">{post.rating || 0}</span>
+                </button>
                 <button 
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
                   onClick={handleLike}

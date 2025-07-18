@@ -933,7 +933,7 @@ const WriteReviewPage: React.FC = () => {
               <div className="wr-content-area">
                 <textarea 
                   className="wr-content-input" 
-                  placeholder="내용을 입력하세요..." 
+                  placeholder="최근 다녀온 곳을 지도와 함께 기록해 보세요!" 
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   disabled={!isEmailVerified} 
