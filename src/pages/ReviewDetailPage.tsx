@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header/Header";
-import commentIcon from "../assets/interaction/comment.svg";
 import heartIcon from "../assets/interaction/empathy.svg";
 import heartFillIcon from "../assets/interaction/empathy_fill.svg";
 import starIcon from "../assets/interaction/scrap.svg";
@@ -25,7 +24,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
   const [showUrlCopyModal, setShowUrlCopyModal] = useState(false);
   const [showScrapModal, setShowScrapModal] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Array<{
     id: number;
@@ -230,16 +229,7 @@ const YouthTalkDetailPage: React.FC = () => {
     navigate('/youth-talk');
   };
 
-  // 댓글 토글
-  const handleCommentClick = () => {
-    setShowComments(!showComments);
-    // 댓글 섹션이 열릴 때 입력창에 포커스
-    if (!showComments) {
-      setTimeout(() => {
-        commentInputRef.current?.focus();
-      }, 100);
-    }
-  };
+
 
   // 댓글 입력 처리
   const handleCommentInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -341,6 +331,13 @@ const YouthTalkDetailPage: React.FC = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+  }, []);
+
+  // 페이지 로드 시 댓글 입력창에 포커스
+  React.useEffect(() => {
+    setTimeout(() => {
+      commentInputRef.current?.focus();
+    }, 100);
   }, []);
 
   return (
@@ -712,10 +709,6 @@ const YouthTalkDetailPage: React.FC = () => {
                 </div>
               </div>
               <div className="ytd-interactions">
-                <button className="ytd-interaction-btn" onClick={handleCommentClick}>
-                  <img src={commentIcon} alt="댓글" style={{ width: 30, height: 30 }} />
-                  {comments.length}
-                </button>
                 <button 
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
                   onClick={handleLike}
@@ -776,110 +769,105 @@ const YouthTalkDetailPage: React.FC = () => {
           </div>
 
           {/* 댓글 섹션 */}
-          {showComments && (
-            <>
-              <div className="ytd-comments-section">
-                <div className="ytd-comments-header">
-                  <div className="ytd-comments-title">댓글 {comments.length}</div>
-                </div>
-                {/* 댓글 입력 */}
-                <div className="ytd-comment-input-container">
-                  <textarea
-                    ref={commentInputRef}
-                    className="ytd-comment-input"
-                    placeholder="댓글을 작성해주세요..."
-                    value={commentText}
-                    onChange={handleCommentInput}
-                    onKeyPress={handleCommentKeyPress}
-                  />
-                  <button className="ytd-comment-submit-btn" onClick={handleCommentSubmit}>
-                    등록
-                  </button>
-                </div>
+          <div className="ytd-comments-section">
+            <div className="ytd-comments-header">
+              <div className="ytd-comments-title">댓글 {comments.length}</div>
+            </div>
+            {/* 댓글 입력 */}
+            <div className="ytd-comment-input-container">
+              <textarea
+                ref={commentInputRef}
+                className="ytd-comment-input"
+                placeholder="댓글을 작성해주세요..."
+                value={commentText}
+                onChange={handleCommentInput}
+                onKeyPress={handleCommentKeyPress}
+              />
+              <button className="ytd-comment-submit-btn" onClick={handleCommentSubmit}>
+                등록
+              </button>
+            </div>
 
-                {/* 댓글 목록 */}
-                {comments.length > 0 ? (
-                  comments.map(comment => (
-                    <div key={comment.id} className="ytd-comment-item">
-                      <div className="ytd-comment-header">
-                        <span className="ytd-comment-username">{comment.username}</span>
-                        <div className="ytd-comment-divider" />
-                        <span className="ytd-comment-date">{comment.date}</span>
-                      </div>
-                      
-                      {comment.isEditing ? (
-                        <div>
-                          <textarea
-                            className="ytd-comment-edit-input"
-                            value={comment.editText}
-                            onChange={(e) => handleCommentEditChange(comment.id, e.target.value)}
-                            rows={3}
-                          />
-                          <div className="ytd-comment-edit-buttons">
-                            <button 
-                              className="ytd-comment-edit-btn" 
-                              onClick={() => handleCommentEditSubmit(comment.id)}
-                            >
-                              완료
-                            </button>
-                            <button 
-                              className="ytd-comment-edit-btn cancel" 
-                              onClick={() => handleCommentEditCancel(comment.id)}
-                            >
-                              취소
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="ytd-comment-content">{comment.content}</div>
-                      )}
-                      
-                      <div className="ytd-comment-actions">
+            {/* 댓글 목록 */}
+            {comments.length > 0 ? (
+              comments.map(comment => (
+                <div key={comment.id} className="ytd-comment-item">
+                  <div className="ytd-comment-header">
+                    <span className="ytd-comment-username">{comment.username}</span>
+                    <div className="ytd-comment-divider" />
+                    <span className="ytd-comment-date">{comment.date}</span>
+                  </div>
+                  
+                  {comment.isEditing ? (
+                    <div>
+                      <textarea
+                        className="ytd-comment-edit-input"
+                        value={comment.editText}
+                        onChange={(e) => handleCommentEditChange(comment.id, e.target.value)}
+                        rows={3}
+                      />
+                      <div className="ytd-comment-edit-buttons">
                         <button 
-                          className={`ytd-comment-action-btn ${comment.isLiked ? 'liked' : ''}`}
-                          onClick={() => handleCommentLike(comment.id)}
+                          className="ytd-comment-edit-btn" 
+                          onClick={() => handleCommentEditSubmit(comment.id)}
                         >
-                          <img 
-                            src={comment.isLiked ? heartFillIcon : heartIcon} 
-                            alt="좋아요" 
-                            style={{ width: 16, height: 16, marginRight: 4, marginTop: 3 }} 
-                          />
-                          <span style={{ display: 'inline-block', verticalAlign: 'top', marginTop: 3 }}>{comment.likes}</span>
+                          완료
                         </button>
-                        {currentUser === comment.username && (
-                          <>
-                            <button 
-                              className="ytd-comment-action-btn"
-                              onClick={() => handleCommentEdit(comment.id)}
-                            >
-                              수정
-                            </button>
-                            <button 
-                              className="ytd-comment-action-btn"
-                              onClick={() => handleCommentDelete(comment.id)}
-                            >
-                              삭제
-                            </button>
-                          </>
-                        )}
+                        <button 
+                          className="ytd-comment-edit-btn cancel" 
+                          onClick={() => handleCommentEditCancel(comment.id)}
+                        >
+                          취소
+                        </button>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div style={{ 
-                    textAlign: 'center', 
-                    padding: '40px 0', 
-                    color: '#838383',
-                    fontFamily: 'inherit',
-                    fontSize: '16px'
-                  }}>
-                    아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
+                  ) : (
+                    <div className="ytd-comment-content">{comment.content}</div>
+                  )}
+                  
+                  <div className="ytd-comment-actions">
+                    <button 
+                      className={`ytd-comment-action-btn ${comment.isLiked ? 'liked' : ''}`}
+                      onClick={() => handleCommentLike(comment.id)}
+                    >
+                      <img 
+                        src={comment.isLiked ? heartFillIcon : heartIcon} 
+                        alt="좋아요" 
+                        style={{ width: 16, height: 16, marginRight: 4, marginTop: 3 }} 
+                      />
+                      <span style={{ display: 'inline-block', verticalAlign: 'top', marginTop: 3 }}>{comment.likes}</span>
+                    </button>
+                    {currentUser === comment.username && (
+                      <>
+                        <button 
+                          className="ytd-comment-action-btn"
+                          onClick={() => handleCommentEdit(comment.id)}
+                        >
+                          수정
+                        </button>
+                        <button 
+                          className="ytd-comment-action-btn"
+                          onClick={() => handleCommentDelete(comment.id)}
+                        >
+                          삭제
+                        </button>
+                      </>
+                    )}
                   </div>
-                )}
+                </div>
+              ))
+            ) : (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '40px 0', 
+                color: '#838383',
+                fontFamily: 'inherit',
+                fontSize: '16px'
+              }}>
+                아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
               </div>
-              <div className="ytd-comments-divider" />
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
