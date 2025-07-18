@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import closeIcon from '../assets/module/close.svg';
 
 // Kakao Maps API 타입 선언
 declare global {
@@ -219,6 +220,14 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
   const selectLocation = (place: any) => {
     setSelectedLocation(place);
     
+    // 장소를 선택하면 바로 저장 (모달은 닫지 않음)
+    onLocationSelect({
+      name: place.place_name,
+      address: place.address_name,
+      lat: parseFloat(place.y),
+      lng: parseFloat(place.x)
+    });
+    
     if (!window.kakao || !window.kakao.maps || !mapInstance.current) {
       console.warn('장소 선택 조건이 충족되지 않음');
       return;
@@ -290,18 +299,17 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
           marginBottom: '20px',
           flexShrink: 0 // 헤더 고정
         }}>
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>장소 선택</h2>
+          <h2 style={{ color: '#333', margin: 10, fontSize: '20px', fontWeight: 'bold' }}>장소 선택</h2>
           <button
             onClick={onClose}
             style={{
               background: 'none',
               border: 'none',
-              fontSize: '24px',
               cursor: 'pointer',
-              color: '#666'
+              padding: '5px'
             }}
           >
-            ×
+            <img src={closeIcon} alt="닫기" style={{ width: '25px', height: '25px' }} />
           </button>
         </div>
 
