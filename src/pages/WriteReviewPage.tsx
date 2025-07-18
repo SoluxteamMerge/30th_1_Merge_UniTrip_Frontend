@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
+import LocationModal from "../components/LocationModal";
 import writeIcon from "../assets/write-icon.svg";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import list1Icon from "../assets/toolbar/list1.svg";
@@ -57,6 +58,13 @@ const WriteReviewPage: React.FC = () => {
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   // 이메일 인증 상태
   const isEmailVerified = localStorage.getItem('isEmailVerified') === 'true';
@@ -167,7 +175,12 @@ const WriteReviewPage: React.FC = () => {
         isPublic: !isPrivate,
         category: selectedCategory,
         rating: rating,
-
+        location: selectedLocation ? {
+          name: selectedLocation.name,
+          address: selectedLocation.address,
+          lat: selectedLocation.lat,
+          lng: selectedLocation.lng
+        } : null,
       };
 
       // 백엔드 API 호출 (예시)
@@ -230,6 +243,14 @@ const WriteReviewPage: React.FC = () => {
 
   const handlePublishCancel = () => {
     setShowPublishModal(false);
+  };
+
+  const handleLocationButtonClick = () => {
+    setShowLocationModal(true);
+  };
+
+  const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
+    setSelectedLocation(location);
   };
 
   const getModalMessage = () => {
@@ -690,6 +711,21 @@ const WriteReviewPage: React.FC = () => {
           cursor: pointer;
           white-space: nowrap;
         }
+        .wr-location-display {
+          padding: 15px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          border: 1px solid #e9ecef;
+        }
+        .wr-location-name {
+          font-weight: bold;
+          margin-bottom: 5px;
+          font-size: 16px;
+        }
+        .wr-location-address {
+          color: #666;
+          font-size: 14px;
+        }
         .wr-modal.publish {
           padding: 100px 150px 20px 150px;
           min-width: 400px;
@@ -761,37 +797,37 @@ const WriteReviewPage: React.FC = () => {
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list2Icon} alt="리스트2" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleTagButtonClick}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleImageButtonClick}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleLocationButtonClick}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleRatingButtonClick}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={leftlistIcon} alt="왼쪽정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={middlelistIcon} alt="가운데정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
               </div>
               <div className="wr-category-row">
-                <div className="wr-category-select">
-                  <button
-                    className="wr-category-btn"
-                    onClick={() => setCategoryOpen(o => !o)}
-                    type="button"
-                    disabled={!isEmailVerified}
-                  >
-                    <span>{selectedCategory}</span>
-                    <span className="wr-category-arrow" style={{ transform: categoryOpen ? "rotate(180deg)" : undefined }}>▼</span>
-                  </button>
-                  {categoryOpen && (
-                    <div className="wr-category-dropdown">
-                      {categories.map(cat => (
-                        <div
-                          key={cat}
-                          className={"wr-category-item" + (cat === selectedCategory ? " selected" : "")}
-                          onClick={() => handleCategorySelect(cat)}
-                        >
-                          {cat}
-                        </div>
-                      ))}
+            <div className="wr-category-select">
+              <button
+                className="wr-category-btn"
+                onClick={() => setCategoryOpen(o => !o)}
+                type="button"
+                disabled={!isEmailVerified}
+              >
+                <span>{selectedCategory}</span>
+                <span className="wr-category-arrow" style={{ transform: categoryOpen ? "rotate(180deg)" : undefined }}>▼</span>
+              </button>
+              {categoryOpen && (
+                <div className="wr-category-dropdown">
+                  {categories.map(cat => (
+                    <div
+                      key={cat}
+                      className={"wr-category-item" + (cat === selectedCategory ? " selected" : "")}
+                      onClick={() => handleCategorySelect(cat)}
+                    >
+                      {cat}
                     </div>
-                  )}
+                  ))}
                 </div>
+              )}
+            </div>
               </div>
               <div className="wr-title-row">
                 <input 
@@ -802,17 +838,17 @@ const WriteReviewPage: React.FC = () => {
                   disabled={!isEmailVerified} 
                 />
               </div>
-              <div className="wr-private-row">
-                <span className="wr-private-label">비공개</span>
-                <div
-                  className={"wr-switch" + (isPrivate ? " on" : "")}
-                  onClick={() => isEmailVerified && setIsPrivate(v => !v)}
-                  role="button"
-                  tabIndex={0}
-                  aria-checked={isPrivate}
-                  style={{ outline: "none" }}
-                >
-                  <div className="wr-switch-circle" />
+                <div className="wr-private-row">
+                  <span className="wr-private-label">비공개</span>
+                  <div
+                    className={"wr-switch" + (isPrivate ? " on" : "")}
+                    onClick={() => isEmailVerified && setIsPrivate(v => !v)}
+                    role="button"
+                    tabIndex={0}
+                    aria-checked={isPrivate}
+                    style={{ outline: "none" }}
+                  >
+                    <div className="wr-switch-circle" />
                 </div>
               </div>
               <hr className="wr-divider" />
@@ -940,7 +976,26 @@ const WriteReviewPage: React.FC = () => {
             </div>
           </>
         )}
-                {showRatingModal && (
+        {selectedLocation && (
+          <>
+            <div className="wr-overlay" />
+            <div className="wr-modal tag">
+              <div className="wr-tag-header">
+                <span className="wr-tag-title">선택된 장소</span>
+                <button className="wr-tag-close" onClick={() => setSelectedLocation(null)}>
+                  <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+                </button>
+              </div>
+              <div className="wr-tag-input-container">
+                <div className="wr-location-display">
+                  <div className="wr-location-name">{selectedLocation.name}</div>
+                  <div className="wr-location-address">{selectedLocation.address}</div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {showRatingModal && (
           <>
             <div className="wr-overlay" />
             <div className="wr-modal tag">
@@ -1000,6 +1055,11 @@ const WriteReviewPage: React.FC = () => {
             </div>
           </>
         )}
+        <LocationModal
+          isOpen={showLocationModal}
+          onClose={() => setShowLocationModal(false)}
+          onLocationSelect={handleLocationSelect}
+        />
       </div>
     </div>
   );

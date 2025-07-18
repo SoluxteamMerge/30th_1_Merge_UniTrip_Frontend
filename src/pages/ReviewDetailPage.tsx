@@ -19,7 +19,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isStarred, setIsStarred] = useState(false);
   
   // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
-  const currentUser = "김눈송";
+  const currentUser = "김눈송 님";
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
@@ -58,7 +58,7 @@ const YouthTalkDetailPage: React.FC = () => {
           id: id || "1",
           title: "MT여정지도 제목",
           content: "주소\n예산\n인원\n입 · 퇴실시간",
-          username: "김눈송 님",
+          username: "김눈송",
           date: "2025.05.06 12:01",
           imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
           profileUrl: "",
@@ -433,6 +433,7 @@ const YouthTalkDetailPage: React.FC = () => {
           font-family: inherit;
         }
         .ytd-modal-content {
+          text-align: center;
           font-size: 16px;
           color: #666;
           margin-bottom: 50px;
