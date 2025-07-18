@@ -67,7 +67,12 @@ const WriteReviewPage: React.FC = () => {
   } | null>(null);
 
   // 이메일 인증 상태
-  const isEmailVerified = localStorage.getItem('isEmailVerified') === 'true';
+  // const isEmailVerified = localStorage.getItem('isEmailVerified') === 'true';
+  const isEmailVerified = true; // 임시로 항상 true로 설정
+  
+  // 디버깅용 콘솔 로그
+  // console.log('localStorage isEmailVerified 값:', localStorage.getItem('isEmailVerified'));
+  // console.log('isEmailVerified 상태:', isEmailVerified);
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
@@ -958,7 +963,7 @@ const WriteReviewPage: React.FC = () => {
               <div className="wr-modal-text">
                 해당 게시판은 작성 전<br />학교 이메일 인증이 필요합니다.
               </div>
-              <button className="wr-modal-btn" onClick={() => navigate('/cjdcnstjfkq')}>인증하기</button>
+              <button className="wr-modal-btn" onClick={() => navigate('/youth-drawer')}>인증하기</button>
             </div>
           </>
         )}

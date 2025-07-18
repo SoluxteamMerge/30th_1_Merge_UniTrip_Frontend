@@ -8,8 +8,6 @@ import starFillIcon from "../assets/interaction/scrap_fill.svg";
 import starRatingIcon from "../assets/interaction/star.svg";
 import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
-import starWishIcon from "../assets/module/star_wish.svg";
-import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,7 +55,11 @@ const YouthTalkDetailPage: React.FC = () => {
           likeCount: 2,
           starCount: 2,
           rating: 4.5,
-          tags: ["#가평", "#대성리", "#40명이상 숙소"]
+          tags: ["#가평", "#대성리", "#40명이상 숙소"],
+          location: {
+            name: "가평 펜션",
+            address: "경기 가평군 가평읍 가화로 123-45"
+          }
         };
       case "동행구해요":
         return {
@@ -150,7 +152,11 @@ const YouthTalkDetailPage: React.FC = () => {
           commentCount: 1,
           likeCount: 2,
           starCount: 2,
-          tags: ["#제주도", "#4인여행"]
+          tags: ["#제주도", "#4인여행"],
+          location: {
+            name: "서울역",
+            address: "서울 중구 봉래동2가 122-11"
+          }
         };
     }
   };
@@ -356,6 +362,11 @@ const YouthTalkDetailPage: React.FC = () => {
         .ytd-interaction-btn.active .ytd-interaction-count { color: #0b0b61; }
         .ytd-more-btn { background: none; border: none; cursor: pointer; color: #666; font-size: 18px; padding: 8px; border-radius: 8px; transition: background 0.2s; font-family: inherit; }
         .ytd-post-image { width: 1000px; height: 600px; object-fit: cover; margin-top: 100px; margin-left: 100px; }
+        .ytd-post-image-with-location { margin-left: 0; }
+        .ytd-image-location-container { display: flex; gap: 0px; align-items: flex-start; margin-top: 100px; margin-left: 100px; }
+        .ytd-location-info { position: absolute; right: 320px; top: 380px; padding: 15px; background-color: #fff; min-width: 200px; text-align: right; }
+        .ytd-location-name { font-size: 16px; font-weight: bold; margin-bottom: 5px; color: #333; }
+        .ytd-location-address { font-size: 14px; color: #666; line-height: 1.4; }
         .ytd-post-content { padding: 80px 100px 80px 100px; }
         .ytd-content-text { color: #black; font-size: 18px; line-height: 1.5; white-space: pre-line; margin-bottom: 20px; font-family: inherit; }
         .ytd-tags-container { display: flex; gap: 10px; margin-top: 40px; }
@@ -747,6 +758,18 @@ const YouthTalkDetailPage: React.FC = () => {
           {/* 게시글 이미지 */}
           {post.imageUrl && (
             <img src={post.imageUrl} alt="게시글 이미지" className="ytd-post-image" />
+          )}
+          
+          {/* 장소 정보 */}
+          {post.imageUrl && post.location && (
+            <div className="ytd-location-info">
+              <div className="ytd-location-name">
+                {post.location.name}
+              </div>
+              <div className="ytd-location-address">
+                {post.location.address}
+              </div>
+            </div>
           )}
 
           {/* 게시글 내용 */}
