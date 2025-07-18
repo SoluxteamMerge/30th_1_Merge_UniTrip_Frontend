@@ -18,7 +18,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isRated, setIsRated] = useState(false);
   
   // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
-  const currentUser = "김눈송 님";
+  const currentUser = "김눈송";
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
@@ -205,6 +205,30 @@ const YouthTalkDetailPage: React.FC = () => {
   const handleScrapModalWrite = () => {
     setShowScrapModal(false);
     navigate('/review-write?category=청춘톡');
+  };
+
+  // 수정하기 클릭
+  const handleEditClick = () => {
+    // 게시글 정보를 URL 파라미터로 전달하여 WriteReviewPage로 이동
+    const editData = {
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      category: category,
+      imageUrl: post.imageUrl,
+      location: post.location,
+      tags: post.tags,
+      rating: post.rating,
+      isPublic: post.isPublic
+    };
+    
+    const queryString = new URLSearchParams({
+      edit: 'true',
+      data: JSON.stringify(editData)
+    }).toString();
+    
+    navigate(`/write-review?${queryString}`);
+    setShowMoreMenu(false);
   };
 
   // 삭제 확인 모달 열기
@@ -742,7 +766,7 @@ const YouthTalkDetailPage: React.FC = () => {
                       <div className="ytd-more-menu">
                         <div style={{ borderTop: '1px solid #bbb', marginBottom: 0 }} />
                         {currentUser === post.username && (
-                          <div className="ytd-more-menu-item">수정하기</div>
+                          <div className="ytd-more-menu-item" onClick={handleEditClick}>수정하기</div>
                         )}
                         <div className="ytd-more-menu-item" onClick={handleCopyUrl}>URL 복사</div>
                         {currentUser === post.username && (

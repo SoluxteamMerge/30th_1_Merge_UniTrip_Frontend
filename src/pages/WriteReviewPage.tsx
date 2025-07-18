@@ -45,6 +45,28 @@ const WriteReviewPage: React.FC = () => {
       }
     }
   }, [searchParams]);
+
+  // 수정 모드일 때 기존 데이터 로드
+  useEffect(() => {
+    const editParam = searchParams.get('edit');
+    const dataParam = searchParams.get('data');
+    
+    if (editParam === 'true' && dataParam) {
+      try {
+        const editData = JSON.parse(dataParam);
+        setTitle(editData.title || '');
+        setContent(editData.content || '');
+        setSelectedCategory(editData.category || categories[0]);
+        setSelectedImage(editData.imageUrl || '');
+        setSelectedLocation(editData.location || null);
+        setTags(editData.tags || []);
+        setRating(editData.rating || 0);
+        setIsPrivate(!editData.isPublic);
+      } catch (error) {
+        console.error('수정 데이터 파싱 오류:', error);
+      }
+    }
+  }, [searchParams]);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleInput, setScheduleInput] = useState("");
   const [showTagModal, setShowTagModal] = useState(false);
@@ -238,16 +260,27 @@ const WriteReviewPage: React.FC = () => {
 
   const handlePublishConfirm = async () => {
     try {
-      // 게시글 데이터 수집
+      // 제목과 내용이 있는지 확인
+      if (!title.trim()) {
+        alert('제목을 입력해주세요.');
+        return;
+      }
+      if (!content.trim()) {
+        alert('내용을 입력해주세요.');
+        return;
+      }
+
+      // 게시글 데이터 수집 (기본 정보만)
       const postData = {
-        title: title || "제목 없음",
-        description: content || "내용 없음",
+        title: title.trim(),
+        description: content.trim(),
+        category: selectedCategory,
+        isPublic: !isPrivate,
+        // 선택적 정보들
         travelType: getTravelType(selectedCategory),
         startDate: scheduleInput.split(' ~ ')[0] || "",
         endDate: scheduleInput.split(' ~ ')[1] || "",
         companions: tags.join(', '),
-        isPublic: !isPrivate,
-        category: selectedCategory,
         rating: rating,
         location: selectedLocation ? {
           name: selectedLocation.name,
@@ -255,6 +288,7 @@ const WriteReviewPage: React.FC = () => {
           lat: selectedLocation.lat,
           lng: selectedLocation.lng
         } : null,
+        imageUrl: selectedImage || null,
       };
 
       // 백엔드 API 호출 (예시)
@@ -940,6 +974,7 @@ const WriteReviewPage: React.FC = () => {
           font-weight: 600;
           cursor: pointer;
         }
+
         .wr-publish-cancel-btn {
           background: #fff;
           color: #333;
