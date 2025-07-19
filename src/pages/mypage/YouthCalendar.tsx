@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import defaultProfile from "../../assets/header/default-profile.svg";
 import writeIcon from "../../assets/write-icon.svg";
+import beforeArrow from "../../assets/arrow/before_arrow.svg";
+import nextArrow from "../../assets/arrow/next_arrow.svg";
 
 
 
@@ -16,7 +18,7 @@ const YouthCalendar: React.FC = () => {
   const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
-  const containerStyle = { maxWidth: 1200, margin: "0 auto", padding: "40px 0" };
+  const containerStyle = { maxWidth: 1400, margin: "0 auto", padding: "60px 0" };
   const titleBoxStyle = {
     fontWeight: 700,
     fontSize: 22,
@@ -41,10 +43,10 @@ const YouthCalendar: React.FC = () => {
     const cells: React.ReactNode[] = [];
     const baseCellStyle = {
       width: `${100 / 7}%`,            // 열 너비를 1/7로 고정
-      height: 85,
+      height: 90,
       border: "1px solid #ddd",
       verticalAlign: "top",   // ← 위쪽 정렬 (세로)
-      padding: 6,
+      padding: 10,
     };
 
     // 빈 셀 먼저 채우기
@@ -141,9 +143,9 @@ const YouthCalendar: React.FC = () => {
                 style={{
                     width: 220,
                     background: "#fff",
-                    borderRadius: 12,
+                    borderRadius: 15,
                     padding: "32px 24px",
-                    boxShadow: "0 0 8px rgba(0,0,0,0.05)",
+                    boxShadow: "0 1px 6px #0001;",
                     marginRight: 32,
                     textAlign: "center",
                     marginTop: 48
@@ -202,9 +204,9 @@ const YouthCalendar: React.FC = () => {
                     <div  style={{
                         flex: 1,
                         background: "#fff",
-                        borderRadius: 12,
-                        padding: "32px 48px",
-                        boxShadow: "0 0 8px rgba(0,0,0,0.05)",
+                        borderRadius: 15,
+                        padding: "32px 40px",
+                        boxShadow: "0 1px 6px #0001;",
                         //minHeight: "580px"
                         }}
                     >
@@ -217,13 +219,17 @@ const YouthCalendar: React.FC = () => {
                         }}
                       >
 
-                        <h2 style={{ fontSize: 20, marginBottom: 24, display: "flex", alignItems: "center", color: "#0b0b61" }}>
+                        <h2 style={{ fontSize: 18, marginBottom: 24, display: "flex", alignItems: "center", color: "#0b0b61" }}>
                           청춘 일정 - {currentMonth + 1}월
                         </h2>
 
                         <div>
-                          <button onClick={handlePrevMonth} style={{ marginRight: 12, fontSize: 18 }}>&lt;</button>
-                          <button onClick={handleNextMonth} style={{ fontSize: 18 }}>&gt;</button>
+                          <button onClick={handlePrevMonth} style={{ marginRight: 15, background: "none", border: "none", cursor: "pointer" }}>
+                            <img src={beforeArrow} alt="이전 달" style={{ width: 30, height: 30 }} />
+                          </button>
+                          <button onClick={handleNextMonth} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                            <img src={nextArrow} alt="다음 달" style={{ width: 30, height: 30 }} />
+                          </button>
                         </div>
                       </div>
 
@@ -261,8 +267,8 @@ const YouthCalendar: React.FC = () => {
           position: "fixed",
           right: 60,
           bottom: 60,
-          width: 100,
-          height: 100,
+          width: 120,
+          height: 120,
           borderRadius: "50%",
           border: "none", 
     

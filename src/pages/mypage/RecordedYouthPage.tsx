@@ -18,7 +18,7 @@ const RecordedYouthPage: React.FC = () => {
 
   // 스타일
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
-  const containerStyle = { maxWidth: 1200, margin: "0 auto", padding: "40px 0" };
+  const containerStyle = { maxWidth: 1400, margin: "0 auto", padding: "60px 0" };
   const titleBoxStyle = {
     fontWeight: 700,
     fontSize: 22,
@@ -106,9 +106,9 @@ const RecordedYouthPage: React.FC = () => {
             style={{
               width: 220,
               background: "#fff",
-              borderRadius: 12,
+              borderRadius: 15,
               padding: "32px 24px",
-              boxShadow: "0 0 8px rgba(0,0,0,0.05)",
+              boxShadow: "0 1px 6px #0001;",
               marginRight: 32,
               textAlign: "center",
               marginTop: 48
@@ -165,15 +165,15 @@ const RecordedYouthPage: React.FC = () => {
               style={{
                 flex: 1,
                 background: "#fff",
-                borderRadius: 12,
-                padding: "32px 48px",
-                boxShadow: "0 0 8px rgba(0,0,0,0.05)",
+                borderRadius: 15,
+                padding: "24px 40px 24px 40px",
+                boxShadow: "0 1px 6px #0001;",
                 minHeight: "580px",
                 position: "relative",
              }}
             >
-              <h2 style={{ marginBottom: 8, fontSize: 20, color: "#0B0B61" }}>내가 만든 청춘</h2>
-              <p style={{ marginBottom: 35, fontSize: 14, color: "#0B0B61" }}>내가 쓴 게시글</p>
+              <h2 style={{ marginBottom: 8, fontSize: 18, color: "#0B0B61" }}>내가 만든 청춘</h2>
+              <p style={{ marginBottom: 30, fontSize: 14, color: "#0B0B61" }}>내가 쓴 게시글</p>
               
               
                 {/* 아래 내용도 실제 사용자가 작성한 게시글과 연동 필요 */}
@@ -181,9 +181,9 @@ const RecordedYouthPage: React.FC = () => {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "repeat(2, 350px)", 
-                      columnGap: 56,  // 좌우 카드 간격
-                      rowGap: 26,    // 위아래 카드 간격 줄이기
+                      gridTemplateColumns: "repeat(2, 400px)", 
+                      columnGap: 80,  // 좌우 카드 간격
+                      rowGap: 40,    // 위아래 카드 간격 줄이기
                       justifyContent: "center", // 좌우 여백 균등하게 배치
                     }}
                   >
@@ -277,8 +277,8 @@ const RecordedYouthPage: React.FC = () => {
           position: "fixed",
           right: 60,
           bottom: 60,
-          width: 100,
-          height: 100,
+          width: 120,
+          height: 120,
           borderRadius: "50%",
           border: "none", 
     
