@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import YouthTalkBoardPage from "../pages/YouthTalkBoardPage";
-import YouthTalkDetailPage from "../pages/YouthTalkDetailPage";
+import ReviewDetailPage from "../pages/ReviewDetailPage";
 import MTJourneyPage from "../pages/MTJourneyPage";
 import WriteReviewPage from "../pages/WriteReviewPage";
 import TogetherPage from "../pages/together/TogetherPage";
@@ -16,12 +16,12 @@ import SearchPage from "../pages/SearchPage";
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<MainPage />} />*/
-
+    <Route path="/" element={<MainPage />} />
     <Route path="/login" element={<LoginPage />} />
     <Route path="/signup" element={<SignupPage />} />
     <Route path="/youth-talk" element={<YouthTalkBoardPage />} />
-    <Route path="/youth-talk/:id" element={<YouthTalkDetailPage />} />
+    <Route path="/youth-talk/:id" element={<ReviewDetailPage />} />
+    <Route path="/review/:id" element={<ReviewDetailPage />} />
     <Route path="/mt-journey" element={<MTJourneyPage />} />
     <Route path="/together" element={<TogetherPage />} />
     <Route path="/review-write" element={<WriteReviewPage />} />

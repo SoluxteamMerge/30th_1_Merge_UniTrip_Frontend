@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "../components/Header/Header";
+import LocationModal from "../components/LocationModal";
 import writeIcon from "../assets/write-icon.svg";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import list1Icon from "../assets/toolbar/list1.svg";
@@ -44,6 +45,28 @@ const WriteReviewPage: React.FC = () => {
       }
     }
   }, [searchParams]);
+
+  // 수정 모드일 때 기존 데이터 로드
+  useEffect(() => {
+    const editParam = searchParams.get('edit');
+    const dataParam = searchParams.get('data');
+    
+    if (editParam === 'true' && dataParam) {
+      try {
+        const editData = JSON.parse(dataParam);
+        setTitle(editData.title || '');
+        setContent(editData.content || '');
+        setSelectedCategory(editData.category || categories[0]);
+        setSelectedImage(editData.imageUrl || '');
+        setSelectedLocation(editData.location || null);
+        setTags(editData.tags || []);
+        setRating(editData.rating || 0);
+        setIsPrivate(!editData.isPublic);
+      } catch (error) {
+        console.error('수정 데이터 파싱 오류:', error);
+      }
+    }
+  }, [searchParams]);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleInput, setScheduleInput] = useState("");
   const [showTagModal, setShowTagModal] = useState(false);
@@ -57,9 +80,27 @@ const WriteReviewPage: React.FC = () => {
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  // textarea ref
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 이메일 인증 상태
-  const isEmailVerified = localStorage.getItem('isEmailVerified') === 'true';
+  // const isEmailVerified = localStorage.getItem('isEmailVerified') === 'true';
+  const isEmailVerified = true; // 임시로 항상 true로 설정
+  
+  // 디버깅용 콘솔 로그
+  // console.log('localStorage isEmailVerified 값:', localStorage.getItem('isEmailVerified'));
+  // console.log('isEmailVerified 상태:', isEmailVerified);
+  console.log('selectedImage:', selectedImage);
+  console.log('selectedLocation:', selectedLocation);
+  console.log('tags:', tags);
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
@@ -124,7 +165,9 @@ const WriteReviewPage: React.FC = () => {
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        setSelectedImage(file.name);
+        // 파일을 URL로 변환
+        const imageUrl = URL.createObjectURL(file);
+        setSelectedImage(imageUrl);
       }
     };
     input.click();
@@ -138,16 +181,77 @@ const WriteReviewPage: React.FC = () => {
     setShowRatingModal(true);
   };
 
-  const handleStarClick = (starIndex: number) => {
-    setRating(starIndex + 1);
+  const handleStarClick = (starIndex: number, isHalf: boolean = false) => {
+    const newRating = starIndex + (isHalf ? 0.5 : 1);
+    setRating(newRating);
   };
 
-  const handleStarHover = (starIndex: number) => {
-    setHoverRating(starIndex + 1);
+  const handleStarHover = (starIndex: number, isHalf: boolean = false) => {
+    const newHoverRating = starIndex + (isHalf ? 0.5 : 1);
+    setHoverRating(newHoverRating);
   };
 
   const handleStarLeave = () => {
     setHoverRating(0);
+  };
+
+  // 별점 요소 렌더링 함수
+  const renderStarElement = (index: number, currentRating: number) => {
+    const starValue = index + 1;
+    const halfStarValue = index + 0.5;
+    
+    if (currentRating >= starValue) {
+      // 완전히 채워진 별
+      return (
+        <img 
+          src={starWishFillIcon} 
+          alt="별" 
+          className="wr-star-img"
+          style={{ position: 'relative', zIndex: 1 }}
+        />
+      );
+         } else if (currentRating >= halfStarValue) {
+       // 반만 채워진 별
+       return (
+         <div className="wr-star-half">
+           <img 
+             src={starWishFillIcon} 
+             alt="별" 
+             style={{ 
+               position: 'absolute', 
+               left: 0, 
+               top: 0, 
+               width: '50%', 
+               height: '100%',
+               objectFit: 'cover',
+               objectPosition: 'left center'
+             }}
+           />
+           <img 
+             src={starWishIcon} 
+             alt="별" 
+             style={{ 
+               position: 'absolute', 
+               left: 0, 
+               top: 0, 
+               width: '100%', 
+               height: '100%',
+               zIndex: -1
+             }}
+           />
+         </div>
+       );
+    } else {
+      // 빈 별
+      return (
+        <img 
+          src={starWishIcon} 
+          alt="별" 
+          className="wr-star-img"
+          style={{ position: 'relative', zIndex: 1 }}
+        />
+      );
+    }
   };
 
   const handlePublishClick = () => {
@@ -156,18 +260,35 @@ const WriteReviewPage: React.FC = () => {
 
   const handlePublishConfirm = async () => {
     try {
-      // 게시글 데이터 수집
+      // 제목과 내용이 있는지 확인
+      if (!title.trim()) {
+        alert('제목을 입력해주세요.');
+        return;
+      }
+      if (!content.trim()) {
+        alert('내용을 입력해주세요.');
+        return;
+      }
+
+      // 게시글 데이터 수집 (기본 정보만)
       const postData = {
-        title: title || "제목 없음",
-        description: content || "내용 없음",
+        title: title.trim(),
+        description: content.trim(),
+        category: selectedCategory,
+        isPublic: !isPrivate,
+        // 선택적 정보들
         travelType: getTravelType(selectedCategory),
         startDate: scheduleInput.split(' ~ ')[0] || "",
         endDate: scheduleInput.split(' ~ ')[1] || "",
         companions: tags.join(', '),
-        isPublic: !isPrivate,
-        category: selectedCategory,
         rating: rating,
-
+        location: selectedLocation ? {
+          name: selectedLocation.name,
+          address: selectedLocation.address,
+          lat: selectedLocation.lat,
+          lng: selectedLocation.lng
+        } : null,
+        imageUrl: selectedImage || null,
       };
 
       // 백엔드 API 호출 (예시)
@@ -232,6 +353,21 @@ const WriteReviewPage: React.FC = () => {
     setShowPublishModal(false);
   };
 
+  const handleLocationButtonClick = () => {
+    setShowLocationModal(true);
+  };
+
+  const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
+    console.log('장소 선택됨:', location);
+    setSelectedLocation(location);
+  };
+
+  // textarea 높이 자동 조정 함수
+  const adjustTextareaHeight = (element: HTMLTextAreaElement) => {
+    element.style.height = "auto";
+    element.style.height = element.scrollHeight + "px";
+  };
+
   const getModalMessage = () => {
     if (selectedCategory === "MT여정지도") {
       return "MT 일정을 입력해주세요";
@@ -246,6 +382,13 @@ const WriteReviewPage: React.FC = () => {
       setShowScheduleModal(true);
     }
   }, [isEmailVerified]);
+
+  // textarea 높이 자동 조정
+  useEffect(() => {
+    if (textareaRef.current) {
+      adjustTextareaHeight(textareaRef.current);
+    }
+  }, [content]);
 
   return (
     <div className="wr-bg">
@@ -409,9 +552,14 @@ const WriteReviewPage: React.FC = () => {
           justify-content: flex-start;
           padding: 60px 0 0 0;
         }
+        .wr-content-wrapper {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+        }
         .wr-content-input {
-          width: 87%;
-          min-height: 180px;
+          width: 93%;
+          min-height: 100px;
           border: none;
           outline: none;
           font-size: 18px;
@@ -419,11 +567,71 @@ const WriteReviewPage: React.FC = () => {
           background: none;
           resize: none;
           text-align: left;
-          padding-left: 80px;
+          padding-left: 90px;
+          word-wrap: break-word;
+          white-space: pre-wrap;
+          overflow-y: visible;
         }
         .wr-content-input::placeholder {
           color: #bbb;
           text-align: left;
+        }
+        
+        .wr-media-section {
+          margin-top: 20px;
+          margin-left: 100px;
+        }
+        .wr-location-container {
+          position: relative;
+          margin-bottom: 20px;
+        }
+        .wr-image-container {
+          position: relative;
+          margin-bottom: 60px;
+        }
+        .wr-post-image {
+          width: 1000px;
+          height: 600px;
+          object-fit: cover;
+        }
+        .wr-location-info {
+          padding: 15px;
+          background-color: #fff;
+          min-width: 200px;
+          text-align: right;
+          margin-right: 90px;
+        }
+        .wr-location-name {
+          font-size: 16px;
+          font-weight: bold;
+          margin-bottom: 5px;
+          color: #333;
+        }
+        .wr-location-address {
+          font-size: 14px;
+          color: #666;
+          line-height: 1.4;
+        }
+        .wr-tags-container {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 50px;
+        }
+        .wr-tag {
+          border-radius: 20px;
+          padding: 6px 18px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+        .wr-tag-main {
+          background: #0b0b61;
+          color: #fff;
+          position: relative;
+        }
+        .wr-tag-sub {
+          background: #fff;
+          border: 1.5px solid #0b0b61;
+          color: #0b0b61;
         }
         .wr-floating-write-btn {
           position: fixed;
@@ -679,6 +887,23 @@ const WriteReviewPage: React.FC = () => {
           height: 40px;
           transition: all 0.2s;
         }
+        .wr-star-half {
+          position: relative;
+          overflow: hidden;
+          width: 40px;
+          height: 40px;
+        }
+        .wr-star-half::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 50%;
+          height: 100%;
+          background: url(${starWishFillIcon}) no-repeat left center;
+          background-size: 40px 40px;
+          z-index: 1;
+        }
         .wr-rating-confirm-btn {
           background: #fff;
           border: 2px solid #bbb;
@@ -689,6 +914,21 @@ const WriteReviewPage: React.FC = () => {
           color: #101010;
           cursor: pointer;
           white-space: nowrap;
+        }
+        .wr-location-display {
+          padding: 15px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          border: 1px solid #e9ecef;
+        }
+        .wr-location-name {
+          font-weight: bold;
+          margin-bottom: 5px;
+          font-size: 16px;
+        }
+        .wr-location-address {
+          color: #666;
+          font-size: 14px;
         }
         .wr-modal.publish {
           padding: 100px 150px 20px 150px;
@@ -734,6 +974,7 @@ const WriteReviewPage: React.FC = () => {
           font-weight: 600;
           cursor: pointer;
         }
+
         .wr-publish-cancel-btn {
           background: #fff;
           color: #333;
@@ -761,37 +1002,37 @@ const WriteReviewPage: React.FC = () => {
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list2Icon} alt="리스트2" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleTagButtonClick}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleImageButtonClick}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleLocationButtonClick}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleRatingButtonClick}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={leftlistIcon} alt="왼쪽정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={middlelistIcon} alt="가운데정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
                 <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
               </div>
               <div className="wr-category-row">
-                <div className="wr-category-select">
-                  <button
-                    className="wr-category-btn"
-                    onClick={() => setCategoryOpen(o => !o)}
-                    type="button"
-                    disabled={!isEmailVerified}
-                  >
-                    <span>{selectedCategory}</span>
-                    <span className="wr-category-arrow" style={{ transform: categoryOpen ? "rotate(180deg)" : undefined }}>▼</span>
-                  </button>
-                  {categoryOpen && (
-                    <div className="wr-category-dropdown">
-                      {categories.map(cat => (
-                        <div
-                          key={cat}
-                          className={"wr-category-item" + (cat === selectedCategory ? " selected" : "")}
-                          onClick={() => handleCategorySelect(cat)}
-                        >
-                          {cat}
-                        </div>
-                      ))}
+            <div className="wr-category-select">
+              <button
+                className="wr-category-btn"
+                onClick={() => setCategoryOpen(o => !o)}
+                type="button"
+                disabled={!isEmailVerified}
+              >
+                <span>{selectedCategory}</span>
+                <span className="wr-category-arrow" style={{ transform: categoryOpen ? "rotate(180deg)" : undefined }}>▼</span>
+              </button>
+              {categoryOpen && (
+                <div className="wr-category-dropdown">
+                  {categories.map(cat => (
+                    <div
+                      key={cat}
+                      className={"wr-category-item" + (cat === selectedCategory ? " selected" : "")}
+                      onClick={() => handleCategorySelect(cat)}
+                    >
+                      {cat}
                     </div>
-                  )}
+                  ))}
                 </div>
+              )}
+            </div>
               </div>
               <div className="wr-title-row">
                 <input 
@@ -802,28 +1043,75 @@ const WriteReviewPage: React.FC = () => {
                   disabled={!isEmailVerified} 
                 />
               </div>
-              <div className="wr-private-row">
-                <span className="wr-private-label">비공개</span>
-                <div
-                  className={"wr-switch" + (isPrivate ? " on" : "")}
-                  onClick={() => isEmailVerified && setIsPrivate(v => !v)}
-                  role="button"
-                  tabIndex={0}
-                  aria-checked={isPrivate}
-                  style={{ outline: "none" }}
-                >
-                  <div className="wr-switch-circle" />
+                <div className="wr-private-row">
+                  <span className="wr-private-label">비공개</span>
+                  <div
+                    className={"wr-switch" + (isPrivate ? " on" : "")}
+                    onClick={() => isEmailVerified && setIsPrivate(v => !v)}
+                    role="button"
+                    tabIndex={0}
+                    aria-checked={isPrivate}
+                    style={{ outline: "none" }}
+                  >
+                    <div className="wr-switch-circle" />
                 </div>
               </div>
               <hr className="wr-divider" />
               <div className="wr-content-area">
-                <textarea 
-                  className="wr-content-input" 
-                  placeholder="내용을 입력하세요..." 
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  disabled={!isEmailVerified} 
-                />
+                <div className="wr-content-wrapper">
+                  <textarea 
+                    ref={textareaRef}
+                    className="wr-content-input" 
+                    placeholder="최근 다녀온 곳을 지도와 함께 기록해 보세요!" 
+                    value={content}
+                    onChange={(e) => {
+                      setContent(e.target.value);
+                      adjustTextareaHeight(e.target);
+                    }}
+                    disabled={!isEmailVerified} 
+                  />
+                  
+                  {/* 미디어 섹션 (장소, 이미지, 태그) */}
+                  {(selectedImage || selectedLocation || tags.length > 0) && (
+                    <div className="wr-media-section">
+                      {/* 장소 정보 */}
+                      {selectedLocation && (
+                        <div className="wr-location-container">
+                          <div className="wr-location-info">
+                            <div className="wr-location-name">
+                              {selectedLocation.name}
+                            </div>
+                            <div className="wr-location-address">
+                              {selectedLocation.address}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* 이미지 */}
+                      {selectedImage && (
+                        <div className="wr-image-container">
+                          <img src={selectedImage} alt="업로드된 이미지" className="wr-post-image" />
+                        </div>
+                      )}
+                      
+                      {/* 태그들 */}
+                      {tags.length > 0 && (
+                        <div className="wr-tags-container">
+                          {tags.map((tag, idx) => (
+                            <span
+                              key={tag}
+                              className={idx === 0 ? "wr-tag wr-tag-main" : "wr-tag wr-tag-sub"}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
               </div>
             </div>
           </div>
@@ -844,7 +1132,7 @@ const WriteReviewPage: React.FC = () => {
               <div className="wr-modal-text">
                 해당 게시판은 작성 전<br />학교 이메일 인증이 필요합니다.
               </div>
-              <button className="wr-modal-btn" onClick={() => navigate('/cjdcnstjfkq')}>인증하기</button>
+              <button className="wr-modal-btn" onClick={() => navigate('/youth-drawer')}>인증하기</button>
             </div>
           </>
         )}
@@ -928,8 +1216,8 @@ const WriteReviewPage: React.FC = () => {
                     <input 
                       type="text" 
                       className="wr-image-input"
-                      placeholder="image1.png"
-                      value={selectedImage}
+                      placeholder="이미지를 선택해주세요"
+                      value={selectedImage ? "이미지가 선택되었습니다" : ""}
                       readOnly
                     />
                     <button className="wr-image-remove" onClick={handleImageRemove}>×</button>
@@ -940,7 +1228,8 @@ const WriteReviewPage: React.FC = () => {
             </div>
           </>
         )}
-                {showRatingModal && (
+
+        {showRatingModal && (
           <>
             <div className="wr-overlay" />
             <div className="wr-modal tag">
@@ -955,19 +1244,46 @@ const WriteReviewPage: React.FC = () => {
                   <div className="wr-rating-input-wrapper">
                     <div className="wr-rating-display">
                       {[0, 1, 2, 3, 4].map((index) => (
-                        <button
-                          key={index}
-                          className="wr-star-btn"
-                          onClick={() => handleStarClick(index)}
-                          onMouseEnter={() => handleStarHover(index)}
-                          onMouseLeave={handleStarLeave}
-                        >
-                          <img 
-                            src={(hoverRating || rating) > index ? starWishFillIcon : starWishIcon} 
-                            alt="별" 
-                            className="wr-star-img"
+                        <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+                          {/* 왼쪽 반쪽 별 (클릭 시 0.5점) */}
+                          <button
+                            className="wr-star-btn"
+                            style={{ 
+                              position: 'absolute', 
+                              left: 0, 
+                              top: 0, 
+                              width: '50%', 
+                              height: '100%',
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              zIndex: 2
+                            }}
+                            onClick={() => handleStarClick(index, true)}
+                            onMouseEnter={() => handleStarHover(index, true)}
+                            onMouseLeave={handleStarLeave}
                           />
-                        </button>
+                          {/* 오른쪽 반쪽 별 (클릭 시 1점) */}
+                          <button
+                            className="wr-star-btn"
+                            style={{ 
+                              position: 'absolute', 
+                              right: 0, 
+                              top: 0, 
+                              width: '50%', 
+                              height: '100%',
+                              background: 'transparent',
+                              border: 'none',
+                              cursor: 'pointer',
+                              zIndex: 2
+                            }}
+                            onClick={() => handleStarClick(index, false)}
+                            onMouseEnter={() => handleStarHover(index, false)}
+                            onMouseLeave={handleStarLeave}
+                          />
+                          {/* 별 이미지 */}
+                          {renderStarElement(index, hoverRating || rating)}
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -1000,6 +1316,15 @@ const WriteReviewPage: React.FC = () => {
             </div>
           </>
         )}
+        <LocationModal
+          isOpen={showLocationModal}
+          onClose={() => {
+            console.log('모달 닫기 전 selectedLocation:', selectedLocation);
+            setShowLocationModal(false);
+            console.log('모달 닫기 후 selectedLocation:', selectedLocation);
+          }}
+          onLocationSelect={handleLocationSelect}
+        />
       </div>
     </div>
   );

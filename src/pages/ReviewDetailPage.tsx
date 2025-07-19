@@ -1,28 +1,30 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header/Header";
-import commentIcon from "../assets/interaction/comment.svg";
 import heartIcon from "../assets/interaction/empathy.svg";
 import heartFillIcon from "../assets/interaction/empathy_fill.svg";
 import starIcon from "../assets/interaction/scrap.svg";
 import starFillIcon from "../assets/interaction/scrap_fill.svg";
+import starRatingIcon from "../assets/interaction/star.svg";
 import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLiked, setIsLiked] = useState(false);
   const [isStarred, setIsStarred] = useState(false);
+  const [isRated, setIsRated] = useState(false);
   
   // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
-  const currentUser = "루룰루";
+  const currentUser = "김눈송";
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
   const [showUrlCopyModal, setShowUrlCopyModal] = useState(false);
   const [showScrapModal, setShowScrapModal] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Array<{
     id: number;
@@ -36,21 +38,131 @@ const YouthTalkDetailPage: React.FC = () => {
   }>>([]);
   const commentInputRef = React.useRef<HTMLTextAreaElement>(null);
 
-  // 실제로는 API에서 데이터를 가져올 예정
-  const post = {
-    id: id || "1",
-    title: "동기들과 함께 제주도 3박 4일 여행 다녀왔습니다",
-    content: "동기들과 함께 제주도에 다녀왔습니다!\n\n바닷바람이 너무 심해서 날아가는 줄 알았지만 근처에 있는 한옥을 모티브로 한 베이커리 카페가 정말 맛있었습니다. 기회가 된다면 다녀오시는 걸 추천할게요!",
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-    profileUrl: "",
-    isPublic: true,
-    commentCount: 1,
-    likeCount: 2,
-    starCount: 2,
-    tags: ["#제주도", "#4인여행"]
+  // 카테고리별 게시글 데이터
+  const getPostData = (category: string) => {
+    switch (category) {
+      case "MT여정지도":
+        return {
+          id: id || "1",
+          title: "MT여정지도 제목",
+          content: "주소\n예산\n인원\n입 · 퇴실시간",
+          username: "김눈송",
+          date: "2025.05.06 12:01",
+          imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          rating: 4.5,
+          tags: ["#가평", "#대성리", "#40명이상 숙소"],
+          location: {
+            name: "가평 펜션",
+            address: "경기 가평군 가평읍 가화로 123-45"
+          }
+        };
+      case "동행구해요":
+        return {
+          id: id || "1",
+          title: "동행구해요 제목",
+          content: "내용칸",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          tags: ["#가평", "#대성리", "#40명이상 숙소"]
+        };
+      case "번개모임":
+        return {
+          id: id || "1",
+          title: "번개모임 제목",
+          content: "내용칸",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          tags: ["#제주도", "#4인", "#펜션"]
+        };
+      case "졸업/휴학여행":
+        return {
+          id: id || "1",
+          title: "졸업여행 제목",
+          content: "주소\n예산\n인원\n입 · 퇴실시간",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          rating: 5,
+          tags: ["#유럽", "#3주", "#백팩"]
+        };
+      case "국내학점교류":
+        return {
+          id: id || "1",
+          title: "국내학점교류 제목",
+          content: "주소\n예산\n인원\n입 · 퇴실시간",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          rating: 4,
+          tags: ["#서울대", "#1학기", "#기숙사"]
+        };
+      case "해외교환학생":
+        return {
+          id: id || "1",
+          title: "해외교환학생 제목",
+          content: "주소\n예산\n인원\n입 · 퇴실시간",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          rating: 5,
+          tags: ["#미국", "#1년", "#캠퍼스"]
+        };
+      default: // 청춘톡
+        return {
+          id: id || "1",
+          title: "동기들과 함께 제주도 3박 4일 여행 다녀왔습니다",
+          content: "동기들과 함께 제주도에 다녀왔습니다!\n\n바닷바람이 너무 심해서 날아가는 줄 알았지만 근처에 있는 한옥을 모티브로 한 베이커리 카페가 정말 맛있었습니다. 기회가 된다면 다녀오시는 걸 추천할게요!",
+          username: "김눈송 님",
+          date: "2025.05.06 12:01",
+          imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+          profileUrl: "",
+          isPublic: true,
+          commentCount: 1,
+          likeCount: 2,
+          starCount: 2,
+          tags: ["#제주도", "#4인여행"],
+          location: {
+            name: "서울역",
+            address: "서울 중구 봉래동2가 122-11"
+          }
+        };
+    }
   };
+
+  const category = searchParams.get('category') || '청춘톡';
+  const post = getPostData(category);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -62,6 +174,10 @@ const YouthTalkDetailPage: React.FC = () => {
     if (!isStarred && currentUser !== post.username) {
       setShowScrapModal(true);
     }
+  };
+
+  const handleRating = () => {
+    setIsRated(!isRated);
   };
 
   // URL 복사 함수
@@ -91,6 +207,30 @@ const YouthTalkDetailPage: React.FC = () => {
     navigate('/review-write?category=청춘톡');
   };
 
+  // 수정하기 클릭
+  const handleEditClick = () => {
+    // 게시글 정보를 URL 파라미터로 전달하여 WriteReviewPage로 이동
+    const editData = {
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      category: category,
+      imageUrl: post.imageUrl,
+      location: post.location,
+      tags: post.tags,
+      rating: post.rating,
+      isPublic: post.isPublic
+    };
+    
+    const queryString = new URLSearchParams({
+      edit: 'true',
+      data: JSON.stringify(editData)
+    }).toString();
+    
+    navigate(`/write-review?${queryString}`);
+    setShowMoreMenu(false);
+  };
+
   // 삭제 확인 모달 열기
   const handleDeleteClick = () => {
     setShowDeleteModal(true);
@@ -114,16 +254,7 @@ const YouthTalkDetailPage: React.FC = () => {
     navigate('/youth-talk');
   };
 
-  // 댓글 토글
-  const handleCommentClick = () => {
-    setShowComments(!showComments);
-    // 댓글 섹션이 열릴 때 입력창에 포커스
-    if (!showComments) {
-      setTimeout(() => {
-        commentInputRef.current?.focus();
-      }, 100);
-    }
-  };
+
 
   // 댓글 입력 처리
   const handleCommentInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -227,6 +358,13 @@ const YouthTalkDetailPage: React.FC = () => {
     };
   }, []);
 
+  // 페이지 로드 시 댓글 입력창에 포커스
+  React.useEffect(() => {
+    setTimeout(() => {
+      commentInputRef.current?.focus();
+    }, 100);
+  }, []);
+
   return (
     <div className="ytd-bg">
       <style>{`
@@ -248,6 +386,11 @@ const YouthTalkDetailPage: React.FC = () => {
         .ytd-interaction-btn.active .ytd-interaction-count { color: #0b0b61; }
         .ytd-more-btn { background: none; border: none; cursor: pointer; color: #666; font-size: 18px; padding: 8px; border-radius: 8px; transition: background 0.2s; font-family: inherit; }
         .ytd-post-image { width: 1000px; height: 600px; object-fit: cover; margin-top: 100px; margin-left: 100px; }
+        .ytd-post-image-with-location { margin-left: 0; }
+        .ytd-image-location-container { display: flex; gap: 0px; align-items: flex-start; margin-top: 100px; margin-left: 100px; }
+        .ytd-location-info { position: absolute; right: 330px; top: 380px; padding: 15px; min-width: 200px; text-align: right; }
+        .ytd-location-name { font-size: 16px; font-weight: bold; margin-bottom: 5px; color: #333; }
+        .ytd-location-address { font-size: 14px; color: #666; line-height: 1.4; }
         .ytd-post-content { padding: 80px 100px 80px 100px; }
         .ytd-content-text { color: #black; font-size: 18px; line-height: 1.5; white-space: pre-line; margin-bottom: 20px; font-family: inherit; }
         .ytd-tags-container { display: flex; gap: 10px; margin-top: 40px; }
@@ -317,6 +460,7 @@ const YouthTalkDetailPage: React.FC = () => {
           font-family: inherit;
         }
         .ytd-modal-content {
+          text-align: center;
           font-size: 16px;
           color: #666;
           margin-bottom: 50px;
@@ -586,12 +730,16 @@ const YouthTalkDetailPage: React.FC = () => {
                   <div className="ytd-username">{post.username}</div>
                   <div className="yt-info-divider" />
                   <div className="ytd-date">{post.date}</div>
+
                 </div>
               </div>
               <div className="ytd-interactions">
-                <button className="ytd-interaction-btn" onClick={handleCommentClick}>
-                  <img src={commentIcon} alt="댓글" style={{ width: 30, height: 30 }} />
-                  {comments.length}
+                <button 
+                  className={`ytd-interaction-btn ${isRated ? 'active' : ''}`}
+                  onClick={handleRating}
+                >
+                  <img src={starRatingIcon} alt="별점" style={{ width: 35, height: 35 }} />
+                  <span className="ytd-interaction-count">{post.rating || 0}</span>
                 </button>
                 <button 
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
@@ -618,7 +766,7 @@ const YouthTalkDetailPage: React.FC = () => {
                       <div className="ytd-more-menu">
                         <div style={{ borderTop: '1px solid #bbb', marginBottom: 0 }} />
                         {currentUser === post.username && (
-                          <div className="ytd-more-menu-item">수정하기</div>
+                          <div className="ytd-more-menu-item" onClick={handleEditClick}>수정하기</div>
                         )}
                         <div className="ytd-more-menu-item" onClick={handleCopyUrl}>URL 복사</div>
                         {currentUser === post.username && (
@@ -632,7 +780,21 @@ const YouthTalkDetailPage: React.FC = () => {
           </div>
 
           {/* 게시글 이미지 */}
-          <img src={post.imageUrl} alt="게시글 이미지" className="ytd-post-image" />
+          {post.imageUrl && (
+            <img src={post.imageUrl} alt="게시글 이미지" className="ytd-post-image" />
+          )}
+          
+          {/* 장소 정보 */}
+          {post.imageUrl && post.location && (
+            <div className="ytd-location-info">
+              <div className="ytd-location-name">
+                {post.location.name}
+              </div>
+              <div className="ytd-location-address">
+                {post.location.address}
+              </div>
+            </div>
+          )}
 
           {/* 게시글 내용 */}
           <div className="ytd-post-content">
@@ -651,110 +813,105 @@ const YouthTalkDetailPage: React.FC = () => {
           </div>
 
           {/* 댓글 섹션 */}
-          {showComments && (
-            <>
-              <div className="ytd-comments-section">
-                <div className="ytd-comments-header">
-                  <div className="ytd-comments-title">댓글 {comments.length}</div>
-                </div>
-                {/* 댓글 입력 */}
-                <div className="ytd-comment-input-container">
-                  <textarea
-                    ref={commentInputRef}
-                    className="ytd-comment-input"
-                    placeholder="댓글을 작성해주세요..."
-                    value={commentText}
-                    onChange={handleCommentInput}
-                    onKeyPress={handleCommentKeyPress}
-                  />
-                  <button className="ytd-comment-submit-btn" onClick={handleCommentSubmit}>
-                    등록
-                  </button>
-                </div>
+          <div className="ytd-comments-section">
+            <div className="ytd-comments-header">
+              <div className="ytd-comments-title">댓글 {comments.length}</div>
+            </div>
+            {/* 댓글 입력 */}
+            <div className="ytd-comment-input-container">
+              <textarea
+                ref={commentInputRef}
+                className="ytd-comment-input"
+                placeholder="댓글을 작성해주세요..."
+                value={commentText}
+                onChange={handleCommentInput}
+                onKeyPress={handleCommentKeyPress}
+              />
+              <button className="ytd-comment-submit-btn" onClick={handleCommentSubmit}>
+                등록
+              </button>
+            </div>
 
-                {/* 댓글 목록 */}
-                {comments.length > 0 ? (
-                  comments.map(comment => (
-                    <div key={comment.id} className="ytd-comment-item">
-                      <div className="ytd-comment-header">
-                        <span className="ytd-comment-username">{comment.username}</span>
-                        <div className="ytd-comment-divider" />
-                        <span className="ytd-comment-date">{comment.date}</span>
-                      </div>
-                      
-                      {comment.isEditing ? (
-                        <div>
-                          <textarea
-                            className="ytd-comment-edit-input"
-                            value={comment.editText}
-                            onChange={(e) => handleCommentEditChange(comment.id, e.target.value)}
-                            rows={3}
-                          />
-                          <div className="ytd-comment-edit-buttons">
-                            <button 
-                              className="ytd-comment-edit-btn" 
-                              onClick={() => handleCommentEditSubmit(comment.id)}
-                            >
-                              완료
-                            </button>
-                            <button 
-                              className="ytd-comment-edit-btn cancel" 
-                              onClick={() => handleCommentEditCancel(comment.id)}
-                            >
-                              취소
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="ytd-comment-content">{comment.content}</div>
-                      )}
-                      
-                      <div className="ytd-comment-actions">
+            {/* 댓글 목록 */}
+            {comments.length > 0 ? (
+              comments.map(comment => (
+                <div key={comment.id} className="ytd-comment-item">
+                  <div className="ytd-comment-header">
+                    <span className="ytd-comment-username">{comment.username}</span>
+                    <div className="ytd-comment-divider" />
+                    <span className="ytd-comment-date">{comment.date}</span>
+                  </div>
+                  
+                  {comment.isEditing ? (
+                    <div>
+                      <textarea
+                        className="ytd-comment-edit-input"
+                        value={comment.editText}
+                        onChange={(e) => handleCommentEditChange(comment.id, e.target.value)}
+                        rows={3}
+                      />
+                      <div className="ytd-comment-edit-buttons">
                         <button 
-                          className={`ytd-comment-action-btn ${comment.isLiked ? 'liked' : ''}`}
-                          onClick={() => handleCommentLike(comment.id)}
+                          className="ytd-comment-edit-btn" 
+                          onClick={() => handleCommentEditSubmit(comment.id)}
                         >
-                          <img 
-                            src={comment.isLiked ? heartFillIcon : heartIcon} 
-                            alt="좋아요" 
-                            style={{ width: 16, height: 16, marginRight: 4, marginTop: 3 }} 
-                          />
-                          <span style={{ display: 'inline-block', verticalAlign: 'top', marginTop: 3 }}>{comment.likes}</span>
+                          완료
                         </button>
-                        {currentUser === comment.username && (
-                          <>
-                            <button 
-                              className="ytd-comment-action-btn"
-                              onClick={() => handleCommentEdit(comment.id)}
-                            >
-                              수정
-                            </button>
-                            <button 
-                              className="ytd-comment-action-btn"
-                              onClick={() => handleCommentDelete(comment.id)}
-                            >
-                              삭제
-                            </button>
-                          </>
-                        )}
+                        <button 
+                          className="ytd-comment-edit-btn cancel" 
+                          onClick={() => handleCommentEditCancel(comment.id)}
+                        >
+                          취소
+                        </button>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div style={{ 
-                    textAlign: 'center', 
-                    padding: '40px 0', 
-                    color: '#838383',
-                    fontFamily: 'inherit',
-                    fontSize: '16px'
-                  }}>
-                    아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
+                  ) : (
+                    <div className="ytd-comment-content">{comment.content}</div>
+                  )}
+                  
+                  <div className="ytd-comment-actions">
+                    <button 
+                      className={`ytd-comment-action-btn ${comment.isLiked ? 'liked' : ''}`}
+                      onClick={() => handleCommentLike(comment.id)}
+                    >
+                      <img 
+                        src={comment.isLiked ? heartFillIcon : heartIcon} 
+                        alt="좋아요" 
+                        style={{ width: 16, height: 16, marginRight: 4, marginTop: 3 }} 
+                      />
+                      <span style={{ display: 'inline-block', verticalAlign: 'top', marginTop: 3 }}>{comment.likes}</span>
+                    </button>
+                    {currentUser === comment.username && (
+                      <>
+                        <button 
+                          className="ytd-comment-action-btn"
+                          onClick={() => handleCommentEdit(comment.id)}
+                        >
+                          수정
+                        </button>
+                        <button 
+                          className="ytd-comment-action-btn"
+                          onClick={() => handleCommentDelete(comment.id)}
+                        >
+                          삭제
+                        </button>
+                      </>
+                    )}
                   </div>
-                )}
+                </div>
+              ))
+            ) : (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '40px 0', 
+                color: '#838383',
+                fontFamily: 'inherit',
+                fontSize: '16px'
+              }}>
+                아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
               </div>
-              <div className="ytd-comments-divider" />
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
