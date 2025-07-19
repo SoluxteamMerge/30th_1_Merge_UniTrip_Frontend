@@ -6,7 +6,7 @@ import Header from '../../components/Header/Header';
 import './MainPage.css';
 import searchIcon from '../../assets/search_icon.svg';
 import { useNavigate } from "react-router-dom";
-import { fetchReviews } from '../../api/mainpage/getReviews';
+/*import { fetchReviews } from '../../api/mainpage/getReviews'; */
 import type { ReviewItem } from '../../api/mainpage/getReviews';
 
 function MainPage() {

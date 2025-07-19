@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from "../../components/Header/Header";
 import './YouthDrawer.css';
-import { fetchMyUserInfo } from '../../api/YouthDrawer/UserInfoResponse';
+import { fetchMyUserInfo } from '../../api/YouthDrawer/fetchMyUserInfo';
 import DrawerCheckIcon from '../../assets/체크아이콘.svg';
 import AlertModal from '../../components/AlertModal/AlertModal';
 import axios from 'axios';
@@ -18,8 +18,11 @@ function YouthDrawer() {
     const [userType, setUserType] = useState('');
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+    const [resultMessage, setResultMessage] = useState('');
 
-    /*
+
+    
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
@@ -35,7 +38,7 @@ function YouthDrawer() {
         };
         fetchUserProfile();
     }, []);
-    */
+
 
     useEffect(() => {
         // 더미 데이터로 테스트
@@ -48,32 +51,36 @@ function YouthDrawer() {
     }, []);
 
     const handleWithdraw = async () => {
-        try {
-            const token = localStorage.getItem('accessToken');
-            if (!token) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        setResultMessage('로그인이 필요합니다.');
+        setIsResultModalOpen(true);
+        return;
+    }
 
-            const res = await axios.delete('/api/user/signout', {
-                headers: { Authorization: token },
-            });
+    try {
+        const res = await axios.delete('/api/user/signout', {
+            headers: { Authorization: token },
+        });
 
-            if (res.data.code === 200) {
-                alert(res.data.message);
-                localStorage.clear();
-                navigate('/');
-            } else {
-                alert(res.data.message);
-            }
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error)) {
-                alert(error.response?.data?.message || '회원탈퇴 실패');
-            } else {
-                alert('회원탈퇴 실패');
-            }
+        if (res.data.code === 200) {
+            setResultMessage(res.data.message);
+            setIsResultModalOpen(true);
+            localStorage.clear();
+            navigate('/');
+        } else {
+            setResultMessage(res.data.message);
+            setIsResultModalOpen(true);
         }
-    };
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            setResultMessage(error.response?.data?.message || '회원탈퇴 실패');
+        } else {
+            setResultMessage('회원탈퇴 실패');
+        }
+        setIsResultModalOpen(true);
+    }
+};
 
     return (
         <div>
@@ -126,11 +133,15 @@ function YouthDrawer() {
                             <div className="input-row-left">
                                 <label className="Drawer-label">프로필 사진</label>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                 {profileImageUrl ? (
-                                    <button onClick={() => setIsImageModalOpen(true)} className="Drawer-check-btn">
+                                    <>
+                                        <span className="Drawer-file-name">{profileImageUrl}</span>
+                                        <button onClick={() => setIsImageModalOpen(true)} className="Drawer-check-btn">
                                         미리보기
                                     </button>
+                                    </>
+                        
                                 ) : (
                                     <span style={{ color: '#999999' }}>등록된 사진이 없습니다.</span>
                                 )}
@@ -164,23 +175,17 @@ function YouthDrawer() {
                                 저장하기
                             </button>
                         </div>
-
-                        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                            <a href="#" style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px', marginRight: '24px' }}>
-                                고객센터
-                            </a>
-                            <a href="#" onClick={(e) => { e.preventDefault(); setIsWithdrawModalOpen(true); }} style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px' }}>
-                                회원 탈퇴
-                            </a>
-                        </div>
-
+                        {isResultModalOpen && <AlertModal message={resultMessage} onClose={() => setIsResultModalOpen(false)} />}
                         {isWithdrawModalOpen && (
                             <AlertModal
-                                message="정말로 탈퇴하시겠습니까?"
-                                onClose={() => {
+                                message="정말 탈퇴하시겠습니까?"
+                                onClose={() => setIsWithdrawModalOpen(false)}
+                                onConfirm={() => {
                                     handleWithdraw();
                                     setIsWithdrawModalOpen(false);
                                 }}
+                            
+
                             />
                         )}
 
@@ -188,14 +193,24 @@ function YouthDrawer() {
                             <AlertModal
                                 message={
                                     <div style={{ textAlign: 'center' }}>
-                                        <img src={profileImageUrl} alt="프로필 미리보기" style={{ maxWidth: '100%' }} />
+                                        <img src={profileImageUrl} alt="프로필 이미지" style={{ maxWidth: '100%', maxHeight: '300px' }} />
                                     </div>
+        
                                 }
                                 onClose={() => setIsImageModalOpen(false)}
                             />
                         )}
                     </div>
                 </div>
+                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                    <a href="#" style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px', marginRight: '24px' }}>
+                        고객센터
+                    </a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setIsWithdrawModalOpen(true); }} style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px' }}>
+                        회원 탈퇴
+                    </a>
+                </div>
+
             </div>
         </div>
     );

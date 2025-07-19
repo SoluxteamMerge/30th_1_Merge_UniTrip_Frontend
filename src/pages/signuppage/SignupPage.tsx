@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { ChangeEvent } from 'react';
+import axios from 'axios';
 import { postUserProfile } from '../../api/Signup/postUserProfile';
 import { checkNicknameDuplicate } from '../../api/Signup/checkNicknameDuplicate';
 import { sendEmailVerification } from '../../api/Signup/sendEmailVerification';
@@ -8,6 +9,7 @@ import './SignupPage.css';
 import logo from '../../assets/header/logo.svg';
 import checkIcon from "../../assets/체크아이콘.svg";
 import AlertModal from '../../components/AlertModal/AlertModal';
+import { uploadUserProfileImage } from '../../api/useUserProfileImage';
 
 const SignupPage: React.FC = () => {
   const [nickname, setNickname] = useState('');
@@ -30,7 +32,7 @@ const SignupPage: React.FC = () => {
   {/* 닉네임 인증 */}
   const handleCheckNickname = async () => {
     if (!nickname) {
-      showModal('닉네임을 입력하세요.');
+      showModal('닉네임을 입력은 필수입니다.');
       return;
     }
     try {
@@ -43,7 +45,10 @@ const SignupPage: React.FC = () => {
         setIsNicknameChecked(false);
       }
     }
-  };
+    
+};
+  
+
 
   {/*휴대폰 번호 하이픈 입력 */}
   const formatPhoneNumber = (value: string) => {
@@ -57,18 +62,39 @@ const SignupPage: React.FC = () => {
     setPhoneNumber(formatPhoneNumber(e.target.value));
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    setFileName(file ? file.name : '');
-    setProfileImageUrl(file ? file.name : '');
-  };
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  /*setFileName(file.name);*/
+
+  try {
+    const token = localStorage.getItem('accessToken') || '';
+    const { uploadedUrl, message } = await uploadUserProfileImage(file, token);
+    setFileName(file.name);
+    setProfileImageUrl(uploadedUrl); // 최종 등록된 이미지 URL
+    showModal(message);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message = error.response?.data?.message || '이미지 업로드에 실패했습니다.';
+      showModal(message);
+    } else {
+      showModal('이미지 업로드에 실패했습니다.');
+  }
+}
+};
+
 
   {/*학교 이메일 인증 */}
   const handleSendVerification = async () => {
     if (!userEmail) {
-      showModal('학교 이메일을 입력하세요.');
+      showModal('학교 이메일 인증은 필수입니다.');
       return;
     }
+    /*if (!userEmail.endsWith('@sookmyung.ac.kr')) {
+      showModal('이메일은 @sookmyung.ac.kr로 끝나야 합니다.');
+      return;
+    }*/
 
     try {
       const result = await sendEmailVerification(userEmail);
@@ -76,12 +102,15 @@ const SignupPage: React.FC = () => {
       setIsCodeSent(true);
       setEmailVerified(false);
     } catch (error) {
-      if (error instanceof Error) {
-        showModal(error.message);
-        setEmailVerified(false);
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '이메일 인증 요청에 실패했습니다.';
+        showModal(message);
+      } else {
+        showModal('이메일 인증 요청에 실패했습니다.');
       }
+      setEmailVerified(false);
     }
-  };
+  }; 
 
   const handleVerifyCode = async () => {
     if (!verificationCode) {
@@ -95,11 +124,15 @@ const SignupPage: React.FC = () => {
       setEmailVerified(true);
       setIsCodeSent(false);
     } catch (error) {
-      if (error instanceof Error) {
-        showModal(error.message);
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '인증에 실패했습니다.';
+        showModal(message);
+      } else {
+        showModal('인증에 실패했습니다.');
       }
     }
   };
+
 
   const handleRegister = async () => { 
     try {
@@ -170,10 +203,11 @@ const SignupPage: React.FC = () => {
               aria-label="회원 유형 선택"
         
             >
-              <option value="">선택하세요</option>
+              <option value="" disabled hidden>선택하세요</option>
               <option value="개인">개인</option>
               <option value="조직">조직</option>
             </select>
+            <div className="signup-underline"></div>
           </div>
 
           <div className="signup-form-row">
