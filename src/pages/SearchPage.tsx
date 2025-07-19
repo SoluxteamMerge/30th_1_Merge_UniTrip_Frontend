@@ -68,7 +68,7 @@ const SearchPage: React.FC = () => {
             
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {/* 첫 번째 줄: 서울~경기 */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 50, marginBottom: 20 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 50, marginBottom: 3 }}>
                   {["서울", "인천", "대전", "대구", "광주", "부산", "울산", "세종", "경기"].map(region => (
                       <label key={region} style={{ 
                         display: "flex",
