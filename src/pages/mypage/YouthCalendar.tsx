@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -7,11 +7,8 @@ import writeIcon from "../../assets/write-icon.svg";
 import beforeArrow from "../../assets/arrow/before_arrow.svg";
 import nextArrow from "../../assets/arrow/next_arrow.svg";
 
-
-
 const YouthCalendar: React.FC = () => {
-    const navigate = useNavigate(); 
-  
+  const navigate = useNavigate(); 
   const username = "김눈송";
   const today = new Date();
 
@@ -35,8 +32,82 @@ const YouthCalendar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
+  const [scheduleTitle, setScheduleTitle] = useState("");
+  const [memo, setMemo] = useState("");
+  const [selectedColor, setSelectedColor] = useState("#8bcece"); // 기본색
+  const [savedSchedules, setSavedSchedules] = useState<{
+    [key: string]: { title: string; color: string; memo?: string };
+  }>({});
+  const [viewingMemo, setViewingMemo] = useState<{ title: string; memo: string; color: string } | null>(null);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingMemo, setEditingMemo] = useState("");
+
+
+  useEffect(() => {
+    const stored = localStorage.getItem("youthCalendarSchedules");
+    if (stored) {
+      setSavedSchedules(JSON.parse(stored));
+    }
+  }, []);
+
+  const handleSave = () => {
+    if (!selectedDate || !scheduleTitle) return;
+    const key = `${currentYear}-${currentMonth + 1}-${selectedDate}`;
+    const updated = {
+      ...savedSchedules,
+      [key]: { title: scheduleTitle, color: selectedColor, memo }
+    };
+    setSavedSchedules(updated);
+    localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
+    setIsModalOpen(false);
+    setScheduleTitle("");
+    setMemo("");
+  };
+    {/*메모 수정*/}
+    const handleEditSave = () => {
+    if (!viewingMemo) return;
+    const updatedSchedules = { ...savedSchedules };
+
+    const key = Object.keys(savedSchedules).find(
+      (k) => savedSchedules[k].title === viewingMemo.title && savedSchedules[k].color === viewingMemo.color
+    );
+    if (!key) return;
+
+    updatedSchedules[key] = {
+      ...updatedSchedules[key],
+      memo: editingMemo
+    };
+
+    setSavedSchedules(updatedSchedules);
+    localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
+    setViewingMemo({ ...viewingMemo, memo: editingMemo });
+    setIsEditing(false);
+  };
+
+  {/*메모 삭제*/}
+  const handleDelete = () => {
+    if (!viewingMemo) return;
+
+    const key = Object.keys(savedSchedules).find(
+      (k) => savedSchedules[k].title === viewingMemo.title && savedSchedules[k].color === viewingMemo.color
+    );
+    if (!key) return;
+
+    const updatedSchedules = { ...savedSchedules };
+    delete updatedSchedules[key];
+
+    setSavedSchedules(updatedSchedules);
+    localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
+    setViewingMemo(null);
+  };
+
+
+
   const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0 (Sun) ~ 6 (Sat)
   const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); // 이번 달 총 일 수
+
+
 
   //달력 생성
   const generateCalendar = (): React.ReactNode[] => {
@@ -61,6 +132,7 @@ const YouthCalendar: React.FC = () => {
 
     //실제 날짜 채우기 
     for (let day = 1; day <= totalDays; day++) {
+      
       const weekday = (firstDay + day - 1) % 7;
       const isSunday = weekday === 0;
       const isSaturday = weekday === 6;
@@ -69,13 +141,21 @@ const YouthCalendar: React.FC = () => {
           currentMonth === today.getMonth() &&
           currentYear === today.getFullYear();
 
+      const key = `${currentYear}-${currentMonth + 1}-${day}`;
+      const entry = savedSchedules[key];
+      
+
       cells.push(
         <td
           key={day}
           onClick={() => {
-                setSelectedDate(day);
-                setIsModalOpen(true);
-            }}
+            if (entry) {
+              setViewingMemo({ title: entry.title, memo: entry.memo ?? "", color: entry.color });
+            } else {
+              setSelectedDate(day);
+              setIsModalOpen(true);
+            }
+          }}
           style={{
             ...baseCellStyle,
             cursor: "pointer",
@@ -83,7 +163,25 @@ const YouthCalendar: React.FC = () => {
             fontWeight: isToday ? "bold" : "normal",
           }}
         >
-          <div style={{ textAlign: "left", padding: 4 }}>{day}</div>
+          <div style={{ textAlign: "left", padding: 4}}>{day}</div>
+          {entry && (
+            <div
+              style={{
+                marginTop: 6,
+                backgroundColor: entry.color,
+                borderRadius: 8,
+                padding: "4px 8px",
+                color: "white",
+                fontSize: 12,
+                textAlign: "center",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              {entry.title}
+            </div>
+          )}
         </td>
       );
     }
@@ -111,6 +209,7 @@ const YouthCalendar: React.FC = () => {
   }; //달력 생성 끝
 
   //이전 달 
+  
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
@@ -119,7 +218,7 @@ const YouthCalendar: React.FC = () => {
       setCurrentMonth(prev => prev - 1);
     }
   };
-
+  
   //다음 달
   const handleNextMonth = () => {
     if (currentMonth === 11) {
@@ -129,7 +228,7 @@ const YouthCalendar: React.FC = () => {
       setCurrentMonth(prev => prev + 1);
     }
   };
-
+  
 
   return (
     <div style={pageBgStyle}>
@@ -296,96 +395,235 @@ const YouthCalendar: React.FC = () => {
       </button>
       {/* Floating 버튼 끝 */}
 
+      {/* 일정 입력 팝업 */}
       {isModalOpen && (
-    <div style={{
-        position: "fixed",
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.3)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 999
-    }}>
-        <div style={{
-        backgroundColor: "#fff",
-        borderRadius: 16,
-        padding: 32,
-        width: 400,
-        boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-        position: "relative"
-        }}>
-        {/* 닫기 버튼 */}
-        <button onClick={() => setIsModalOpen(false)} style={{
-            position: "absolute", top: 12, right: 12,
-            background: "none", border: "none", fontSize: 20, cursor: "pointer"
-        }}>✕</button>
+      <div style={{
+          position: "fixed",
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.3)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 999
+      }}>
+          <div style={{
+          backgroundColor: "#fff",
+          borderRadius: 16,
+          padding: 32,
+          width: 400,
+          boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+          position: "relative"
+          }}>
 
-        <h3 style={{ marginBottom: 16 }}>일정 추가</h3>
+            {/* 닫기 버튼 */}
+            <button onClick={() => setIsModalOpen(false)} style={{
+                position: "absolute", top: 12, right: 12,
+                background: "none", border: "none", fontSize: 20, cursor: "pointer"
+            }}>✕</button>
 
-        <p style={{ fontSize: 14, color: "#666" }}>
-            {currentMonth + 1}월 {selectedDate}일
-        </p>
+            <h3 style={{ marginBottom: 16 }}>일정 추가</h3>
 
-        <input
-            type="text"
-            placeholder="일정 제목을 입력해주세요..."
-            style={{
-            width: "100%",
-            padding: "10px",
-            marginTop: 12,
-            marginBottom: 16,
-            borderRadius: 6,
-            border: "1px solid #ccc"
-            }}
-        />
+            <p style={{ fontSize: 14, color: "#666" }}>
+                {currentMonth + 1}월 {selectedDate}일
+            </p>
 
-        <p style={{ fontSize: 14, marginBottom: 8 }}>메모</p>
-        <textarea
-            rows={3}
-            placeholder="내용을 입력하세요"
-            style={{
-            width: "100%",
-            padding: "10px",
-            borderRadius: 6,
-            border: "1px solid #ccc",
-            resize: "none"
-            }}
-        />
-
-        {/* 색상 선택 */}
-        <div style={{ margin: "16px 0", display: "flex", gap: 8 }}>
-            {["#f44336", "#ff9800", "#ffeb3b", "#4caf50", "#03a9f4", "#3f51b5", "#9c27b0", "#ccc"].map((color, index) => (
-            <div key={index}
+            {/* 일정 제목 입력 */}
+            <input
+                type="text"
+                placeholder="일정 제목을 입력해주세요..."
+                value={scheduleTitle}
+                onChange={(e) => setScheduleTitle(e.target.value)}
+                className="pill-input"
                 style={{
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                backgroundColor: color,
-                cursor: "pointer"
+                width: "100%",
+                padding: "8px 16px",   
+                marginTop: 12,
+                marginBottom: 16,
+                backgroundColor: "#e0e0e0",    
+                border: "none",                 // 테두리 없음
+                borderRadius: 999,              //양 끝 둥글게 (pill)
+                fontSize: 14,
+                color: "#000",               // 글자색 검정
+                outline: "none"             // 포커스시 기본 테두리 제거 (선택 사항)
                 }}
-            ></div>
-            ))}
-        </div>
+            />
+            <style>{`
+              .pill-input::placeholder {
+                color: #000;
+              }
+            `}</style>
 
-        <button
-            onClick={() => setIsModalOpen(false)}
-            style={{
-            width: "100%",
-            backgroundColor: "#0b0b61",
-            color: "#fff",
-            border: "none",
-            padding: "12px 0",
-            borderRadius: 8,
-            fontWeight: 600,
-            marginTop: 8
-            }}
-        >
-            저장
-        </button>
-        </div>
+            {/* 메모 입력 */}
+            <p style={{ fontSize: 14, marginBottom: 2 }}>메모</p>
+            <input
+                type="text"  
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}              
+                style={{
+                width: "100%",
+                border: "none",
+                borderBottom: "1px solid #aaa",  
+                padding: "2px 0",                
+                fontSize: 14,
+                outline: "none",                
+                backgroundColor: "transparent",  
+                color: "#000"
+                }}
+            />
+
+            {/* 색상 선택 */}
+            <div style={{ margin: "16px 0", display: "flex", gap: 19 }}>
+                {["#dc4141", "#ffb95d", "#f9e678", "#98ef91", "#8bcece", "#959fe2", "#0b0b61", "#9462b5", "#bbbbbb"].map((color, index) => (
+                <div key={index}
+                    onClick={() => setSelectedColor(color)}
+                    style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    backgroundColor: color,
+                    cursor: "pointer",
+                    border: selectedColor === color ? "2px solid #000" : "none"
+                    }}
+                ></div>
+                ))}
+            </div>
+
+            <button
+              onClick={handleSave}
+              style={{
+                width: "100%",
+                backgroundColor: "#0b0b61",
+                color: "#fff",
+                border: "none",
+                padding: "12px 0",
+                borderRadius: 8,
+                fontWeight: 600,
+                marginTop: 8
+              }}
+            >
+              저장
+            </button>
+          </div>
+      </div>
+      )}
+
+      {/* 메모 보기 팝업 */}
+      {viewingMemo && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.3)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 999
+        }}>
+          <div style={{
+            backgroundColor: "#fff",
+            borderRadius: 16,
+            padding: 32,
+            width: 360,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+            position: "relative"
+          }}>
+            <button onClick={() => setViewingMemo(null)} style={{
+              position: "absolute", top: 12, right: 12,
+              background: "none", border: "none", fontSize: 20, cursor: "pointer"
+            }}>✕</button>
+
+            <h3 style={{ marginBottom: 16 }}>일정 보기</h3>
+            <div style={{ 
+              backgroundColor: viewingMemo.color, 
+              color: "#fff", 
+              borderRadius: 8, 
+              padding: "8px 12px", 
+              marginBottom: 12 
+              }}
+            >
+              <strong>{viewingMemo.title}</strong>
+            </div>
+            
+            {/* 메모 수정 모드 전환용 상태 */}
+            {isEditing ? (
+              <>
+                <textarea
+                  value={editingMemo}
+                  onChange={(e) => setEditingMemo(e.target.value)}
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: 8,
+                    fontSize: 14,
+                    border: "1px solid #ccc",
+                    borderRadius: 6,
+                    resize: "none",
+                    marginBottom: 12
+                  }}
+                />
+                <button
+                  onClick={handleEditSave}
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#0b0b61",
+                    color: "#fff",
+                    border: "none",
+                    padding: "10px 0",
+                    borderRadius: 6,
+                    fontWeight: 600,
+                    marginBottom: 8
+                  }}
+                >
+                  수정 완료
+                </button>
+              </>
+            ) : (
+              <div style={{ fontSize: 14, color: "#333", marginBottom: 16 }}>
+                {viewingMemo.memo || "메모 없음"}
+              </div>
+            )}
+
+            {/* 버튼들 */}
+            {!isEditing && (
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                <button
+                  onClick={() => {
+                    setEditingMemo(viewingMemo.memo);
+                    setIsEditing(true);
+                  }}
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#f0ad4e",
+                    color: "#fff",
+                    border: "none",
+                    padding: "10px 0",
+                    borderRadius: 6,
+                    fontWeight: 600
+                  }}
+                >
+                  메모 수정
+                </button>
+
+                <button
+                  onClick={handleDelete}
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#d9534f",
+                    color: "#fff",
+                    border: "none",
+                    padding: "10px 0",
+                    borderRadius: 6,
+                    fontWeight: 600
+                  }}
+                >
+                  삭제
+                </button>
+              </div>
+            )}
+
+
+          </div>
     </div>
     )}
-
     </div>
   );
 };
