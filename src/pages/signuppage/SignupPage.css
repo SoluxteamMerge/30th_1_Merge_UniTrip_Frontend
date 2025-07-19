@@ -166,7 +166,11 @@ html, body, #root {
   
 }
 
-
+.signup-form-row:nth-of-type(5) .signup-input {
+  padding: 0px;
+  margin-top: -4px;
+  
+}
 
 input[type="text"],
 input[type="password"],
@@ -239,16 +243,22 @@ input::placeholder {
 .signup-select {
   width: 100%;
   padding: 8px 16px;
-  border: 1px solid #BBBBBB;
-  border-radius: 12px;
   font-size: 16px;
+  border:none;
   font-family: 'Pretendard', sans-serif;
-  appearance: none;  /* 기본 화살표 없애기 */
   background: white url('/src/assets/dropdown_arrow.svg') no-repeat right 16px center;
   background-size: 16px;
   cursor: pointer;
   margin-top: 3px;
+  color: #838383;
+  padding: 5px 0;
 }
+
+
+
+
+
+
 
 .signup-email-verify-btn {
   display: inline-block; /* 라벨로 수정했기 때문에 있어야 버튼처럼 보임 */
