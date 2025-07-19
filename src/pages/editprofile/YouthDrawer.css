@@ -52,7 +52,7 @@ body {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  margin-bottom: 120px;
+  margin-bottom: 60px;
   padding: 0 180px;
   flex-wrap: nowrap; 
 }
@@ -100,6 +100,10 @@ body {
   justify-content: space-between;
 }
 
+.input-with-button input {
+  flex: 1;
+  margin-right: 8px;
+}
 .Drawerinput {
   flex: 1 1 auto;
   min-width: 0;
@@ -161,4 +165,34 @@ body {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+}
+
+.YouthDrawerButton {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  margin:0  auto 60px;
+  margin-top: 60px;
+
+
+}
+
+.Drawer-save-btn {
+  width: 200px;
+
+  height: 50px;
+  background-color: #0B0B61;
+  color:#FBFBFB;
+  border-radius: 12px;
+  border: 0.67px solid #838383;
+
+}
+
+.Drawer-edit-btn{
+  width: 200px;
+
+  height: 50px;
+  background-color: #FBFBFB;
+  border-radius: 12px;
 }
