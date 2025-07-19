@@ -1,71 +1,279 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import RouletteModal from "../roulette/RouletteModal";
 import '../../App.css';
-import { reviewData } from '../../data/review';
 import { ReviewCard } from '../../pages/reviewcard/ReviewCard';
 import Header from '../../components/Header/Header';
 import './MainPage.css';
 import searchIcon from '../../assets/search_icon.svg';
 import { useNavigate } from "react-router-dom";
-
-const recommended = {
-  title: '동기들과 함께 제주도 3박 4일 여행 다녀왔습니다',
-  summary: '동기들과 함께 제주도에 다녀왔습니다! 바닷바람이 너무 심해서 날아가는 줄 알았지만 근처에 있는 한옥을 모두 볼 수 있었습니다. 안녕하세요 안녕.',
-  imageUrl: 'https://picsum.photos/120/80'
-};
+import { fetchReviews } from '../../api/mainpage/getReviews';
+import type { ReviewItem } from '../../api/mainpage/getReviews';
 
 function MainPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(6); //6개만 보이게 제한
-  const [isMoreClicked, setIsMoreClicked] = useState(false); //더 보기 버튼 제한
-  const navigate = useNavigate(); // 추가
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [isMoreClicked, setIsMoreClicked] = useState(false);
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [randomRecommend, setRandomRecommend] = useState<ReviewItem | null>(null);
+  const token = localStorage.getItem('accessToken');
+  const navigate = useNavigate();
 
   const handleMoreClick = () => {
     setVisibleCount((prev) => prev + 3);
     setIsMoreClicked(true);
   }
+  {/*더미 테스트 */}
+  useEffect(() => {
+    const dummyData: ReviewItem[] = [
+      {
+        postId: 1,
+        boardType: "모임구인",
+        categoryName: "여행",
+        title: "서울 근교 나들이 후기",
+        userId: 101,
+        nickname: "여행러1",
+        createdAt: "2025-07-15T10:00:00",
+        commentCount: 2,
+        likes: 5,
+        isLiked: true,
+        scrapCount: 1,
+        isScraped: false,
+        thumbnailUrl: "https://picsum.photos/200/100?random=101"
+      },
+      {
+        postId: 2,
+        boardType: "MT/LT",
+        categoryName: "일상",
+        title: "청춘 엠티 첫날 후기",
+        userId: 102,
+        nickname: "유저2",
+        createdAt: "2025-07-14T09:30:00",
+        commentCount: 0,
+        likes: 2,
+        isLiked: false,
+        scrapCount: 0,
+        isScraped: false,
+        thumbnailUrl: "https://picsum.photos/200/100?random=102"
+      },
+      {
+        postId: 3,
+        boardType: "식도락",
+        categoryName: "맛집탐방",
+        title: "홍대 핫플 탐방기",
+        userId: 103,
+        nickname: "맛집헌터",
+        createdAt: "2025-07-13T12:45:00",
+        commentCount: 4,
+        likes: 10,
+        isLiked: true,
+        scrapCount: 3,
+        isScraped: true,
+        thumbnailUrl: "https://picsum.photos/200/100?random=103"
+      },
+    {
+    postId: 4,
+    boardType: "자유게시판",
+    categoryName: "일상",
+    title: "주말 캠핑 다녀왔어요",
+    userId: 104,
+    nickname: "캠핑러",
+    createdAt: "2025-07-12T15:20:00",
+    commentCount: 3,
+    likes: 8,
+    isLiked: false,
+    scrapCount: 2,
+    isScraped: false,
+    thumbnailUrl: "https://picsum.photos/200/100?random=104"
+  },
+  {
+    postId: 5,
+    boardType: "모임구인",
+    categoryName: "스포츠",
+    title: "풋살 멤버 모집합니다",
+    userId: 105,
+    nickname: "풋살조아",
+    createdAt: "2025-07-12T09:00:00",
+    commentCount: 1,
+    likes: 4,
+    isLiked: true,
+    scrapCount: 0,
+    isScraped: false,
+    thumbnailUrl: "https://picsum.photos/200/100?random=105"
+  },
+  {
+    postId: 6,
+    boardType: "MT/LT",
+    categoryName: "단합대회",
+    title: "MT에서 있었던 웃긴 일화",
+    userId: 106,
+    nickname: "MT참가자",
+    createdAt: "2025-07-11T14:30:00",
+    commentCount: 2,
+    likes: 6,
+    isLiked: true,
+    scrapCount: 1,
+    isScraped: true,
+    thumbnailUrl: "https://picsum.photos/200/100?random=106"
+  },
+  {
+    postId: 7,
+    boardType: "식도락",
+    categoryName: "맛집탐방",
+    title: "강남 맛집 추천",
+    userId: 107,
+    nickname: "미식가",
+    createdAt: "2025-07-11T11:15:00",
+    commentCount: 0,
+    likes: 9,
+    isLiked: false,
+    scrapCount: 3,
+    isScraped: true,
+    thumbnailUrl: "https://picsum.photos/200/100?random=107"
+  },
+  {
+    postId: 8,
+    boardType: "자유게시판",
+    categoryName: "생각나눔",
+    title: "요즘 느낀 점 공유",
+    userId: 108,
+    nickname: "생각많은사람",
+    createdAt: "2025-07-10T18:40:00",
+    commentCount: 5,
+    likes: 3,
+    isLiked: true,
+    scrapCount: 0,
+    isScraped: false,
+    thumbnailUrl: "https://picsum.photos/200/100?random=108"
+  },
+  {
+    postId: 9,
+    boardType: "모임구인",
+    categoryName: "문화생활",
+    title: "연극 같이 보실 분?",
+    userId: 109,
+    nickname: "문화러버",
+    createdAt: "2025-07-10T08:00:00",
+    commentCount: 0,
+    likes: 7,
+    isLiked: false,
+    scrapCount: 2,
+    isScraped: false,
+    thumbnailUrl: "https://picsum.photos/200/100?random=109"
+  },
+  {
+    postId: 10,
+    boardType: "식도락",
+    categoryName: "카페추천",
+    title: "숨은 카페 소개",
+    userId: 110,
+    nickname: "카페투어",
+    createdAt: "2025-07-09T16:50:00",
+    commentCount: 2,
+    likes: 5,
+    isLiked: true,
+    scrapCount: 1,
+    isScraped: true,
+    thumbnailUrl: "https://picsum.photos/200/100?random=110"
+  },
+  {
+    postId: 11,
+    boardType: "MT/LT",
+    categoryName: "엠티후기",
+    title: "다같이 불멍한 날",
+    userId: 111,
+    nickname: "불멍러",
+    createdAt: "2025-07-09T13:10:00",
+    commentCount: 1,
+    likes: 2,
+    isLiked: false,
+    scrapCount: 0,
+    isScraped: true,
+    thumbnailUrl: "https://picsum.photos/200/100?random=111"
+  },
+  {
+    postId: 12,
+    boardType: "모임구인",
+    categoryName: "야외활동",
+    title: "이번 주말 등산 갈 사람!",
+    userId: 112,
+    nickname: "산이좋아",
+    createdAt: "2025-07-08T19:00:00",
+    commentCount: 4,
+    likes: 11,
+    isLiked: true,
+    scrapCount: 4,
+    isScraped: true,
+    thumbnailUrl: "https://picsum.photos/200/100?random=112"
+  }
+];
+
+
+    const sorted = dummyData.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+    setReviews(sorted);
+
+    const randomIndex = Math.floor(Math.random() * sorted.length);
+    setRandomRecommend(sorted[randomIndex]);
+  }, []);
+
+  /*
+  useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        const data = await fetchReviews(token || undefined);
+        const sorted = data.reviews.sort((a, b) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        setReviews(sorted);
+        const randomIndex = Math.floor(Math.random() * sorted.length);
+        setRandomRecommend(sorted[randomIndex]);
+      } catch (err: any) {
+        console.error('리뷰 불러오기 실패:', err.message);
+        setReviews([]);
+      }
+    };
+    loadReviews();
+  }, []);
+  */
 
   return (
     <>
       <Header />
 
       <div className="mainpage-background">
-        {/* 검색 섹션 */}
         <section className="mainpage-search-section">
           <h2 className="mainpage-sectiontitle">▶ 청춘 발자국</h2>
           <div className="mainpage-search-container">
-            <img
-              src={searchIcon}
-              alt="검색 아이콘"
-              className="mainpage-search-icon"
-            />
+            <img src={searchIcon} alt="검색 아이콘" className="mainpage-search-icon" />
             <input
               type="text"
               placeholder="검색어를 입력하세요"
               className="mainpage-search-input"
-              onClick={() => navigate("/search")} // 클릭하면 SearchPage.tsx 페이지로 넘어감
+              onClick={() => navigate("/search")}
             />
           </div>
         </section>
 
-        <section className="mainpage-suggest-section">
-          <div className="mainpage-suggest-card">
-            <p className="mainpage-suggest-label">이런 글은 어떠신가요?</p>
-            <div className="mainpage-suggest-content-wrapper">
-              <div className="mainpage-suggest-text">
-                <p className="mainpage-recommend-title">{recommended.title}</p>
-                <p className="mainpage-recommend-summary">{recommended.summary}</p>
-              </div>
-              <div className="mainpage-suggest-image-wrapper">
-                <img
-                  src="https://picsum.photos/160/120"
-                  alt="추천 이미지"
-                  className="mainpage-suggest-img"
-                />
+        {randomRecommend && (
+          <section className="mainpage-suggest-section">
+            <div className="mainpage-suggest-card" onClick={() => navigate(`/youth-talk/${randomRecommend.postId}`)}>
+              <p className="mainpage-suggest-label">이런 글은 어떠신가요?</p>
+              <div className="mainpage-suggest-content-wrapper">
+                <div className="mainpage-suggest-text">
+                  <p className="mainpage-recommend-title">{randomRecommend.title}</p>
+                  {/* <p className="mainpage-recommend-summary">{randomRecommend.content.length > 50? `${randomRecommend.content.slice(0, 50)}...`: randomRecommend.content}</p> */}
+                   <p className="mainpage-recommend-summary">#{randomRecommend.categoryName} / by {randomRecommend.nickname}</p>
+                </div>
+                <div className="mainpage-suggest-image-wrapper">
+                  <img src={randomRecommend.thumbnailUrl} alt="추천 이미지" className="mainpage-suggest-img" />
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <div className="roulette-wrapper">
           <button className="roulette-button" onClick={() => setIsModalOpen(true)}>룰렛 돌리기</button>
@@ -75,23 +283,34 @@ function MainPage() {
           <div className="today-board">
             <div className="section-header">
               <h2 className="today-section">오늘의 청춘</h2>
-              <a href="youth-talk" className="more-link">전체보기 {'>'} </a>
+              <a href="/youth-talk" className="more-link" style={{ textDecoration: 'underline' }}>더보기 {'>'}</a>
             </div>
             <div className="review-grid">
-              {reviewData.slice(0, visibleCount).map((review) => ( /*6개 제한*/
-                <ReviewCard
-                  key={review.id}
-                  title={review.title}
-                  tags={review.tags}
-                  imageUrl={review.imageUrl}
-                  author={review.author}
-                />
+              {reviews.slice(0, visibleCount).map((review) => (
+                <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
+                  <ReviewCard
+                    postId={review.postId}
+                    title={review.title}
+                    categoryName={review.categoryName}
+                    thumbnailUrl={review.thumbnailUrl}
+                    nickname={review.nickname}
+                    createdAt={review.createdAt}
+                    likes={review.likes}
+                    scrapCount={review.scrapCount}
+                    rating={4}
+                    isLiked={token ? review.isLiked: false}
+                    isScraped={review.isScraped}
+                  />
+                </div>
               ))}
             </div>
-            {!isMoreClicked && (
-              <button className="more-button" onClick={handleMoreClick}> 더보기 </button>
-            )}
           </div>
+          {!isMoreClicked && (
+            <button className="more-button" onClick={handleMoreClick}>
+              <span style={{ textDecoration: 'underline' }}>더보기</span> +
+            </button>
+          )}
+
         </section>
       </div>
 

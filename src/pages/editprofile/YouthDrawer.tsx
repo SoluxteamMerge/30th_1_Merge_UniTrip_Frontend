@@ -2,52 +2,78 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from "../../components/Header/Header";
 import './YouthDrawer.css';
-/*import { getUserInfo } from '../../api/getUserInfo'; */
+import { fetchMyUserInfo } from '../../api/YouthDrawer/UserInfoResponse';
 import DrawerCheckIcon from '../../assets/체크아이콘.svg';
+import AlertModal from '../../components/AlertModal/AlertModal';
+import axios from 'axios';
 
 function YouthDrawer() {
     const navigate = useNavigate();
 
-    const [name, setName] = useState('');
+    const [userName, setUserName] = useState('');
     const [nickname, setNickname] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [email, setEmail] = useState('');
+    const [emailVerified, setEmailVerified] = useState(false);
     const [profileImageUrl, setProfileImageUrl] = useState('');
+    const [userType, setUserType] = useState('');
+    const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
-    //실제 사용할 코드 (배포 시 주석 해제)
-    
-    /*useEffect(() => {
-        const getchUserProfile = async () => {
+    /*
+    useEffect(() => {
+        const fetchUserProfile = async () => {
             try {
-                const response = await getUserInfo();
-                setName(response.data.name);
-                setNickname(response.data.nickname);
-                setPhoneNumber(response.data.phoneNumber);
-                setEmail(response.data.userEmail);
-                setProfileImageUrl(response.data.profileImageUrl);
+                const data = await fetchMyUserInfo();
+                setUserName(data.userName);
+                setNickname(data.nickname);
+                setPhoneNumber(data.phoneNumber);
+                setEmailVerified(data.emailVerified);
+                setProfileImageUrl(data.profileImageUrl);
             } catch (error) {
                 console.error('회원정보 불러오기 실패', error);
             }
         };
-        getchUserProfile();
+        fetchUserProfile();
     }, []);
     */
 
-    // ✅ 더미 테스트용 데이터
     useEffect(() => {
-        const dummyUser = {
-            name: '홍길동',
-            nickname: '길동이',
-            phoneNumber: '010-1234-5678',
-            userEmail: 'gildong@example.com',
-            profileImageUrl: 'https://dummyimage.com/100x100/000/fff.png',
-        };
-        setName(dummyUser.name);
-        setNickname(dummyUser.nickname);
-        setPhoneNumber(dummyUser.phoneNumber);
-        setEmail(dummyUser.userEmail);
-        setProfileImageUrl(dummyUser.profileImageUrl);
+        // 더미 데이터로 테스트
+        setUserName('김가인');
+        setNickname('가인123');
+        setPhoneNumber('010-1234-5678');
+        setEmailVerified(true);
+        setProfileImageUrl('https://picsum.photos/300');
+        setUserType('개인');
     }, []);
+
+    const handleWithdraw = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+
+            const res = await axios.delete('/api/user/signout', {
+                headers: { Authorization: token },
+            });
+
+            if (res.data.code === 200) {
+                alert(res.data.message);
+                localStorage.clear();
+                navigate('/');
+            } else {
+                alert(res.data.message);
+            }
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                alert(error.response?.data?.message || '회원탈퇴 실패');
+            } else {
+                alert('회원탈퇴 실패');
+            }
+        }
+    };
 
     return (
         <div>
@@ -61,7 +87,7 @@ function YouthDrawer() {
                             <div className="input-row-left">
                                 <label className="Drawer-label">이름</label>
                             </div>
-                            <input type="text" className="Drawerinput" value={name} readOnly placeholder="이름" />
+                            <input type="text" className="Drawerinput" value={userName} readOnly placeholder="이름" />
                             <div className="Drawer-underline"></div>
                         </div>
 
@@ -83,35 +109,97 @@ function YouthDrawer() {
 
                         <div className="input-row">
                             <div className="input-row-left">
-                                <label className="Drawer-label">프로필 사진 URL</label>
+                                <label className="Drawer-label">유저 유형</label>
                             </div>
-                            <input type="text" className="Drawerinput" value={profileImageUrl} readOnly placeholder="이미지 주소" />
+                            <input
+                                type="text"
+                                className="Drawerinput"
+                                value={userType}
+                                readOnly
+                                placeholder="유저 유형"
+                            />
+                            <div className="Drawer-underline"></div>
+                        </div>
+
+
+                        <div className="input-row">
+                            <div className="input-row-left">
+                                <label className="Drawer-label">프로필 사진</label>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                                {profileImageUrl ? (
+                                    <button onClick={() => setIsImageModalOpen(true)} className="Drawer-check-btn">
+                                        미리보기
+                                    </button>
+                                ) : (
+                                    <span style={{ color: '#999999' }}>등록된 사진이 없습니다.</span>
+                                )}
+                            </div>
                             <div className="Drawer-underline"></div>
                         </div>
 
                         <div className="input-row">
-                            <div className="input-row-left">
-                                <label className="Drawer-label">학교 이메일</label>
-                                <img src={DrawerCheckIcon} alt='체크아이콘' style={{ width: '24px', cursor: 'pointer', verticalAlign: 'middle' }} onClick={() => window.open('', '_blank', 'width=400, height=300')} />
+                            <div className="input-row-left" style={{ display: 'flex', alignItems: 'center' }}>
+                                <label className="Drawer-label">학교 이메일 인증</label>
+                                {emailVerified && (
+                                    <img src={DrawerCheckIcon} alt="체크 아이콘" style={{ width: '16px', marginLeft: '0px' }} />
+                                )}
                             </div>
-                            <input type="email" className="Drawerinput" value={email} readOnly placeholder="이메일" />
+                            <input
+                                type="text"
+                                className="Drawerinput"
+                                placeholder='이메일 인증'
+                                readOnly
+                                value={emailVerified ? '인증 완료했습니다.' : '미인증 상태입니다.'}
+                            />
                             <div className="Drawer-underline"></div>
                         </div>
+
+
+                        <div className="YouthDrawerButton">
+                            <button className="Drawer-edit-btn" onClick={() => navigate('/youth-drawer-edit')}>
+                                수정하기
+                            </button>
+                            <button className="Drawer-save-btn">
+                                저장하기
+                            </button>
+                        </div>
+
+                        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                            <a href="#" style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px', marginRight: '24px' }}>
+                                고객센터
+                            </a>
+                            <a href="#" onClick={(e) => { e.preventDefault(); setIsWithdrawModalOpen(true); }} style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px' }}>
+                                회원 탈퇴
+                            </a>
+                        </div>
+
+                        {isWithdrawModalOpen && (
+                            <AlertModal
+                                message="정말로 탈퇴하시겠습니까?"
+                                onClose={() => {
+                                    handleWithdraw();
+                                    setIsWithdrawModalOpen(false);
+                                }}
+                            />
+                        )}
+
+                        {isImageModalOpen && (
+                            <AlertModal
+                                message={
+                                    <div style={{ textAlign: 'center' }}>
+                                        <img src={profileImageUrl} alt="프로필 미리보기" style={{ maxWidth: '100%' }} />
+                                    </div>
+                                }
+                                onClose={() => setIsImageModalOpen(false)}
+                            />
+                        )}
                     </div>
-
-                    <button className="Drawer-submit-btn" onClick={() => navigate('/youth-drawer-edit')}>
-                        수정하기
-                    </button>
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                    <a href="#" style={{ display: 'inline-block', color: '#BBBBBB', textDecoration: 'underline', fontWeight: '00', fontSize: '24px', marginBottom: '40px' }}>
-                        고객센터
-                    </a>
-                </div>
-
             </div>
         </div>
     );
 }
 
 export default YouthDrawer;
+

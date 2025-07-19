@@ -1,18 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from "../../components/Header/Header";
 import './YouthDrawer.css';
 import DrawerCheckIcon from '../../assets/체크아이콘.svg';
+import AlertModal from '../../components/AlertModal/AlertModal';
+// import { updateMyUserInfo } from '../../api/YouthDrawer/updateMyUserInfo';
+// import { sendEmailVerification } from '../../api/Signup/sendEmailVerification';
+// import { verifyEmailCode } from '../../api/Signup/verifyEmailCode';
 
 function YouthDrawerEdit() {
+    const navigate = useNavigate();
+
     const [name, setName] = useState('');
     const [nickname, setNickname] = useState('');
     const [nicknameChecked, setNicknameChecked] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
+    const [userType, setUserType] = useState('개인');
+    const [emailVerified, setEmailVerified] = useState(false);
     const [profileImageName, setProfileImageName] = useState('선택된 파일 없음');
 
-    // 더미 데이터 세팅
+    const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+    const [resultMessage, setResultMessage] = useState('');
+
+    const [isEmailCodeSent, setIsEmailCodeSent] = useState(false);
+    const [emailVerificationCode, setEmailVerificationCode] = useState('');
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
     useEffect(() => {
         const dummyUser = {
             name: '홍길동',
@@ -24,31 +41,25 @@ function YouthDrawerEdit() {
         setNickname(dummyUser.nickname);
         setPhoneNumber(dummyUser.phoneNumber);
         setEmail(dummyUser.userEmail);
-        setNicknameChecked(true); // 초기에 닉네임은 중복확인 완료된 상태로 가정
+        setNicknameChecked(true);
     }, []);
 
-    // 닉네임 중복 확인 - 더미용
     const handleCheckNickname = () => {
         if (!nickname) {
-            alert('닉네임을 입력하세요');
+            setResultMessage('닉네임을 입력하세요');
+            setIsResultModalOpen(true);
             return;
         }
         if (nickname.length < 2 || nickname.length > 20) {
-            alert('닉네임은 2~20자여야 합니다.');
+            setResultMessage('닉네임은 2~20자여야 합니다.');
+            setIsResultModalOpen(true);
             return;
         }
-        // 더미 중복 체크: '가인'은 중복된 닉네임으로 가정
-        const isDuplicated = nickname === '가인';
-        if (isDuplicated) {
-            alert('이미 사용 중인 닉네임입니다.');
-            setNicknameChecked(false);
-        } else {
-            alert('사용 가능한 닉네임입니다.');
-            setNicknameChecked(true);
-        }
+        setResultMessage('사용 가능한 닉네임입니다.');
+        setNicknameChecked(true);
+        setIsResultModalOpen(true);
     };
 
-    // 휴대폰 번호 포맷팅
     const formatPhoneNumber = (value: string) => {
         const onlyNumber = value.replace(/[^0-9]/g, '');
         if (onlyNumber.length < 4) return onlyNumber;
@@ -60,21 +71,61 @@ function YouthDrawerEdit() {
         setPhoneNumber(formatPhoneNumber(e.target.value));
     };
 
-    // 파일 선택시 파일명 업데이트
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        setProfileImageName(file ? file.name : '선택된 파일 없음');
+        if (file) {
+            setSelectedFile(file);
+            setIsImageModalOpen(true);
+        }
     };
 
-    // 저장하기 - 더미용
-    const handleSave = () => {
-        if (!nicknameChecked) {
-            alert('닉네임 중복 확인을 해주세요.');
+    const handleConfirmImageUpload = () => {
+        if (selectedFile) {
+            setProfileImageName(selectedFile.name);
+        }
+        setIsImageModalOpen(false);
+    };
+
+    const handleCancelImageUpload = () => {
+        setSelectedFile(null);
+        setIsImageModalOpen(false);
+    };
+
+    const handleVerifyEmailCode = async () => {
+        if (!emailVerificationCode) {
+            setResultMessage('인증 코드를 입력하세요');
+            setIsResultModalOpen(true);
             return;
         }
-        // 서버 호출 없이 콘솔에 저장할 데이터 출력 후 알림
-        console.log('저장할 정보', { name, nickname, phoneNumber, email, profileImageName });
-        alert('저장되었습니다. (더미 테스트)');
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setEmailVerified(true);
+        setIsEmailCodeSent(false);
+        setResultMessage('이메일 인증이 완료되었습니다.');
+        setIsResultModalOpen(true);
+    };
+
+    const handleSendEmailVerification = async () => {
+        if (!email) {
+            setResultMessage('학교 이메일을 입력하세요');
+            setIsResultModalOpen(true);
+            return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setIsEmailCodeSent(true);
+        setEmailVerified(false);
+        setResultMessage('인증 코드가 발송되었습니다.');
+        setIsResultModalOpen(true);
+    };
+
+    const handleSave = async () => {
+        if (!nicknameChecked) {
+            setResultMessage('닉네임 중복 확인을 해주세요.');
+            setIsResultModalOpen(true);
+            return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setResultMessage('회원정보가 저장되었습니다.');
+        setIsResultModalOpen(true);
     };
 
     return (
@@ -85,18 +136,9 @@ function YouthDrawerEdit() {
                 <div className="edit-card">
                     <h3 className="Drawer-title">개인정보 수정</h3>
                     <div className="edit-form">
-
                         <div className="input-row">
-                            <div className="input-row-left">
-                                <label className="Drawer-label">이름</label>
-                            </div>
-                            <input
-                                type="text"
-                                className="Drawerinput"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="이름을 입력하세요"
-                            />
+                            <div className="input-row-left"><label className="Drawer-label">이름</label></div>
+                            <input type="text" className="Drawerinput" value={name} onChange={(e) => setName(e.target.value)} placeholder="이름을 입력하세요" />
                             <div className="Drawer-underline"></div>
                         </div>
 
@@ -105,37 +147,27 @@ function YouthDrawerEdit() {
                                 <label className="Drawer-label">닉네임</label>
                                 <span className="Drawer-check-duplicate" onClick={handleCheckNickname}>중복확인</span>
                             </div>
-                            <input
-                                type="text"
-                                className="Drawerinput"
-                                value={nickname}
-                                onChange={(e) => {
-                                    setNickname(e.target.value);
-                                    setNicknameChecked(false);
-                                }}
-                                placeholder="닉네임을 입력하세요"
-                            />
+                            <input type="text" className="Drawerinput" value={nickname} onChange={(e) => { setNickname(e.target.value); setNicknameChecked(false); }} placeholder="닉네임을 입력하세요" />
                             <div className="Drawer-underline"></div>
                         </div>
 
                         <div className="input-row">
-                            <div className="input-row-left">
-                                <label className="Drawer-label">핸드폰 번호</label>
-                            </div>
-                            <input
-                                type="tel"
-                                className="Drawerinput"
-                                value={phoneNumber}
-                                onChange={handlePhoneNumberChange}
-                                placeholder="휴대폰 번호를 입력하세요"
-                            />
+                            <div className="input-row-left"><label className="Drawer-label">핸드폰 번호</label></div>
+                            <input type="tel" className="Drawerinput" value={phoneNumber} onChange={handlePhoneNumberChange} placeholder="휴대폰 번호를 입력하세요" />
                             <div className="Drawer-underline"></div>
                         </div>
 
                         <div className="input-row">
-                            <div className="input-row-left">
-                                <label className="Drawer-label">프로필 사진</label>
-                            </div>
+                            <div className="input-row-left"><label className="Drawer-label">유저 유형</label></div>
+                            <select id="userTypeSelect" className="Drawerinput" value={userType} onChange={(e) => setUserType(e.target.value)} aria-label="유저 유형 선택">
+                                <option value="">선택하세요</option>
+                                <option value="개인">개인</option>
+                                <option value="조직">조직</option>
+                            </select>
+                        </div>
+
+                        <div className="input-row">
+                            <div className="input-row-left"><label className="Drawer-label">프로필 사진</label></div>
                             <div className="input-with-button">
                                 <span className="Drawer-file-name">{profileImageName}</span>
                                 <input type="file" id="file" className="Drawer-hidden-file" onChange={handleFileChange} />
@@ -147,44 +179,59 @@ function YouthDrawerEdit() {
                         <div className="input-row">
                             <div className="input-row-left">
                                 <label className="Drawer-label">학교 이메일</label>
-                                <img
-                                    src={DrawerCheckIcon}
-                                    alt='체크아이콘'
-                                    style={{ width: '24px', cursor: 'pointer', verticalAlign: 'middle' }}
-                                    onClick={() => window.open('', '_blank', 'width=400, height=300')}
-                                />
+                                {emailVerified && <img src={DrawerCheckIcon} alt="체크아이콘" style={{ width: '24px', marginLeft: '4px', verticalAlign: 'middle' }} />}
                             </div>
-                            <input
-                                type="email"
-                                className="Drawerinput"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="학교 이메일을 입력하세요"
-                            />
+                            <div className="input-with-button">
+                                <input type="email" className="Drawerinput" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="학교 이메일을 입력하세요" />
+                                <button className="Drawer-check-btn" onClick={handleSendEmailVerification}>인증요청</button>
+                            </div>
                             <div className="Drawer-underline"></div>
                         </div>
 
+                        {isEmailCodeSent && (
+                            <>
+                              <div className="input-with-button" style={{ marginTop: '8px' }}>
+                                <input
+                                    type="text"
+                                    className="Drawerinput"
+                                    value={emailVerificationCode}
+                                    onChange={(e) => setEmailVerificationCode(e.target.value)}
+                                    placeholder="인증 코드를 입력하세요"
+                                />
+                                <button className="Drawer-check-btn" onClick={handleVerifyEmailCode}>확인</button>
+                            </div>
+                            <div className="Drawer-underline"></div>
+                            </>
+                
+                        )}
+                
+
+                    <div className="YouthDrawerButton">
+                        <button className="Drawer-edit-btn" onClick={() => navigate('/youth-drawer-edit')}>수정하기</button>
+                        <button className="Drawer-save-btn" onClick={handleSave}>저장하기</button>
                     </div>
-                    <button className="Drawer-submit-btn" onClick={handleSave}>저장</button>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                    <a
-                        href="#"
-                        style={{
-                            display: 'inline-block',
-                            color: '#BBBBBB',
-                            textDecoration: 'underline',
-                            fontWeight: '00',
-                            fontSize: '24px',
-                            marginBottom: '40px',
-                        }}
-                    >
-                        고객센터
-                    </a>
                 </div>
             </div>
+
+            {isResultModalOpen && <AlertModal message={resultMessage} onClose={() => setIsResultModalOpen(false)} />}
+
+            {isImageModalOpen && (
+                <AlertModal
+                    message={
+                        <div style={{ textAlign: 'center' }}>
+                            <p><strong>이미지</strong></p>
+                            <p style={{ color: '#999', marginBottom: '16px' }}>{selectedFile?.name}</p>
+                            <button onClick={handleConfirmImageUpload} className="Drawer-check-btn">파일 업로드</button>
+                        </div>
+                    }
+                    onClose={handleCancelImageUpload}
+                />
+            )}
+        </div>
         </div>
     );
+
 }
 
 export default YouthDrawerEdit;
+

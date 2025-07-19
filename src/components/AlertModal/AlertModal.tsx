@@ -1,8 +1,10 @@
+// src/components/AlertModal/AlertModal.tsx
+
 import React from 'react';
 import './AlertModal.css';
 
 interface AlertModalProps {
-  message: string;
+  message: React.ReactNode;
   onClose: () => void;
 }
 
@@ -10,8 +12,9 @@ const AlertModal: React.FC<AlertModalProps> = ({ message, onClose }) => {
   return (
     <div className="alert-overlay" onClick={onClose}>
       <div className="alert-box" onClick={(e) => e.stopPropagation()}>
-        <p style={{ color: 'black'}}>{message}</p>
-        <button onClick={onClose}>확인</button>
+        <button className="alert-close-button" onClick={onClose}>✕</button>
+        <div style={{ color: 'black', textAlign: 'center' }}>{message}</div>
+        <button className="alert-ok-btn" onClick={onClose}>확인</button>
       </div>
     </div>
   );
