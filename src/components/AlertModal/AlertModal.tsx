@@ -6,6 +6,7 @@ import './AlertModal.css';
 interface AlertModalProps {
   message: React.ReactNode;
   onClose: () => void;
+  onConfirm?: () => void;
 }
 
 const AlertModal: React.FC<AlertModalProps> = ({ message, onClose }) => {

@@ -82,6 +82,13 @@ body {
     align-items: center;
 }
 
+.input-row.file-upload-row .input-row-left {
+  align-items: flex-end;
+  display: flex;
+  margin-bottom:0px;
+}
+
+
 .edit-form .input-row:nth-of-type(4) .input-row-left { /*나중에 바뀔 지도 모르지만 프로필 사진 자식 */
   margin-bottom: 10px;
 }
@@ -90,14 +97,19 @@ body {
   display: none;
 }
 
+.Drawer-button-group {
+  display: flex;
+  gap: 8px;
+}
 
 .input-with-button {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 10px;
   flex-wrap: nowrap;
   width: 100%;
   justify-content: space-between;
+  margin-bottom: 3px;
 }
 
 .input-with-button input {
@@ -119,6 +131,7 @@ body {
 
 .Drawer-file-name{
   font-size: 20px;
+
 }
 
 
@@ -179,20 +192,20 @@ body {
 }
 
 .Drawer-save-btn {
-  width: 200px;
-
-  height: 50px;
+  width: 250px;
+  height: 70px;
   background-color: #0B0B61;
   color:#FBFBFB;
   border-radius: 12px;
   border: 0.67px solid #838383;
+  font-size: 20px;
 
 }
 
 .Drawer-edit-btn{
-  width: 200px;
-
-  height: 50px;
+  width: 250px;
+  height: 70px;
   background-color: #FBFBFB;
   border-radius: 12px;
+  font-size: 20px;
 }
