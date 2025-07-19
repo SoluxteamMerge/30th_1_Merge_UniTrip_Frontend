@@ -162,15 +162,17 @@ const SignupPage: React.FC = () => {
           </div>
 
           <div className="signup-form-row">
-            <label className="signup-label">유저 타입 (개인/단체)</label>
+            <label className="signup-label">유저 타입 (개인/조직)</label>
             <select
               value={userType}
               onChange={(e) => setUserType(e.target.value)}
               className="signup-select"
+              aria-label="회원 유형 선택"
+        
             >
               <option value="">선택하세요</option>
               <option value="개인">개인</option>
-              <option value="단체">단체</option>
+              <option value="조직">조직</option>
             </select>
           </div>
 
