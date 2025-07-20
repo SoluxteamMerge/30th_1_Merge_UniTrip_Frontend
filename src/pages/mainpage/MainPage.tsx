@@ -6,15 +6,22 @@ import Header from '../../components/Header/Header';
 import './MainPage.css';
 import searchIcon from '../../assets/search_icon.svg';
 import { useNavigate } from "react-router-dom";
-/*import { fetchReviews } from '../../api/mainpage/getReviews'; */
+import { fetchReviews } from '../../api/mainpage/getReviews'; 
+import { fetchRecommendedReview } from '../../api/mainpage/getRecommendedReview';
 import type { ReviewItem } from '../../api/mainpage/getReviews';
 
+interface RecommendItem {
+  postId: number;
+  title: string;
+  thumbnailUrl: string;
+  content: string;
+}
 function MainPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
   const [isMoreClicked, setIsMoreClicked] = useState(false);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
-  const [randomRecommend, setRandomRecommend] = useState<ReviewItem | null>(null);
+  const [randomRecommend, setRandomRecommend] = useState<RecommendItem | null>(null);
   const token = localStorage.getItem('accessToken');
   const navigate = useNavigate();
 
@@ -23,6 +30,7 @@ function MainPage() {
     setIsMoreClicked(true);
   }
   {/*더미 테스트 */}
+
   useEffect(() => {
     const dummyData: ReviewItem[] = [
       {
@@ -214,11 +222,40 @@ function MainPage() {
 
     setReviews(sorted);
 
-    const randomIndex = Math.floor(Math.random() * sorted.length);
-    setRandomRecommend(sorted[randomIndex]);
+    setRandomRecommend({
+    postId: 999,
+    title: "테스트 추천글",
+    thumbnailUrl: "https://picsum.photos/200/100?random=999",
+    content: "<p>추천 테스트용입니다! 길이가 언제까지 갈까요 시험해봅시다 언제까지 가나요? 언제까지언제까지 언제까지</p>"
+  });
+  }, []);
+// 추천 Api
+/*
+ useEffect(() => {
+    const fetchRecommended = async () => {
+      try {
+        const data = await fetchRecommendedReview();
+
+        setRandomRecommend({
+          postId: data.postId,
+          title: data.title,
+          thumbnailUrl: data.thumbnailUrl || '/default-thumbnail.png',
+          content: data.content,
+        });
+      } catch (err) {
+        if (err instanceof Error) {
+        console.error('추천 리뷰 불러오기 실패:', err.message);
+      } else {
+        console.error('추천 리뷰 불러오기 실패:',err);
+      }
+      setRandomRecommend(null);
+      }
+    };
+
+    fetchRecommended();
   }, []);
 
-  /*
+  // 리뷰 리스트 가져오기 
   useEffect(() => {
     const loadReviews = async () => {
       try {
@@ -228,11 +265,13 @@ function MainPage() {
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
         setReviews(sorted);
-        const randomIndex = Math.floor(Math.random() * sorted.length);
-        setRandomRecommend(sorted[randomIndex]);
-      } catch (err: any) {
-        console.error('리뷰 불러오기 실패:', err.message);
-        setReviews([]);
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error('리뷰 불러오기 실패:', err.message);
+        } else {
+          console.error('리뷰 불어오기 실패:',err);
+      } 
+      setReviews([]);
       }
     };
     loadReviews();
@@ -264,8 +303,11 @@ function MainPage() {
               <div className="mainpage-suggest-content-wrapper">
                 <div className="mainpage-suggest-text">
                   <p className="mainpage-recommend-title">{randomRecommend.title}</p>
-                  {/* <p className="mainpage-recommend-summary">{randomRecommend.content.length > 50? `${randomRecommend.content.slice(0, 50)}...`: randomRecommend.content}</p> */}
-                   <p className="mainpage-recommend-summary">#{randomRecommend.categoryName} / by {randomRecommend.nickname}</p>
+                  <p className="mainpage-recommend-summary">
+                    {randomRecommend.content
+                      ? randomRecommend.content.replace(/<[^>]+>/g, '').slice(0, 50) + '...'
+                      : '소개글이 없습니다.'}
+                  </p>
                 </div>
                 <div className="mainpage-suggest-image-wrapper">
                   <img src={randomRecommend.thumbnailUrl} alt="추천 이미지" className="mainpage-suggest-img" />
@@ -299,7 +341,7 @@ function MainPage() {
                     scrapCount={review.scrapCount}
                     rating={4}
                     isLiked={token ? review.isLiked: false}
-                    isScraped={review.isScraped}
+                    isScraped={token ? review.isScraped: false}
                   />
                 </div>
               ))}
