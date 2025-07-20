@@ -68,3 +68,8 @@
   margin-top: 5px;
   border-bottom: 1px solid #BBBBBB;
 }
+
+.upload-btn-gruop {
+  display: flex;
+  gap: 4px;
+}
