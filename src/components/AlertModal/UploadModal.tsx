@@ -1,5 +1,6 @@
 import React from 'react';
 import './UploadModal.css'; 
+import closeIcon from '../../assets/close.svg';
 
 interface UploadModalProps {
   fileName: string;
@@ -13,7 +14,9 @@ const UploadModal: React.FC<UploadModalProps> = ({ fileName, onConfirm, onClose 
       <div className="upload-box" onClick={(e) => e.stopPropagation()}>
         <div className="upload-header">
           <span>이미지</span>
-          <button onClick={onClose}>✕</button>
+          <button className="alert-close-button" onClick={onClose}>
+            <img src = {closeIcon} alt="닫기 버튼"/>
+          </button>
         </div>
 
         <div className="upload-content">

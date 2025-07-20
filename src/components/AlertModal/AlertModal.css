@@ -24,14 +24,20 @@
 
 .alert-close-button {
   position: absolute;
-  top: 16px;    /* 기존보다 약간 아래로 */
-  right: 16px;
+  top: 10px;    /* 기존보다 약간 아래로 */
+  right:15px;
   background: none;
   border: none;
   font-size: 20px;
   cursor: pointer;
   outline: none; 
+
   
+}
+.alert-close-button img {
+  width: 22px;
+  height: 22px;
+
 }
 
 .alert-box p {
