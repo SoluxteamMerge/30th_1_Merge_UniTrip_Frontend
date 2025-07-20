@@ -38,10 +38,10 @@ const YouthCalendar: React.FC = () => {
   const [savedSchedules, setSavedSchedules] = useState<{
     [key: string]: { title: string; color: string; memo?: string };
   }>({});
-  const [viewingMemo, setViewingMemo] = useState<{ title: string; memo: string; color: string } | null>(null);
+  //const [viewingMemo, setViewingMemo] = useState<{ title: string; memo: string; color: string } | null>(null);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingMemo, setEditingMemo] = useState("");
+  //const [isEditing, setIsEditing] = useState(false);
+  //const [editingMemo, setEditingMemo] = useState("");
 
 
   useEffect(() => {
@@ -51,6 +51,7 @@ const YouthCalendar: React.FC = () => {
     }
   }, []);
 
+  {/*메모 저장?*/}
   const handleSave = () => {
     if (!selectedDate || !scheduleTitle) return;
     const key = `${currentYear}-${currentMonth + 1}-${selectedDate}`;
@@ -64,44 +65,50 @@ const YouthCalendar: React.FC = () => {
     setScheduleTitle("");
     setMemo("");
   };
-    {/*메모 수정*/}
-    const handleEditSave = () => {
-    if (!viewingMemo) return;
-    const updatedSchedules = { ...savedSchedules };
+      {/*메모 수정
+      const handleEditSave = () => {
+      if (!viewingMemo) return;
+      const updatedSchedules = { ...savedSchedules };
 
-    const key = Object.keys(savedSchedules).find(
-      (k) => savedSchedules[k].title === viewingMemo.title && savedSchedules[k].color === viewingMemo.color
-    );
-    if (!key) return;
+      const key = Object.keys(savedSchedules).find(
+        (k) => savedSchedules[k].title === viewingMemo.title && savedSchedules[k].color === viewingMemo.color
+      );
+      if (!key) return;
 
-    updatedSchedules[key] = {
-      ...updatedSchedules[key],
-      memo: editingMemo
+      updatedSchedules[key] = {
+        ...updatedSchedules[key],
+        memo: editingMemo
+      };
+      
+
+      setSavedSchedules(updatedSchedules);
+      localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
+      setViewingMemo({ ...viewingMemo, memo: editingMemo });
+      setIsEditing(false);
     };
+    */}
 
-    setSavedSchedules(updatedSchedules);
-    localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
-    setViewingMemo({ ...viewingMemo, memo: editingMemo });
-    setIsEditing(false);
+    {/*메모 삭제*/}
+    const handleDelete = () => {
+    if (!selectedDate) return;
+    const key = `${currentYear}-${currentMonth + 1}-${selectedDate}`;
+    const updated = { ...savedSchedules };
+    delete updated[key];
+    setSavedSchedules(updated);
+    localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
+    setIsModalOpen(false);
+    setScheduleTitle("");
+    setMemo("");
   };
 
-  {/*메모 삭제*/}
-  const handleDelete = () => {
-    if (!viewingMemo) return;
-
-    const key = Object.keys(savedSchedules).find(
-      (k) => savedSchedules[k].title === viewingMemo.title && savedSchedules[k].color === viewingMemo.color
-    );
-    if (!key) return;
-
-    const updatedSchedules = { ...savedSchedules };
-    delete updatedSchedules[key];
-
-    setSavedSchedules(updatedSchedules);
-    localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
-    setViewingMemo(null);
+  {/*메모 조회*/}
+  const openEditModal = (day: number, entry: { title: string; color: string; memo?: string }) => {
+    setSelectedDate(day);
+    setScheduleTitle(entry.title);
+    setSelectedColor(entry.color);
+    setMemo(entry.memo ?? "");
+    setIsModalOpen(true);
   };
-
 
 
   const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0 (Sun) ~ 6 (Sat)
@@ -150,9 +157,12 @@ const YouthCalendar: React.FC = () => {
           key={day}
           onClick={() => {
             if (entry) {
-              setViewingMemo({ title: entry.title, memo: entry.memo ?? "", color: entry.color });
+             openEditModal(day, entry);
             } else {
               setSelectedDate(day);
+              setScheduleTitle("");
+              setMemo("");
+              setSelectedColor("#8bcece");
               setIsModalOpen(true);
             }
           }}
@@ -208,8 +218,7 @@ const YouthCalendar: React.FC = () => {
     return rows;
   }; //달력 생성 끝
 
-  //이전 달 
-  
+  //이전 달
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
@@ -422,7 +431,6 @@ const YouthCalendar: React.FC = () => {
             }}>✕</button>
 
             <h3 style={{ marginBottom: 16 }}>일정 추가</h3>
-
             <p style={{ fontSize: 14, color: "#666" }}>
                 {currentMonth + 1}월 {selectedDate}일
             </p>
@@ -487,144 +495,43 @@ const YouthCalendar: React.FC = () => {
                 ></div>
                 ))}
             </div>
-
-            <button
-              onClick={handleSave}
-              style={{
-                width: "100%",
-                backgroundColor: "#0b0b61",
-                color: "#fff",
-                border: "none",
-                padding: "12px 0",
-                borderRadius: 8,
-                fontWeight: 600,
-                marginTop: 8
-              }}
-            >
-              저장
-            </button>
-          </div>
-      </div>
-      )}
-
-      {/* 메모 보기 팝업 */}
-      {viewingMemo && (
-        <div style={{
-          position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.3)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 999
-        }}>
-          <div style={{
-            backgroundColor: "#fff",
-            borderRadius: 16,
-            padding: 32,
-            width: 360,
-            boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-            position: "relative"
-          }}>
-            <button onClick={() => setViewingMemo(null)} style={{
-              position: "absolute", top: 12, right: 12,
-              background: "none", border: "none", fontSize: 20, cursor: "pointer"
-            }}>✕</button>
-
-            <h3 style={{ marginBottom: 16 }}>일정 보기</h3>
-            <div style={{ 
-              backgroundColor: viewingMemo.color, 
-              color: "#fff", 
-              borderRadius: 8, 
-              padding: "8px 12px", 
-              marginBottom: 12 
-              }}
-            >
-              <strong>{viewingMemo.title}</strong>
-            </div>
             
-            {/* 메모 수정 모드 전환용 상태 */}
-            {isEditing ? (
-              <>
-                <textarea
-                  value={editingMemo}
-                  onChange={(e) => setEditingMemo(e.target.value)}
-                  rows={3}
-                  style={{
-                    width: "100%",
-                    padding: 8,
-                    fontSize: 14,
-                    border: "1px solid #ccc",
-                    borderRadius: 6,
-                    resize: "none",
-                    marginBottom: 12
-                  }}
-                />
-                <button
-                  onClick={handleEditSave}
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#0b0b61",
-                    color: "#fff",
-                    border: "none",
-                    padding: "10px 0",
-                    borderRadius: 6,
-                    fontWeight: 600,
-                    marginBottom: 8
-                  }}
-                >
-                  수정 완료
-                </button>
-              </>
-            ) : (
-              <div style={{ fontSize: 14, color: "#333", marginBottom: 16 }}>
-                {viewingMemo.memo || "메모 없음"}
-              </div>
-            )}
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+              <button
+                onClick={handleSave}
+                style={{
+                  width: "100%",
+                  backgroundColor: "#0b0b61",
+                  color: "#fff",
+                  border: "none",
+                  padding: "12px 0",
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  marginTop: 8
+                }}
+              >
+                저장
+              </button>
 
-            {/* 버튼들 */}
-            {!isEditing && (
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                <button
-                  onClick={() => {
-                    setEditingMemo(viewingMemo.memo);
-                    setIsEditing(true);
-                  }}
-                  style={{
-                    flex: 1,
-                    backgroundColor: "#f0ad4e",
-                    color: "#fff",
-                    border: "none",
-                    padding: "10px 0",
-                    borderRadius: 6,
-                    fontWeight: 600
-                  }}
-                >
-                  메모 수정
-                </button>
-
-                <button
+              <button
                   onClick={handleDelete}
                   style={{
                     flex: 1,
                     backgroundColor: "#d9534f",
                     color: "#fff",
                     border: "none",
-                    padding: "10px 0",
-                    borderRadius: 6,
+                    padding: "12px 0",
+                    borderRadius: 8,
                     fontWeight: 600
                   }}
                 >
                   삭제
-                </button>
-              </div>
-            )}
-
-
+              </button>
           </div>
-    </div>
-    )}
-    </div>
+          </div>
+      </div>
+      )}
+  </div>
   );
 };
 
