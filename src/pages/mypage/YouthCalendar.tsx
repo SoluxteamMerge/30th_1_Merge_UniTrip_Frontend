@@ -32,6 +32,8 @@ const YouthCalendar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
+  const [isMemoSelected, setIsMemoSelected] = useState(false); // 메모 클릭 상태
+
   const [scheduleTitle, setScheduleTitle] = useState("");
   const [memo, setMemo] = useState("");
   const [selectedColor, setSelectedColor] = useState("#8bcece"); // 기본색
@@ -107,6 +109,7 @@ const YouthCalendar: React.FC = () => {
     setScheduleTitle(entry.title);
     setSelectedColor(entry.color);
     setMemo(entry.memo ?? "");
+    setIsMemoSelected(true); //메모가 있는 셀 클릭 → 삭제 버튼 빨간색
     setIsModalOpen(true);
   };
 
@@ -157,12 +160,13 @@ const YouthCalendar: React.FC = () => {
           key={day}
           onClick={() => {
             if (entry) {
-             openEditModal(day, entry);
+              openEditModal(day, entry); // 기존 메모 있는 셀 클릭
             } else {
               setSelectedDate(day);
               setScheduleTitle("");
               setMemo("");
               setSelectedColor("#8bcece");
+              setIsMemoSelected(false); // 빈 셀 클릭 → 삭제 버튼 회색
               setIsModalOpen(true);
             }
           }}
@@ -370,7 +374,7 @@ const YouthCalendar: React.FC = () => {
 
       {/* Floating 버튼 */}
       <button
-        onClick={() => navigate("/review-write")}  // 이 줄 추가!
+        onClick={() => navigate("/review-write")}  
         style={{
           position: "fixed",
           right: 60,
@@ -516,13 +520,14 @@ const YouthCalendar: React.FC = () => {
               <button
                   onClick={handleDelete}
                   style={{
-                    flex: 1,
-                    backgroundColor: "#d9534f",
+                    width: "120px",
+                    backgroundColor: isMemoSelected ? "#d9534f" : "#aaaaaa", // ← 조건부 색상
                     color: "#fff",
                     border: "none",
                     padding: "12px 0",
-                    borderRadius: 8,
-                    fontWeight: 600
+                    borderRadius: 8, 
+                    fontWeight: 600,
+                    marginTop: 8
                   }}
                 >
                   삭제
