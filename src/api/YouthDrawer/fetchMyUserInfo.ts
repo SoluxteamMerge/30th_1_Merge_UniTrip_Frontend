@@ -23,7 +23,7 @@ export const fetchMyUserInfo = async (): Promise<MyUserInfo> => {
   }
 
   try {
-    const response = await axios.get<FetchUserInfoResponse>('/api/user/profile', {
+    const response = await axios.get<FetchUserInfoResponse>('/api/user/getProfile', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
