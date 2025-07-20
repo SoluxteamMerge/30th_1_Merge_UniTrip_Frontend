@@ -7,6 +7,7 @@ import DrawerCheckIcon from '../../assets/체크아이콘.svg';
 import AlertModal from '../../components/AlertModal/AlertModal';
 import axios from 'axios';
 
+
 function YouthDrawer() {
     const navigate = useNavigate();
 
