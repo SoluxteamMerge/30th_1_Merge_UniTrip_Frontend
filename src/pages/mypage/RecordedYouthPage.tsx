@@ -5,11 +5,10 @@ import { useNavigate } from "react-router-dom";
 import defaultProfile from "../../assets/header/default-profile.svg";
 import writeIcon from "../../assets/write-icon.svg";
 
-import starIcon from "../../assets/interaction/star-icon.svg";
+import starIcon from "../../assets/interaction/star.svg";
 import empathyIcon from "../../assets/interaction/empathy.svg";
-import scrapIcon from "../../assets/interaction/scrap-icon.svg";
+import scrapIcon from "../../assets/interaction/scrap.svg";
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
-
 
 
 const RecordedYouthPage: React.FC = () => {
@@ -35,7 +34,7 @@ const RecordedYouthPage: React.FC = () => {
       author: "김눈송",
       title: "첫 번째 이야기",
       tags: ["#태그 1", "태그 2", "#태그3"],
-      commentCount: 1,
+      starCount: 1,
       empathyCount: 0,
       scrapCount: 1,
       thumbnail: grayThumbnail
@@ -45,7 +44,7 @@ const RecordedYouthPage: React.FC = () => {
       author: "김눈송",
       title: "두 번째 ",
       tags: ["#태그 1", "태그 2", "#태그3"],
-      commentCount: 2,
+      starCount: 2,
       empathyCount: 0,
       scrapCount: 2,
       thumbnail: grayThumbnail
@@ -55,7 +54,7 @@ const RecordedYouthPage: React.FC = () => {
       author: "김눈송",
       title: "세 번째 ",
       tags: ["#태그 1", "태그 2", "#태그3"],
-      commentCount: 3,
+      starCount: 3,
       empathyCount: 0,
       scrapCount: 3,
       thumbnail: grayThumbnail
@@ -65,7 +64,7 @@ const RecordedYouthPage: React.FC = () => {
       author: "김눈송",
       title: "네 번째 ",
       tags: ["#태그 1", "태그 2", "#태그3"],
-      commentCount: 4,
+      starCount: 4,
       empathyCount: 0,
       scrapCount: 4,
       thumbnail: grayThumbnail
@@ -75,7 +74,7 @@ const RecordedYouthPage: React.FC = () => {
       author: "김눈송",
       title: "다섯 번째 ",
       tags: ["#태그 1", "태그 2", "#태그3"],
-      commentCount: 5,
+      starCount: 5,
       empathyCount: 0,
       scrapCount: 5,
       thumbnail: grayThumbnail
@@ -85,7 +84,7 @@ const RecordedYouthPage: React.FC = () => {
       author: "김눈송",
       title: "여섯 번째 ",
       tags: ["#태그 1", "태그 2", "#태그3"],
-      commentCount: 6,
+      starCount: 6,
       empathyCount: 0,
       scrapCount: 6,
       thumbnail: grayThumbnail
@@ -224,7 +223,7 @@ const RecordedYouthPage: React.FC = () => {
 
                                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                                   <img src={starIcon} alt="댓글" style={{ width: 16, height: 16 }} />
-                                  <span style={{ fontSize: 13, color: "#333" }}>{post.commentCount}</span>
+                                  <span style={{ fontSize: 13, color: "#333" }}>{post.starCount}</span>
                                 </div>
 
                                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -258,6 +257,7 @@ const RecordedYouthPage: React.FC = () => {
                       <p style={{ fontSize: 16, color: "#0B0B61", fontWeight: 600, margin: 0 }}>
                         아직 내가 만든 청춘이 없어요
                       </p>
+                      
                       <p style={{ fontSize: 14, color: "#888", marginTop: 8 }}>
                         <Link to="/review-write" style={{ color: "#888", textDecoration: "underline" }}>
                           청춘을 만들러 가볼까요? &gt;
