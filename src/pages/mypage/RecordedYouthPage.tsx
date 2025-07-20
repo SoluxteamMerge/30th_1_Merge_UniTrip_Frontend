@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 import defaultProfile from "../../assets/header/default-profile.svg";
 import writeIcon from "../../assets/write-icon.svg";
 
-import starIcon from "../../assets/interaction/star-icon.svg";
+import starIcon from "../../assets/interaction/star.svg";
 import empathyIcon from "../../assets/interaction/empathy.svg";
-import scrapIcon from "../../assets/interaction/scrap-icon.svg";
+import scrapIcon from "../../assets/interaction/scrap.svg";
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
 
 

@@ -4,9 +4,9 @@
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
   import { useNavigate } from "react-router-dom"; // 이미 있으면 생략
   import grayThumbnail from "../assets/gray-thumbnail.svg";
-  import starIcon from "../assets/interaction/star-icon.svg";
+  import starIcon from "../assets/interaction/star.svg";
   import empathyIcon from "../assets/interaction/empathy.svg";
-  import scrapIcon from "../assets/interaction/scrap-icon.svg";
+  import scrapIcon from "../assets/interaction/scrap.svg";
 
 
   const dummyReviews = [
@@ -90,16 +90,37 @@
       const [selectedDropdownRegion, setSelectedDropdownRegion] = useState<string | null>(null);
       const dropdownRef = useRef<HTMLDivElement>(null);
 
+      const [sortOption, setSortOption] = useState("latest"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
+
 
       const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
           setSubmitted(true);
         }
       };
+
       {/*검색어 필터링*/}
       const filteredReviews = dummyReviews.filter(review =>
         review.title.includes(searchQuery)
       ).slice(0, 6);
+
+      {/*리뷰 정렬(최신순, 인기순, 즐겨찾기순, 공감순)*/}
+      const sortedReviews = [...filteredReviews].sort((a, b) => {
+      switch (sortOption) {
+        case "popular":
+          return b.starCount - a.starCount;
+        case "scrap":
+          return b.scrapCount - a.scrapCount;
+        case "empathy":
+          return b.empathyCount - a.empathyCount;
+        case "latest":
+        //case "latest":
+          //return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        default:
+          return 0; // 정렬하지 않음 → 원래 순서 유지 (최신순이라고 간주)
+
+      }
+    }).slice(0, 6); // 6개만 잘라서 보여주기
 
       useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -369,10 +390,13 @@
                 <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600 }}>
                   관련된 {filteredReviews.length}개의 리뷰
                 </h3>
-                <select style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #ccc" }}>
+                <select 
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #ccc" }}>
                   <option value="latest">최신순</option>
                   <option value="popular">인기순</option>
-                  <option value="rating">즐겨찾기순</option>
+                  <option value="scrap">즐겨찾기순</option>
                   <option value="rating">공감순</option>
                 </select>
               </div>
@@ -403,7 +427,7 @@
               </div>
               ) : (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
-                  {filteredReviews.map((review) => (
+                  {sortedReviews.map((review) => (
                     <div key={review.id} style={{ backgroundColor: "#fff", borderRadius: 16, boxShadow: "0 1px 6px #0001", overflow: "hidden" }}>
                       <img src={review.image} alt={review.title} style={{ width: "100%", height: 200, objectFit: "cover" }} />
 
