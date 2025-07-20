@@ -9,7 +9,7 @@ import './SignupPage.css';
 import logo from '../../assets/header/logo.svg';
 import checkIcon from "../../assets/체크아이콘.svg";
 import AlertModal from '../../components/AlertModal/AlertModal';
-import { uploadUserProfileImage } from '../../api/useUserProfileImage';
+import { uploadUserProfileImage } from '../../api/userProfileImageApi';
 
 const SignupPage: React.FC = () => {
   const [nickname, setNickname] = useState('');
@@ -22,6 +22,7 @@ const SignupPage: React.FC = () => {
   const [modalMessage, setModalMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,20}$/; // 한글, 영문, 숫자 2~20자
   const [isCodeSent, setIsCodeSent] = useState(false); //인증 코드 입력창 노출 여부
   const [verificationCode, setVerificationCode] = useState(''); //인증코드
 
@@ -29,10 +30,16 @@ const SignupPage: React.FC = () => {
     setModalMessage(message);
     setIsModalOpen(true);
   };
-  {/* 닉네임 인증 */}
+  //닉네임 인증
   const handleCheckNickname = async () => {
     if (!nickname) {
       showModal('닉네임을 입력은 필수입니다.');
+      return;
+    }
+
+    {/* 글자수 제한 */}
+    if (!nicknameRegex.test(nickname)) {
+      showModal('닉네임은 2~20자의 한글, 영문, 숫자만 가능합니다.');
       return;
     }
     try {
@@ -46,7 +53,7 @@ const SignupPage: React.FC = () => {
       }
     }
     
-};
+  };
   
 
 
@@ -65,37 +72,48 @@ const SignupPage: React.FC = () => {
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (!file) return;
+  
+    //더미테스트 주석처리
+    //console.log('업로드한 파일:',file.name);
+    //const dummyUploadUrl = 'https://picsum.photos/200';
 
-  /*setFileName(file.name);*/
-
+    //setFileName(file.name);
+    //setProfileImageUrl(dummyUploadUrl);
+    //showModal('프로필 이미지가 업로드 되었습니다 (더미)');
   try {
     const token = localStorage.getItem('accessToken') || '';
-    const { uploadedUrl, message } = await uploadUserProfileImage(file, token);
+    const uploadedUrl = await uploadUserProfileImage(file, token);
     setFileName(file.name);
     setProfileImageUrl(uploadedUrl); // 최종 등록된 이미지 URL
-    showModal(message);
+    showModal('프로필 이미지가 업로드되었습니다');
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const message = error.response?.data?.message || '이미지 업로드에 실패했습니다.';
       showModal(message);
     } else {
       showModal('이미지 업로드에 실패했습니다.');
+      }
+    } 
+  };
+
+  {/*업로드취소 하고 싶을 때 */}
+  const handleCancelUpload = () => {
+    setProfileImageUrl('');
+    setFileName('');
   }
-}
-};
 
 
-  {/*학교 이메일 인증 */}
   const handleSendVerification = async () => {
-    if (!userEmail) {
-      showModal('학교 이메일 인증은 필수입니다.');
+    if (!userEmail || !userEmail.trim()) {
+      showModal('학교 이메일을 입력해주세요.');
       return;
     }
-    /*if (!userEmail.endsWith('@sookmyung.ac.kr')) {
+    //이메일 인증 코드 유효성 조건 확인//
+    if (!userEmail.endsWith('@sookmyung.ac.kr')) {
       showModal('이메일은 @sookmyung.ac.kr로 끝나야 합니다.');
       return;
-    }*/
-
+    }
+    
     try {
       const result = await sendEmailVerification(userEmail);
       showModal(result.message);
@@ -135,21 +153,38 @@ const SignupPage: React.FC = () => {
 
 
   const handleRegister = async () => { 
-    try {
-      const response = await postUserProfile({
-        nickname,
-        phoneNumber,
-        userType,
-        emailVerified,
-        profileImageUrl,
-      });
-      showModal(response.message);
-    } catch (error) {
-      if (error instanceof Error) {
-        showModal(error.message || '회원가입 실패');
-      }
+    //유효성 검사//
+    if (!nickname) {
+      showModal('닉네임을 입력은 필수입니다.');
+      return;
     }
-  };
+    if (!isNicknameChecked) {
+      showModal('닉네임 중복 확인을 해주세요.');
+      return;
+    }
+    if (!userEmail || !emailVerified) {
+      showModal('학교 이메일 인증은 필수입니다.');
+      return;
+    }
+    if (!userType) {
+      showModal('유저 타입 입력은 필수입니다.');
+      return;
+    }
+      try {
+        const response = await postUserProfile({
+          nickname,
+          phoneNumber,
+          userType,
+          emailVerified,
+          profileImageUrl,
+        });
+        showModal(response.message);
+      } catch (error) {
+        if (error instanceof Error) {
+          showModal(error.message || '회원가입 실패');
+        }
+      }
+    };
 
   return (
     <div className="signup-page">
@@ -184,6 +219,12 @@ const SignupPage: React.FC = () => {
               <span className="signup-file-name">{fileName || ''}</span>
               <input type="file" id="file" className="signup-hidden-file" onChange={handleFileChange} />
               <label htmlFor="file" className="signup-upload-btn">파일 업로드</label>
+
+              {profileImageUrl && (
+                <button type="button" className="signup-upload-btn" onClick={handleCancelUpload}>
+                  업로드 취소
+                </button>
+              )}
             </div>
             <div className="signup-underline"></div>
           </div>

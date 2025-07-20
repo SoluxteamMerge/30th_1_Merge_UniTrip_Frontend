@@ -11,7 +11,7 @@ import { updateMyUserInfo } from '../../api/YouthDrawer/updateMyUserInfo';
 import { fetchMyUserInfo } from '../../api/YouthDrawer/fetchMyUserInfo';
 import { sendEmailVerification } from '../../api/Signup/sendEmailVerification';
 // import { verifyEmailCode } from '../../api/Signup/verifyEmailCode';
-import { uploadUserProfileImage } from '../../api/useUserProfileImage'
+import { deleteUserProfileImage, uploadUserProfileImage } from '../../api/userProfileImageApi';
 
 
 function YouthDrawerEdit() {
@@ -19,12 +19,12 @@ function YouthDrawerEdit() {
 
     const [name, setName] = useState('');
     const [nickname, setNickname] = useState('');
-    /*const [nicknameChecked, setNicknameChecked] = useState(false);*/
+    const [nicknameChecked, setNicknameChecked] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [userType, setUserType] = useState('개인');
     const [emailVerified, setEmailVerified] = useState(false);
-    const [profileImageName, setProfileImageName] = useState('선택된 파일 없음');
+    const [profileImageUrl, setProfileImageUrl] = useState('');
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
     const [isResultModalOpen, setIsResultModalOpen] = useState(false);
@@ -43,14 +43,16 @@ function YouthDrawerEdit() {
             nickname: '길동이',
             phoneNumber: '010-1234-5678',
             userEmail: 'gildong@example.com',
+            profileImageUrl: 'https://picsum.photos/300',
         };
         setName(dummyUser.name);
         setNickname(dummyUser.nickname);
         setPhoneNumber(dummyUser.phoneNumber);
         setEmail(dummyUser.userEmail);
+        setProfileImageUrl(dummyUser.profileImageUrl);
         /*setNicknameChecked(true);*/
     }, []);
-
+    
     useEffect(() => {
     const fetchUserProfile = async () => {
         try {
@@ -59,16 +61,15 @@ function YouthDrawerEdit() {
             setNickname(data.nickname);
             setPhoneNumber(data.phoneNumber);
             setEmailVerified(data.emailVerified);
-            /*setNicknameChecked(true);*/
+            setNicknameChecked(true);
         } catch (error) {
             console.error('회원정보 불러오기 실패', error);
         }
     };
     fetchUserProfile();
-}, []);
+    }, []); 
 
-
-    /*const handleCheckNickname = () => {
+    const handleCheckNickname = () => {
         if (!nickname) {
             setResultMessage('닉네임을 입력하세요');
             setIsResultModalOpen(true);
@@ -83,7 +84,7 @@ function YouthDrawerEdit() {
         setNicknameChecked(true);
         setIsResultModalOpen(true);
     };
-    */
+    
     const formatPhoneNumber = (value: string) => {
         const onlyNumber = value.replace(/[^0-9]/g, '');
         if (onlyNumber.length < 4) return onlyNumber;
@@ -104,21 +105,20 @@ function YouthDrawerEdit() {
     };
 
     const handleConfirmImageUpload = () => {
-        if (selectedFile) {
-            setProfileImageName(selectedFile.name);
-        }
         setIsImageModalOpen(false);
     };
+
+
 
     const handleCancelImageUpload = () => {
         setSelectedFile(null);
         setIsImageModalOpen(false);
     };
 
-    const handleDeleteFile = () => {
+    /*const handleDeleteFile = () => {
         setSelectedFile(null);
         setProfileImageName('선택된 파일 없음');
-};
+};*/
     const handleWithdraw = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -206,17 +206,18 @@ function YouthDrawerEdit() {
         }
 
 
-        /*if (!nicknameChecked) {
+        if (!nicknameChecked) {
             setResultMessage('닉네임 중복 확인을 해주세요.');
             setIsResultModalOpen(true);
             return;
-        }*/
+        }
         try {
-            let profileImageUrl='';
+            let finalProfileImageUrl = profileImageUrl;
             if (selectedFile) {
                 const uploadedUrl = await uploadUserProfileImage(selectedFile,token)
-                profileImageUrl = uploadedUrl || '';
-                setProfileImageName(profileImageUrl||'선택된 파일 없음');
+                finalProfileImageUrl = uploadedUrl || '';
+            } else if (!selectedFile && profileImageUrl === '') {
+                await deleteUserProfileImage(token);
             }
             await updateMyUserInfo({
                 userName: name,
@@ -224,7 +225,7 @@ function YouthDrawerEdit() {
                 phoneNumber,
                 userType,
                 emailVerified,
-                profileImageUrl,
+                profileImageUrl: finalProfileImageUrl,
             });
             setResultMessage('회원정보가 저장되었습니다.');
             setIsResultModalOpen(true);
@@ -253,7 +254,7 @@ function YouthDrawerEdit() {
                         <div className="input-row">
                             <div className="input-row-left">
                                 <label className="Drawer-label">닉네임</label>
-                                {/*<span className="Drawer-check-duplicate" onClick={handleCheckNickname}>중복확인</span>*/}
+                                <span className="Drawer-check-duplicate" onClick={handleCheckNickname}>중복확인</span>*
                             </div>
                             <input type="text" className="Drawerinput" value={nickname} onChange={(e) => { setNickname(e.target.value); {/*setNicknameChecked(false);*/} }} placeholder="닉네임을 입력하세요" />
                             <div className="Drawer-underline"></div>
@@ -277,15 +278,25 @@ function YouthDrawerEdit() {
                         <div className="input-row">
                             <div className="input-row-left"><label className="Drawer-label">프로필 사진</label></div>
                             <div className="input-with-button">
-                                <span className="Drawer-file-name">{profileImageName}</span>
+                                {selectedFile ? (
+                                    <span className="Drawer-file-name">{selectedFile.name}</span>
+                                ) : profileImageUrl ? (
+                                    <span className="Drawer-file-name">{profileImageUrl}</span>
+                                ) : (
+                                    <span className="Drawer-file-name">프로필 이미지가 없습니다.</span>
+                                )}
+                                {/*<span className="Drawer-file-name">{profileImageName}</span>*/}
                                 <div className="Drawer-button-gruop">
                                     <div>
                                     <input type="file" id="file" className="Drawer-hidden-file" onChange={handleFileChange} />
                                     <label htmlFor="file" className="Drawer-check-btn">파일 업로드</label>
                                 </div>
 
-                                {selectedFile && (
-                                    <button type="button" className="Drawer-check-btn" onClick={handleDeleteFile}>
+                                {(selectedFile || profileImageUrl) && (
+                                    <button type="button" className="Drawer-check-btn" onClick={() => {
+                                        setSelectedFile(null);
+                                        setProfileImageUrl('');
+                                    }}>
                                         삭제
                                     </button>
                                 )}
