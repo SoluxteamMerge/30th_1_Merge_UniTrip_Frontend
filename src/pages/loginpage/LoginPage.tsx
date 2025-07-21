@@ -1,15 +1,30 @@
 import React from 'react';
 import type { FC } from 'react';
-//import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; //연동 시 삭제 요망
 import './LoginPage.css';
 import logo from '../../assets/header/logo.svg';
 import Google from '../../assets/Google_Logo.svg';
 
 const LoginPage: FC = () => {
-  //const navigate = useNavigate();
+  //실제론 사용x
+  const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
-    window.location.href = '/api/google/login';
+    // 연동 시 실제 코드 
+    // window.location.href = '/api/google/login';
+    localStorage.setItem('accessToken', 'dummy-access-token');
+
+    // ✅ 더미 회원정보 데이터
+    const dummyUser = {
+      nickname: '가인', // 비어있으면 회원가입, 값 있으면 홈으로
+    };
+
+    // ✅ 조건 분기
+    if (!dummyUser.nickname) {
+      navigate('/signup');
+    } else {
+      navigate('/');
+    }
   };
 
   return (

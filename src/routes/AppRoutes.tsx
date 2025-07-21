@@ -13,6 +13,7 @@ import YouthCalendar from "../pages/mypage/YouthCalendar";
 import YouthDrawer from "../pages/editprofile/YouthDrawer";
 import YouthDrawerEdit from '../pages/editprofile/YouthDrawerEdit';
 import SearchPage from "../pages/SearchPage";
+import OauthSuccessPage from "../pages/loginpage/OauthSucessPage";
 
 const AppRoutes = () => (
   <Routes>
@@ -31,6 +32,8 @@ const AppRoutes = () => (
     <Route path="/recorded-youth/youth-calendar" element={<YouthCalendar />} />
     <Route path="/youth-drawer-edit" element={<YouthDrawerEdit />} />
     <Route path="/search" element={<SearchPage />} />
+    <Route path="/oauth2/success" element={<OauthSuccessPage />} />
+
 
     {/* 다른 페이지 라우트도 여기에 추가 */}
   </Routes>
