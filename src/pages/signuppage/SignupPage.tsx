@@ -80,6 +80,7 @@ const SignupPage: React.FC = () => {
     //setFileName(file.name);
     //setProfileImageUrl(dummyUploadUrl);
     //showModal('프로필 이미지가 업로드 되었습니다 (더미)');
+  //}
   try {
     const token = localStorage.getItem('accessToken') || '';
     const uploadedUrl = await uploadUserProfileImage(file, token);
@@ -94,7 +95,7 @@ const SignupPage: React.FC = () => {
       showModal('이미지 업로드에 실패했습니다.');
       }
     } 
-  };
+  }; 
 
   {/*업로드취소 하고 싶을 때 */}
   const handleCancelUpload = () => {
