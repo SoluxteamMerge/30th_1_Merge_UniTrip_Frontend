@@ -1,26 +1,58 @@
+import React, { useEffect, useState } from 'react';
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import logo from '../../assets/header/logo.svg';
 import Google from '../../assets/Google_Logo.svg';
-import { getGoogleLogin } from '../../api/login';
+//import { getGoogleLogin } from '../../api/login';
+import AlertModal from '../../components/AlertModal/AlertModal';
+
+//테스트용
+const getGoogleLogin = async () => {
+  return {
+    success: true,
+    message: ''
+  };
+};
+//
 
 const LoginPage: FC = () => {
     const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+
+    //테스트용
+    useEffect(() => {
+        localStorage.setItem('isNewUser', 'true'); // true로 세팅
+    }, []);
+    //
 
     const handleGoogleLogin = async () => {
         const result = await getGoogleLogin();
 
         if (result.success) {
             if (localStorage.getItem('isNewUser') === 'true') {
-                navigate('/signup');
-            } else {
+                setModalMessage('새로운 사용자입니다. 회원가입을 진행해주세요.');
+                setIsModalOpen(true);
+            } 
+          else {
                 navigate('/');
             }
         } else {
-            alert(result.message);
+            setModalMessage(result.message);
+            setIsModalOpen(true);
         }
     };
+
+    const handleCloseModal = () => {
+    setIsModalOpen(false);
+
+    if (modalMessage === '새로운 사용자입니다. 회원가입을 진행해주세요.') {
+        navigate('/signup');
+    }
+};
+
+
 
     return (
         <div className="login-page">
@@ -44,6 +76,10 @@ const LoginPage: FC = () => {
                     </a>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <AlertModal message={modalMessage} onClose={handleCloseModal} />
+            )}
         </div>
     );
 };
