@@ -192,7 +192,7 @@
 
 
 /*-----핸드폰 용------*/
-/*
+
 @media (max-width: 768px) {
   .mainpage-background {
     padding-top: 60px;
@@ -325,10 +325,10 @@
   }
 
 }
-*/
+
 
 /* ------패드용------ */
-/*
+
 @media (min-width: 769px) and (max-width: 1024px) {
   .mainpage-background {
     padding-top: 70px;
@@ -436,4 +436,3 @@
     font-size: 16px;
   }
 }
-*/
