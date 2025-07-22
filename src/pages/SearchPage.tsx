@@ -1,4 +1,4 @@
-  import React, { useState, useRef, useEffect } from "react";
+  import React, { useState } from "react";
   import Header from "../components/Header/Header";
   import searchIcon from '../assets/search_icon.svg';
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
@@ -73,25 +73,12 @@
     
   ];
 
-  const dropdownRegions = [
-    ["부산", "제주", "바다", "광안리", "속초"],
-    ["강릉", "MT", "대구", "전주", "힐링"]
-  ];
-
   const SearchPage: React.FC = () => {
       const navigate = useNavigate(); 
-
       const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태
       const [submitted, setSubmitted] = useState(false);   //엔터 입력 여부 상태
-
-      const [selectedRegion, setSelectedRegion] = useState<string | null>(null); // 지역 선택 상태
-      const [showDropdown, setShowDropdown] = useState(false);
-
-      const [selectedDropdownRegion, setSelectedDropdownRegion] = useState<string | null>(null);
-      const dropdownRef = useRef<HTMLDivElement>(null);
-
+      const [selectedRegion, setSelectedRegion] = useState<string | null>(null); // 라디오 전체 지역 선택 상태
       const [sortOption, setSortOption] = useState("latest"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
-
 
       const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
@@ -122,21 +109,6 @@
       }
     }).slice(0, 6); // 6개만 잘라서 보여주기
 
-      useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-          if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-            setShowDropdown(false); // 외부 클릭 시 드롭다운 닫기
-          }
-        };
-
-        if (showDropdown) {
-          document.addEventListener("mousedown", handleClickOutside);
-        }
-
-        return () => {
-          document.removeEventListener("mousedown", handleClickOutside);
-        };
-      }, [showDropdown]);
 
     return (
       <>
@@ -146,34 +118,6 @@
           {/* 검색 섹션 */}
           <section className="mainpage-search-section">
             <h2 className="mainpage-sectiontitle">▶ 청춘 발자국</h2>
-
-            {/* 드롭다운에서 선택된 항목 우측 상단에 표시 */}
-            {selectedDropdownRegion && (
-              <div
-                style={{
-                  position: "relative", // 이거는 감싸는 div에서 한 번만 적용
-                  height: 0,             // layout 영향 없도록
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -60,          // 검색창 위
-                    right: 220,        // 검색창 오른쪽 끝 기준 맞추기 (조절 가능)
-                    backgroundColor: "#fff",
-                    border: "1px solid #ccc",
-                    borderRadius: 12,
-                    padding: "12px 24px",
-                    fontSize: 16,
-                    fontWeight: 500,
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                    color: "#333"
-                  }}
-                >
-                  {selectedDropdownRegion}
-                </div>
-              </div>
-            )}
 
             <div className="mainpage-search-container">
               <img
@@ -242,21 +186,15 @@
                     ))}
                     </div>
 
-                    {/* 두 번째 줄: 강원~전체보기 */}
+                    {/* 두 번째 줄: 강원~제주 */}
                     <div style={{ 
                       display: "flex", 
                       flexWrap: "wrap", 
                       gap: 50, 
                       }}
                     >
-                    {["강원", "충북", "충남", "경북", "경남", "전북", "전남", "제주", "전체보기"].map(region => (
+                    {["강원", "충북", "충남", "경북", "경남", "전북", "전남", "제주"].map(region => (
                       <label key={region} //label = 드롭다운을 열고 닫는 트리거 버튼
-                        onClick={() => {
-                          if (region === "전체보기") {
-                            setShowDropdown(prev => !prev);
-                            setSelectedRegion(region);
-                          }
-                        }}
                         style={{ 
                           display: "flex", 
                           alignItems: "center", 
@@ -278,103 +216,11 @@
                             height: 16
                             }}
                         />
-                        <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>
-                            {region}
-                        </span>
+                          <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>
+                              {region}
+                          </span>
                       
-
-                          {/* 전체보기 드롭다운 */}
-                          {region === "전체보기" && showDropdown && (
-                          <div ref={dropdownRef} style={{  //드롭다운 메뉴 그 자체
-                            position: "absolute", 
-                            top: 30, 
-                            left: 0, 
-                            background: "#fff", 
-                            border: "1px solid #ccc", 
-                            borderRadius: 12, 
-                            padding: 0, 
-                            width: 360, // 너비 조정
-                            display: "grid", 
-                            gridTemplateColumns: "1fr 1px 1fr",  
-                            zIndex: 10 ,
-                            }}
-                          >
-                            {/* 왼쪽 컬럼 */} 
-                            <div style={{ display: "flex", flexDirection: "column", paddingTop:32, paddingBottom:32 }}>
-                              
-                              {/* 상단 가로선 */}
-                              <div style={{ height: 1, backgroundColor: "#eee", width: "100%" }}></div>
-                              {dropdownRegions[0].map((regionName, index) => (
-                                <div 
-                                key={index} 
-                                style={{ 
-                                  display: "flex", 
-                                  gap: 8, 
-                                  borderBottom: "1px solid #eee", 
-                                  padding: "8px 12px",
-                                  transition: "background-color 0.2s ease",
-                                  cursor: "pointer",
-                                }}
-                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")} //드롭다운 내 지역 항목에 마우스를 올렸을 때 배경색을 살짝 회색으로 변경
-                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")} //마우스를 떼면 원래대로 투명하게 돌려줌
-                                onClick={() => {
-                                  setSelectedRegion(regionName);     // 선택한 지역 업데이트
-                                  setSelectedDropdownRegion(`${index + 1}. ${regionName}`); // 검색창 우측 상단에 버튼 띄우기 
-                                  setShowDropdown(false);            // 드롭다운 닫기
-                                }}
-                                >
-
-
-                                  <span style={{ width: 20 }}>{index + 1}.</span>
-                                  <span>{regionName}</span>
-                                </div>
-                              ))}
-                            </div>
-
-                            {/* 세로 구분선 */}
-                            <div
-                              style={{
-                                backgroundColor: "#eee",
-                                width: 1,
-                                alignSelf: "center",    // 중앙 정렬
-                                height: "calc(100% - 64px)", // ← 위아래 padding 합친 높이만큼 빼줌 (32+32)
-                                marginTop: 0,
-                                marginBottom: 0
-                              }}
-                            />
-
-                            {/* 오른쪽 컬럼 */}
-                            <div style={{ display: "flex", flexDirection: "column",  paddingTop: 32, paddingBottom: 32}}>
-                              {/* 상단 가로선 */}
-                              <div style={{ height: 1, backgroundColor: "#eee", width: "100%" }}></div>
-
-                              {dropdownRegions[1].map((regionName, index) => (
-                                <div 
-                                key={index} 
-                                style={{ 
-                                  display: "flex", 
-                                  gap: 8, 
-                                  borderBottom: "1px solid #eee", 
-                                  padding: "8px 12px",
-                                  transition: "background-color 0.2s ease",
-                                  cursor: "pointer",
-                                  }}
-                                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")}
-                                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
-                                  onClick={() => {
-                                    setSelectedRegion(regionName);     // 선택한 지역 업데이트
-                                    setSelectedDropdownRegion(`${index + 1}. ${regionName}`); // 검색창 우측 상단에 버튼 띄우기 
-                                    setShowDropdown(false);            // 드롭다운 닫기
-                                  }}
-                                >
-                                  <span style={{ width: 20 }}>{index + 6}.</span>
-                                  <span>{regionName}</span>
-                                </div>
-                              ))}
-                            </div>
-
-                          </div>
-                        )}
+                          
                       </label>
                     ))}
 
