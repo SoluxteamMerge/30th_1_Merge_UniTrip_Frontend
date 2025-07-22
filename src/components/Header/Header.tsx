@@ -30,13 +30,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
 
   const handleLogoutConfirm = () => {
     // 로그아웃 로직 (실제로는 API 호출 등)
-    console.log('로그아웃 전 localStorage 상태:', localStorage.getItem('isEmailVerified'));
-    
     localStorage.removeItem('isEmailVerified');
-    
-    console.log('로그아웃 후 localStorage 상태:', localStorage.getItem('isEmailVerified'));
-    console.log('로그아웃 완료 - 로그인 페이지로 이동합니다.');
-    
     setShowLogoutModal(false);
     setShowLogoutSuccessModal(true);
   };
@@ -67,7 +61,6 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
         .header-username-gap { display: inline-block; width: 24px; }
         .header-profile-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #eee; border: 1.5px solid #ccc; }
         .header-login-link { color: #0b0b61; font-weight: 600; margin-right: 16px; text-decoration: none; }
-        .header-signup-link { color: #0b0b61; font-weight: 600; text-decoration: none; }
         .header-logout-btn { 
           background: none; 
           border: none; 
@@ -211,7 +204,6 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
           ) : (
             <>
               <Link to="/login" className="header-login-link">로그인</Link>
-              <Link to="/signup" className="header-signup-link">회원가입</Link>
             </>
           )}
         </div>
