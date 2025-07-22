@@ -580,10 +580,14 @@ const WriteReviewPage: React.FC = () => {
         .wr-media-section {
           margin-top: 20px;
           margin-left: 100px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
         }
         .wr-location-container {
           position: relative;
           margin-bottom: 20px;
+          align-self: flex-start;
         }
         .wr-image-container {
           position: relative;
@@ -598,8 +602,8 @@ const WriteReviewPage: React.FC = () => {
           padding: 15px;
           background-color: #fff;
           min-width: 200px;
-          text-align: right;
-          margin-right: 90px;
+          text-align: left;
+          margin-right: 0;
         }
         .wr-location-name {
           font-size: 16px;
