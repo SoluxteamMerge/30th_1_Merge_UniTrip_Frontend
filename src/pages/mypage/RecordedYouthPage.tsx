@@ -42,7 +42,7 @@ const RecordedYouthPage: React.FC = () => {
       createdAt: "2025-07-15T10:00:00",
       commentCount: 2,
       likes: 5,
-      isLiked: true,
+      isLiked: false,
       scrapCount: 1,
       isScraped: false,
       thumbnailUrl: "https://picsum.photos/200/100?random=101"
