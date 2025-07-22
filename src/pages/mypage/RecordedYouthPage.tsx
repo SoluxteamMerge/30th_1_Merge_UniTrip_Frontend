@@ -10,6 +10,9 @@ import empathyIcon from "../../assets/interaction/empathy.svg";
 import scrapIcon from "../../assets/interaction/scrap.svg";
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
 
+import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
+import '../mainpage/MainPage.css'; 
+
 
 const RecordedYouthPage: React.FC = () => {
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요
@@ -30,67 +33,87 @@ const RecordedYouthPage: React.FC = () => {
 
   const postData = [
     {
-      id: 1,
-      author: "김눈송",
-      title: "첫 번째 이야기",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 1,
-      empathyCount: 0,
+      postId: 1,
+      boardType: "모임구인",
+      categoryName: "여행",
+      title: "서울 근교 나들이 후기",
+      userId: 101,
+      nickname: "여행러1",
+      createdAt: "2025-07-15T10:00:00",
+      commentCount: 2,
+      likes: 5,
+      isLiked: false,
       scrapCount: 1,
-      thumbnail: grayThumbnail
+      isScraped: false,
+      thumbnailUrl: "https://picsum.photos/200/100?random=101"
     },
     {
-      id: 2,
-      author: "김눈송",
-      title: "두 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 2,
-      empathyCount: 0,
+      postId: 2,
+      nickname: "김눈송",
+      title: "두 번째",
+      categoryName: "청춘기록",
+      thumbnailUrl: grayThumbnail,
+      createdAt: "2025-07-22T12:00:00",
+      likes: 2,
       scrapCount: 2,
-      thumbnail: grayThumbnail
+      isLiked: false,
+      isScraped: false,
     },
-    {
-      id: 3,
-      author: "김눈송",
-      title: "세 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 3,
-      empathyCount: 0,
+     {
+      postId: 3,
+      nickname: "김눈송",
+      title: "세 번째",
+      categoryName: "청춘기록",
+      thumbnailUrl: grayThumbnail,
+      createdAt: "2025-07-22T12:00:00",
+      likes: 3,
       scrapCount: 3,
-      thumbnail: grayThumbnail
+      isLiked: false,
+      isScraped: false,
     },
-    {
-      id: 4,
-      author: "김눈송",
-      title: "네 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 4,
-      empathyCount: 0,
+  
+     {
+      postId: 4,
+      nickname: "김눈송",
+      title: "네 번째",
+      categoryName: "청춘기록",
+      thumbnailUrl: grayThumbnail,
+      createdAt: "2025-07-22T12:00:00",
+      likes: 4,
       scrapCount: 4,
-      thumbnail: grayThumbnail
+      isLiked: false,
+      isScraped: false,
     },
-    {
-      id: 5,
-      author: "김눈송",
-      title: "다섯 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 5,
-      empathyCount: 0,
-      scrapCount: 5,
-      thumbnail: grayThumbnail
+  
+     {
+      postId: 5,
+      nickname: "김눈송",
+      title: "다섯 번째",
+      categoryName: "청춘기록",
+      thumbnailUrl: grayThumbnail,
+      createdAt: "2025-07-22T12:00:00",
+      likes: 5,
+      scrapCount: 2,
+      isLiked: false,
+      isScraped: false,
     },
-    {
-      id: 6,
-      author: "김눈송",
-      title: "여섯 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 6,
-      empathyCount: 0,
-      scrapCount: 6,
-      thumbnail: grayThumbnail
+  
+     {
+      postId: 6,
+      nickname: "김눈송",
+      title: "여섯 번째",
+      categoryName: "청춘기록",
+      thumbnailUrl: grayThumbnail,
+      createdAt: "2025-07-22T12:00:00",
+      likes: 6,
+      scrapCount: 2,
+      isLiked: false,
+      isScraped: false,
     },
-    
-  ];
+  
+  
+];
+
   const navigate = useNavigate(); 
 
   return (
@@ -169,6 +192,8 @@ const RecordedYouthPage: React.FC = () => {
                 boxShadow: "0 1px 6px #0001;",
                 minHeight: "580px",
                 position: "relative",
+                width: "100%",
+                boxSizing: "border-box" 
              }}
             >
               <h2 style={{ marginBottom: 8, fontSize: 18, color: "#0B0B61" }}>내가 만든 청춘</h2>
@@ -177,73 +202,28 @@ const RecordedYouthPage: React.FC = () => {
               
                 {/* 아래 내용도 실제 사용자가 작성한 게시글과 연동 필요 */}
                 {hasPosts ? (
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(2, 400px)", 
-                      columnGap: 80,  // 좌우 카드 간격
-                      rowGap: 40,    // 위아래 카드 간격 줄이기
-                      justifyContent: "center", // 좌우 여백 균등하게 배치
-                    }}
-                  >
-                    {postData.map((post) => (
-                      <div
-                        key={post.id}
-                        style={{
-                          backgroundColor: "#fff",
-                          borderRadius: 12,
-                          width: "100%",
-                          aspectRatio: "1 / 1",
-                          height: 320,
-                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
-                          display: "flex",
-                          flexDirection: "column",
-                          overflow: "hidden"
-                        }}
-                      >
-                        {/* 썸네일 영역 */}              
-                          <img
-                            src={post.thumbnail}
-                            alt="썸네일"
-                            style={{
-                              width: "100%", // 카드 가로와 동일하게
-                              height: "70%", // 카드 높이의 70% 차지
-                              objectFit: "cover",
-                              borderRadius: "8px 8px 0 0"
-                            }}
+                  
+                  <div className="review-grid">
+                      {postData.map((post) => (
+                        <div key={post.postId} onClick={() => navigate(`/youth-talk/${post.postId}`)}>
+                          <ReviewCard
+                            postId={post.postId}
+                            title={post.title}
+                            categoryName={post.categoryName}
+                            thumbnailUrl={post.thumbnailUrl}
+                            nickname={post.nickname}
+                            createdAt={post.createdAt}
+                            likes={post.likes}
+                            scrapCount={post.scrapCount}
+                            rating={4}
+                            isLiked={post.isLiked}
+                            isScraped={post.isScraped}
                           />
-                                                  
-                        {/* 텍스트 영역 */}
-                        <div style={{ padding: "16px" }}>
-
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                              <p style={{ fontSize: 14, fontWeight: 500, color: "#a3a3a3", margin: 0 }}>{post.author}</p>
-
-                              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-
-                                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                  <img src={starIcon} alt="댓글" style={{ width: 16, height: 16 }} />
-                                  <span style={{ fontSize: 13, color: "#333" }}>{post.starCount}</span>
-                                </div>
-
-                                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                  <img src={empathyIcon} alt="공감" style={{ width: 16, height: 16 }} />
-                                  <span style={{ fontSize: 13, color: "#333" }}>{post.empathyCount}</span>
-                                </div>
-
-                                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                  <img src={scrapIcon} alt="스크랩" style={{ width: 16, height: 16 }} />
-                                  <span style={{ fontSize: 13, color: "#333" }}>{post.scrapCount}</span>
-                                </div>
-
-                              </div>
-                            </div>
-                            <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>{post.title}</p>
-                            <p style={{ fontSize: 12, color: "#0B0B61" }}>{post.tags.join(", ")}</p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+
+                      ))}
+                    </div>
+
                 ) : (
                     <div
                       style={{
