@@ -52,6 +52,8 @@ function YouthDrawerEdit() {
         setProfileImageUrl(dummyUser.profileImageUrl);
         /*setNicknameChecked(true);*/
     }, []);
+
+    //실제 사용할 코드
     
     useEffect(() => {
     const fetchUserProfile = async () => {
@@ -214,10 +216,13 @@ function YouthDrawerEdit() {
         try {
             let finalProfileImageUrl = profileImageUrl;
             if (selectedFile) {
-                const uploadedUrl = await uploadUserProfileImage(selectedFile,token)
+                const uploadedUrl = await uploadUserProfileImage(selectedFile,token);
+                console.log('업로드한 프로필 이미지 URL: ', uploadedUrl); //더미테스트
                 finalProfileImageUrl = uploadedUrl || '';
             } else if (!selectedFile && profileImageUrl === '') {
+                console.log('프로필 이미지 삭제 요청 전송'); //더미 테스트
                 await deleteUserProfileImage(token);
+                console.log('삭제 완료'); //더미테스트
             }
             await updateMyUserInfo({
                 userName: name,
@@ -236,6 +241,8 @@ function YouthDrawerEdit() {
             setIsResultModalOpen(true);
         }
     };
+    
+
 
     return (
         <div>
@@ -254,7 +261,7 @@ function YouthDrawerEdit() {
                         <div className="input-row">
                             <div className="input-row-left">
                                 <label className="Drawer-label">닉네임</label>
-                                <span className="Drawer-check-duplicate" onClick={handleCheckNickname}>중복확인</span>*
+                                <span className="Drawer-check-duplicate" onClick={handleCheckNickname}>중복확인</span>
                             </div>
                             <input type="text" className="Drawerinput" value={nickname} onChange={(e) => { setNickname(e.target.value); {/*setNicknameChecked(false);*/} }} placeholder="닉네임을 입력하세요" />
                             <div className="Drawer-underline"></div>
