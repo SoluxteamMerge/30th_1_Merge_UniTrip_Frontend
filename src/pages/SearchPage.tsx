@@ -120,11 +120,7 @@
             <h2 className="mainpage-sectiontitle">▶ 청춘 발자국</h2>
 
             <div className="mainpage-search-container">
-              <img
-                src={searchIcon}
-                alt="검색 아이콘"
-                className="mainpage-search-icon"
-              />
+              <img src={searchIcon} alt="검색 아이콘" className="mainpage-search-icon"/>
               <input
                 type="text"
                 //value="검색어를 입력하세요"
@@ -137,8 +133,9 @@
           </section>
 
           {/* 필터 섹션 (지역) */}
-          <section style={{ padding: "32px 160px 16px" }}>
+          <section style={{ display: "flex", justifyContent: "center", paddingTop: 32, paddingBottom: 16 }}>
             <div style={{
+              width: "calc(100vw - 400px)",   // 검색창과 동일한 너비
               backgroundColor: "#fff",
               borderRadius: 16,
               padding: "28px 32px",
@@ -149,8 +146,7 @@
               justifyContent: "center",   // 가운데 정렬 추가
               flexWrap: "wrap",
               gap: 50,                      // 버튼 간 간격
-              maxWidth: 1200,             // 검색창과 맞춤
-              margin: "0 auto"           //가운데 정렬
+
             }}>
               <div style={{  
                 fontSize: 18, 
@@ -222,8 +218,7 @@
                           <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>
                               {region}
                           </span>
-                      
-                          
+
                       </label>
                     ))}
 
