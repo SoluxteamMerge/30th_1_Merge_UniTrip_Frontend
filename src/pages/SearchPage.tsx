@@ -144,10 +144,13 @@
               padding: "28px 32px",
               border: "1px solid #ccc",
               fontFamily: "Pretendard, sans-serif",
-              display: "flex",                 // ← 가로 정렬
+              display: "flex",                 // 가로 정렬
               alignItems: "flex-start",
+              justifyContent: "center",   // 가운데 정렬 추가
               flexWrap: "wrap",
-              gap: 50                      // ← 버튼 간 간격
+              gap: 50,                      // 버튼 간 간격
+              maxWidth: 1200,             // 검색창과 맞춤
+              margin: "0 auto"           //가운데 정렬
             }}>
               <div style={{  
                 fontSize: 18, 
