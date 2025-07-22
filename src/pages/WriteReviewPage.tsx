@@ -17,7 +17,6 @@ import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 
 const WriteReviewPage: React.FC = () => {
-  const [isPrivate, setIsPrivate] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -61,7 +60,6 @@ const WriteReviewPage: React.FC = () => {
         setSelectedLocation(editData.location || null);
         setTags(editData.tags || []);
         setRating(editData.rating || 0);
-        setIsPrivate(!editData.isPublic);
       } catch (error) {
         console.error('수정 데이터 파싱 오류:', error);
       }
@@ -275,7 +273,7 @@ const WriteReviewPage: React.FC = () => {
         title: title.trim(),
         description: content.trim(),
         category: selectedCategory,
-        isPublic: !isPrivate,
+        isPublic: true,
         // 선택적 정보들
         travelType: getTravelType(selectedCategory),
         startDate: scheduleInput.split(' ~ ')[0] || "",
@@ -497,47 +495,6 @@ const WriteReviewPage: React.FC = () => {
         }
         .wr-category-item:hover {
           background: #f5f5f5;
-        }
-        .wr-private-row {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          justify-content: flex-end;
-          padding: 0 40px;
-          margin-bottom: 0px;
-        }
-        .wr-private-label {
-          font-size: 20px;
-          font-weight: 700;
-          color: #333;
-        }
-        .wr-switch {
-          width: 60px;
-          height: 32px;
-          border-radius: 18px;
-          background: #838383;
-          position: relative;
-          cursor: pointer;
-          transition: background 0.2s;
-          box-shadow: inset 0 4px 16px 0 rgba(0,0,0,0.18), 0 2px 8px #0002;
-          display: inline-block;
-        }
-        .wr-switch.on {
-          background: #88cece;
-        }
-        .wr-switch-circle {
-          position: absolute;
-          top: 3px;
-          left: 3px;
-          width: 25px;
-          height: 25px;
-          border-radius: 50%;
-          background: #fff;
-          box-shadow: 0 2px 8px #0001;
-          transition: left 0.2s;
-        }
-        .wr-switch.on .wr-switch-circle {
-          left: 32px;
         }
         .wr-divider {
           border: none;
@@ -1046,19 +1003,6 @@ const WriteReviewPage: React.FC = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   disabled={!isEmailVerified} 
                 />
-              </div>
-                <div className="wr-private-row">
-                  <span className="wr-private-label">비공개</span>
-                  <div
-                    className={"wr-switch" + (isPrivate ? " on" : "")}
-                    onClick={() => isEmailVerified && setIsPrivate(v => !v)}
-                    role="button"
-                    tabIndex={0}
-                    aria-checked={isPrivate}
-                    style={{ outline: "none" }}
-                  >
-                    <div className="wr-switch-circle" />
-                </div>
               </div>
               <hr className="wr-divider" />
               <div className="wr-content-area">
