@@ -38,8 +38,19 @@ const YouthCalendar: React.FC = () => {
   const [memo, setMemo] = useState("");
   const [selectedColor, setSelectedColor] = useState("#8bcece"); // 기본색
   const [savedSchedules, setSavedSchedules] = useState<{
-    [key: string]: { title: string; color: string; memo?: string };
+    [key: string]: { title: string; color: string; memo?: string }[];
   }>({});
+
+  const [editingIndex, setEditingIndex] = useState<number>(0); // 0 또는 1
+  const [editingEntry, setEditingEntry] = useState<{
+    title: string;
+    memo?: string;
+    color: string;
+  } | null>(null); // ← 메모 클릭 시 불러올 일정
+
+  const [endDate, setEndDate] = useState<number | null>(null);
+
+
   //const [viewingMemo, setViewingMemo] = useState<{ title: string; memo: string; color: string } | null>(null);
 
   //const [isEditing, setIsEditing] = useState(false);
@@ -53,55 +64,65 @@ const YouthCalendar: React.FC = () => {
     }
   }, []);
 
-  {/*메모 저장?*/}
+  {/*메모 저장-2개까지만 추가*/}
   const handleSave = () => {
     if (!selectedDate || !scheduleTitle) return;
-    const key = `${currentYear}-${currentMonth + 1}-${selectedDate}`;
-    const updated = {
-      ...savedSchedules,
-      [key]: { title: scheduleTitle, color: selectedColor, memo }
-    };
+    const end = endDate || selectedDate;
+
+    const updated = { ...savedSchedules };
+
+    for (let day = selectedDate; day <= end; day++) {
+      const key = `${currentYear}-${currentMonth + 1}-${day}`;
+      const existing = updated[key] || [];
+
+      if (!editingEntry && existing.length >= 2) {
+        alert("일정은 최대 2개까지 추가할 수 있습니다.");
+        return;
+      }
+
+      if (editingEntry) {
+        updated[key] = existing.map((e) =>
+          e.title === editingEntry.title && e.color === editingEntry.color
+            ? { title: scheduleTitle, memo, color: selectedColor }
+            : e
+        );
+      } else {
+        updated[key] = [...existing, { title: scheduleTitle, color: selectedColor, memo }];
+      }
+    }
+
     setSavedSchedules(updated);
     localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
     setIsModalOpen(false);
     setScheduleTitle("");
     setMemo("");
+    setEditingEntry(null);
   };
-      {/*메모 수정
-      const handleEditSave = () => {
-      if (!viewingMemo) return;
-      const updatedSchedules = { ...savedSchedules };
 
-      const key = Object.keys(savedSchedules).find(
-        (k) => savedSchedules[k].title === viewingMemo.title && savedSchedules[k].color === viewingMemo.color
-      );
-      if (!key) return;
-
-      updatedSchedules[key] = {
-        ...updatedSchedules[key],
-        memo: editingMemo
-      };
-      
-
-      setSavedSchedules(updatedSchedules);
-      localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
-      setViewingMemo({ ...viewingMemo, memo: editingMemo });
-      setIsEditing(false);
-    };
-    */}
 
     {/*메모 삭제*/}
-    const handleDelete = () => {
-    if (!selectedDate) return;
-    const key = `${currentYear}-${currentMonth + 1}-${selectedDate}`;
+   const handleDelete = () => {
+    if (!editingEntry) return;
+
     const updated = { ...savedSchedules };
-    delete updated[key];
-    setSavedSchedules(updated);
-    localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
-    setIsModalOpen(false);
-    setScheduleTitle("");
-    setMemo("");
-  };
+    for (const key in updated) {
+      updated[key] = updated[key].filter(
+        (entry) =>
+          entry.title !== editingEntry.title || entry.color !== editingEntry.color
+      );
+      if (updated[key].length === 0) {
+        delete updated[key];
+      }
+  }
+
+  setSavedSchedules(updated);
+  localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
+  setIsModalOpen(false);
+  setScheduleTitle("");
+  setMemo("");
+  setEditingEntry(null);
+};
+
 
   {/*메모 조회*/}
   const openEditModal = (day: number, entry: { title: string; color: string; memo?: string }) => {
@@ -112,10 +133,6 @@ const YouthCalendar: React.FC = () => {
     setIsMemoSelected(true); //메모가 있는 셀 클릭 → 삭제 버튼 빨간색
     setIsModalOpen(true);
   };
-
-
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0 (Sun) ~ 6 (Sat)
-  const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); // 이번 달 총 일 수
 
 
 
@@ -130,14 +147,12 @@ const YouthCalendar: React.FC = () => {
       padding: 10,
     };
 
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0 (Sun) ~ 6 (Sat)
+      const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); // 이번 달 총 일 수
+
     // 빈 셀 먼저 채우기
     for (let i = 0; i < firstDay; i++) {
-      cells.push(
-      <td 
-      key={`empty-${i}`}
-      style={baseCellStyle}
-      ></td>
-    );
+      cells.push(<td key={`empty-${i}`} style={baseCellStyle}></td>);
     }
 
     //실제 날짜 채우기 
@@ -152,34 +167,50 @@ const YouthCalendar: React.FC = () => {
           currentYear === today.getFullYear();
 
       const key = `${currentYear}-${currentMonth + 1}-${day}`;
-      const entry = savedSchedules[key];
+      const entryList = savedSchedules[key] || [];
       
 
       cells.push(
         <td
           key={day}
-          onClick={() => {
-            if (entry) {
-              openEditModal(day, entry); // 기존 메모 있는 셀 클릭
-            } else {
+          style={{
+          ...baseCellStyle,
+          cursor: "pointer",
+          color: isSunday ? "#e53935" : isSaturday ? "#3d3d81" : "#333",
+          fontWeight: isToday ? "bold" : "normal",
+          }}
+        >
+          {/* 날짜 숫자 클릭: 새 일정 추가 */}
+          <div
+            style={{ textAlign: "left", padding: 4 }}
+            onClick={(e) => {
+              e.stopPropagation(); // 여기 클릭 시 팝업
               setSelectedDate(day);
               setScheduleTitle("");
               setMemo("");
               setSelectedColor("#8bcece");
-              setIsMemoSelected(false); // 빈 셀 클릭 → 삭제 버튼 회색
+              setEditingEntry(null);
+              setIsMemoSelected(false);
               setIsModalOpen(true);
-            }
-          }}
-          style={{
-            ...baseCellStyle,
-            cursor: "pointer",
-            color: isSunday ? "#e53935" : isSaturday ? "#3d3d81" : "#333",
-            fontWeight: isToday ? "bold" : "normal",
-          }}
-        >
-          <div style={{ textAlign: "left", padding: 4}}>{day}</div>
-          {entry && (
+            }}
+          >
+            {day}
+          </div>
+
+          {/* 일정 2개까지만 표시 + 클릭 시 해당 메모 내용 불러오기 */}
+          {entryList.slice(0, 2).map((entry, i) => (
             <div
+              key={i}
+              onClick={(e) => {
+                e.stopPropagation(); // 날짜 클릭 방지, 여기 클릭 시 기존 메모 편집
+                setSelectedDate(day);
+                setScheduleTitle(entry.title);
+                setMemo(entry.memo || "");
+                setSelectedColor(entry.color);
+                setEditingEntry(entry);
+                setIsMemoSelected(true);
+                setIsModalOpen(true);
+              }}
               style={{
                 marginTop: 6,
                 backgroundColor: entry.color,
@@ -190,12 +221,13 @@ const YouthCalendar: React.FC = () => {
                 textAlign: "center",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
-                textOverflow: "ellipsis"
+                textOverflow: "ellipsis",
+                cursor: "pointer",
               }}
             >
               {entry.title}
             </div>
-          )}
+          ))}
         </td>
       );
     }
@@ -435,8 +467,18 @@ const YouthCalendar: React.FC = () => {
             }}>✕</button>
 
             <h3 style={{ marginBottom: 16 }}>일정 추가</h3>
-            <p style={{ fontSize: 14, color: "#666" }}>
-                {currentMonth + 1}월 {selectedDate}일
+
+            <p style={{ fontSize: 14, color: "#666", marginBottom: 4 }}>
+              {currentMonth + 1}월 {selectedDate}일 ~ 
+              <input
+                type="number"
+                min={selectedDate || 1}
+                max={new Date(currentYear, currentMonth + 1, 0).getDate()}
+                value={endDate || ""}
+                onChange={(e) => setEndDate(Number(e.target.value))}
+                style={{ width: 50, margin: "0 4px", textAlign: "center" }}
+              />
+              일
             </p>
 
             {/* 일정 제목 입력 */}
