@@ -11,7 +11,7 @@ const OauthSuccessPage = () => {
   const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    const token = searchParams.get('accessToken');
     if (token) {
       localStorage.setItem('accessToken', token);
 
@@ -24,7 +24,8 @@ const OauthSuccessPage = () => {
           const { nickname } = response.data;
 
           if (!nickname) {
-            navigate('/signup');
+            setModalMessage(response.data.message || '회원가입이 필요합니다.');
+            setIsModalOpen(true);
           } else {
             navigate('/');
           }
@@ -44,16 +45,18 @@ const OauthSuccessPage = () => {
       setIsModalOpen(true);
     }
   }, [navigate, searchParams]);
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    navigate('/login');
+    setTimeout(() => {
+      navigate('/signup');
+    }, 200);
   };
+
 
   return (
     <>
-        <div>로그인 처리 중입니다...</div>
-        {isModalOpen && <AlertModal message={modalMessage} onClose={handleCloseModal} />}
+      <div>로그인 처리 중입니다...</div>
+      {isModalOpen && <AlertModal message={modalMessage} onClose={handleCloseModal} />}
     </>
   );
 };
