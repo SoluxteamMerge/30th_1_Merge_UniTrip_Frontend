@@ -267,6 +267,10 @@ const WriteReviewPage: React.FC = () => {
         alert('내용을 입력해주세요.');
         return;
       }
+      if (!rating || rating === 0) {
+        alert('별점을 입력해주세요.');
+        return;
+      }
 
       // 게시글 데이터 수집 (기본 정보만)
       const postData = {
