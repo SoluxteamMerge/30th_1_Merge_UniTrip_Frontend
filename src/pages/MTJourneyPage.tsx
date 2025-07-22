@@ -98,7 +98,7 @@ const MTJourneyPage: React.FC = () => {
     <div className="mt-bg">
       <style>{`
         .mt-bg { background: #e8f0f2; min-height: 100vh; }
-        .mt-container { max-width: 1500px; margin: 0 auto; padding: 60px 0px 0px 300px; }
+        .mt-container { max-width: 1500px; margin: 0 auto; padding: 60px 150px 0px 150px; }
         .mt-title-box { font-weight: 700; font-size: 22px; color: #0b0b61; display: flex; align-items: center; margin-bottom: 0px; }
         .mt-title-icon { font-size: 20px; margin-right: 8px; }
         .mt-board-title { font-weight: 700; font-size: 18px; color: #0b0b61; margin-bottom: 20px; }
