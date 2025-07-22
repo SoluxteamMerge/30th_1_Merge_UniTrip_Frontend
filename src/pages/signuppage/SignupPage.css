@@ -13,7 +13,7 @@ html, body, #root {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to bottom, #C2E4E4, #DEE8E8, #FBFBFB);
+  background: linear-gradient(to bottom, #DEE8E8, #FBFBFB);
   padding: 40px 24px; 
   box-sizing: border-box;
   min-height: 100vh;
