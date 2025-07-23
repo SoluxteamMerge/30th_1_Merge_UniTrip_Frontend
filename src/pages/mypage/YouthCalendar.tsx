@@ -7,6 +7,9 @@ import writeIcon from "../../assets/write-icon.svg";
 import beforeArrow from "../../assets/arrow/before_arrow.svg";
 import nextArrow from "../../assets/arrow/next_arrow.svg";
 
+import AlertModal from "../../components/AlertModal/AlertModal.tsx";
+import "../../components/AlertModal/AlertModal.css";
+
 const YouthCalendar: React.FC = () => {
   const navigate = useNavigate(); 
   const username = "김눈송";
@@ -22,10 +25,9 @@ const YouthCalendar: React.FC = () => {
     display: "flex",
     alignItems: "center",
     marginBottom: 16,
-    justifyContent: "space-between"  // ← 버튼 오른쪽 정렬
+    justifyContent: "space-between" 
   };
   const titleIconStyle = { fontSize: 20, marginRight: 8 };
-
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,6 +41,8 @@ const YouthCalendar: React.FC = () => {
   const [savedSchedules, setSavedSchedules] = useState<{
     [key: string]: { title: string; color: string; memo?: string }[];
   }>({});
+  const [showAlert, setShowAlert] = useState(false); //모달창띄우기 
+  const [alertMessage, setAlertMessage] = useState("");
 
   //const [editingIndex, setEditingIndex] = useState<number>(0); // 0 또는 1
   const [editingEntry, setEditingEntry] = useState<{
@@ -51,14 +55,6 @@ const YouthCalendar: React.FC = () => {
   const [endMonth, setEndMonth] = useState<number | null>(null); 
   const [endYear, setEndYear] = useState<number | null>(null);
 
-
-
-  //const [viewingMemo, setViewingMemo] = useState<{ title: string; memo: string; color: string } | null>(null);
-
-  //const [isEditing, setIsEditing] = useState(false);
-  //const [editingMemo, setEditingMemo] = useState("");
-
-
   useEffect(() => {
     const stored = localStorage.getItem("youthCalendarSchedules");
     if (stored) {
@@ -66,34 +62,47 @@ const YouthCalendar: React.FC = () => {
     }
   }, []);
 
-  {/*메모 저장-2개까지만 추가*/}
+  {/*메모 local storage 에 저장-2개까지만 추가*/}
   const handleSave = () => {
       if (!selectedDate || !scheduleTitle) return;
 
-      const start = new Date(currentYear, currentMonth, selectedDate);
-      const end = new Date(
+      const start = new Date(currentYear, currentMonth, selectedDate); //시작일
+      const end = new Date( //종료일 
         endYear !== null ? endYear : currentYear,
         endMonth !== null ? endMonth - 1 : currentMonth,
         endDate || selectedDate
       );
 
       const updated = { ...savedSchedules };
-
       let current = new Date(start);
+      
      while (current <= end) {
         const y = current.getFullYear();
         //const m = current.getMonth() + 1; // 0-indexed → 1부터 시작
         //const d = current.getDate();
         const m = String(current.getMonth() + 1).padStart(2, "0");
         const d = String(current.getDate()).padStart(2, "0");
-        const key = `${y}-${m}-${d}`;
+        const key = `${y}-${m}-${d}`; //// "YYYY-MM-DD" 형식의 키
 
         const existing = updated[key] || [];
 
+        //3개째 일정 입력 시 
         if (!editingEntry && existing.length >= 2) {
-          alert("일정은 날짜당 최대 2개까지 추가할 수 있습니다.");
+          setAlertMessage("일정은 날짜당 최대 2개까지 추가할 수 있습니다.");
+          setShowAlert(true);
           return;
         }
+        current.setDate(current.getDate() + 1);
+      }
+
+         //실제 저장 로직
+      current = new Date(start);
+      while (current <= end) {
+        const y = current.getFullYear();
+        const m = String(current.getMonth() + 1).padStart(2, "0");
+        const d = String(current.getDate()).padStart(2, "0");
+        const key = `${y}-${m}-${d}`;
+        const existing = updated[key] || [];
 
         if (editingEntry) {
           updated[key] = existing.map((e) =>
@@ -105,17 +114,19 @@ const YouthCalendar: React.FC = () => {
           updated[key] = [...existing, { title: scheduleTitle, color: selectedColor, memo }];
         }
 
-        current.setDate(current.getDate() + 1); // 다음 날짜로 이동
+        current.setDate(current.getDate() + 1);
       }
 
       setSavedSchedules(updated);
       localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
+
+      // 모달찯 닫고 입력 필드 초기화
       setIsModalOpen(false);
       setScheduleTitle("");
       setMemo("");
       setEditingEntry(null);
-      setEndMonth(null); // 선택 해제
-      setEndYear(null);  // 선택 해제
+      setEndMonth(null); 
+      setEndYear(null);  
     };
 
 
@@ -141,17 +152,6 @@ const YouthCalendar: React.FC = () => {
   setMemo("");
   setEditingEntry(null);
 };
-
-
-  {/*메모 조회*/}
-  const openEditModal = (day: number, entry: { title: string; color: string; memo?: string }) => {
-    setSelectedDate(day);
-    setScheduleTitle(entry.title);
-    setSelectedColor(entry.color);
-    setMemo(entry.memo ?? "");
-    setIsMemoSelected(true); //메모가 있는 셀 클릭 → 삭제 버튼 빨간색
-    setIsModalOpen(true);
-  };
 
 
 
@@ -470,6 +470,14 @@ const YouthCalendar: React.FC = () => {
         />
       </button>
       {/* Floating 버튼 끝 */}
+
+      {/* Alert 모달 표시 */}
+      {showAlert && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+        />
+      )}
 
       {/* 일정 입력 팝업 */}
       {isModalOpen && (
