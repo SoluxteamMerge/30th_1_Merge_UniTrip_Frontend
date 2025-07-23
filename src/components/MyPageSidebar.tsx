@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import defaultProfile from '../assets/header/default-profile.svg';
-import { fetchUserInfo } from '../api/userApi';
+import { fetchUserInfo } from '../api/mypage/userApi';
 
 const MyPageSidebar: React.FC = () => {
   const [username, setUsername] = useState("로딩 중...");
