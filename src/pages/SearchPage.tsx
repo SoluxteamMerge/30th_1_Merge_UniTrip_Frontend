@@ -80,6 +80,8 @@
 
   ];
 
+  
+
   const SearchPage: React.FC = () => {
       const navigate = useNavigate(); 
       const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태

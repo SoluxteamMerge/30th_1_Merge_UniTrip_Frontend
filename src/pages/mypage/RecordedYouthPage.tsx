@@ -2,17 +2,11 @@ import React from "react";
 import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import defaultProfile from "../../assets/header/default-profile.svg";
 import writeIcon from "../../assets/write-icon.svg";
-
-import starIcon from "../../assets/interaction/star.svg";
-import empathyIcon from "../../assets/interaction/empathy.svg";
-import scrapIcon from "../../assets/interaction/scrap.svg";
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
-
 import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css'; 
-
+import MyPageSidebar from "../../components/MyPageSidebar";
 
 const RecordedYouthPage: React.FC = () => {
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요
@@ -124,57 +118,7 @@ const RecordedYouthPage: React.FC = () => {
 
         <div style={{ display: "flex", alignItems: "flex-start"}}> {/*flex-start 없으면 양 컨테이너 높이 자동 맞춰짐 */}
           {/* 사이드바 */}
-          <div
-            style={{
-              width: 220,
-              background: "#FBFBFB",
-              borderRadius: 15,
-              padding: "32px 24px",
-              boxShadow: "0 1px 6px #0001;",
-              marginRight: 32,
-              textAlign: "center",
-              marginTop: 48
-            }}
-          >
-            <img
-              src={defaultProfile}
-              alt="기본 프로필"
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: "50%",
-                objectFit: "cover",
-                margin: "0 auto 12px",
-                display: "block"
-              }}
-            />
-            <p style={{ fontWeight: "bold", marginBottom: 24, color: "#0B0B61" }}>{username}</p> {/* 사용자명 연동 */}
-
-            <ul style={{ listStyle: "none", padding: 0, textAlign: "left", fontSize: 14, color: "#888" }}>
-              <li 
-              style={{ 
-                  marginBottom: 12,
-                  fontWeight: 700,
-                  color: "#333",
-                  backgroundColor: "#e0e0e0",
-                  padding: "4px 12px",
-                  borderRadius: 5,
-               }}
-              >
-                • 내가 만든 청춘
-              </li>
-              <li style={{ marginBottom: 12 }}>
-                <Link to="/recorded-youth/scrapped-youth" style={{ color: "#888", textDecoration: "none" }}>
-                  · 스크랩한 청춘
-                </Link>
-              </li>
-              <li>
-                <Link to="/recorded-youth/youth-calendar" style={{ color: "#888", textDecoration: "none" }}>
-                  · 청춘 일정
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <MyPageSidebar />  {/* 이 한 줄로 사이드바 대체 */}
 
           {/* 콘텐츠 */}
           <div style={{ flex: 1 }}>
