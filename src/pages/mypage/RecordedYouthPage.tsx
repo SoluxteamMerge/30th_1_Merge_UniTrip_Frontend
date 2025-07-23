@@ -8,8 +8,11 @@ import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css'; 
 import MyPageSidebar from "../../components/MyPageSidebar";
 
+import  {useMyReviews} from "../../api/hooks/useMyReviews"; // 커스텀 훅 import
+
 const RecordedYouthPage: React.FC = () => {
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요
+  const { reviews, loading, error } = useMyReviews(); // ✅ 이 줄 추가
   const hasPosts = true; // 작성한 글이 있다고 가정
 
   // 스타일
@@ -105,8 +108,9 @@ const RecordedYouthPage: React.FC = () => {
       isScraped: false,
     },
   
+  ];
   
-];
+
 
   const navigate = useNavigate(); 
 
@@ -145,30 +149,31 @@ const RecordedYouthPage: React.FC = () => {
               
               
                 {/* 아래 내용도 실제 사용자가 작성한 게시글과 연동 필요 */}
-                {hasPosts ? (
-                  
+                {loading ? (
+                  <p>불러오는 중...</p>
+                ) : error ? (
+                  <p style={{ color: "red" }}>{error}</p>
+                ) : reviews.length > 0 ? (
                   <div className="review-grid">
-                      {postData.map((post) => (
-                        <div key={post.postId} onClick={() => navigate(`/youth-talk/${post.postId}`)}>
-                          <ReviewCard
-                            postId={post.postId}
-                            title={post.title}
-                            categoryName={post.categoryName}
-                            thumbnailUrl={post.thumbnailUrl}
-                            nickname={post.nickname}
-                            createdAt={post.createdAt}
-                            likes={post.likes}
-                            scrapCount={post.scrapCount}
-                            rating={4}
-                            isLiked={post.isLiked}
-                            isScraped={post.isScraped}
-                          />
-                        </div>
-
-                      ))}
+                    {reviews.map((review) => (
+                      <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
+                        <ReviewCard
+                          postId={review.postId}
+                          title={review.postTitle}
+                          categoryName={review.category_name}
+                          thumbnailUrl={review.imageUrl}
+                          nickname={review.nickname}
+                          createdAt={""}
+                          likes={review.likeCount}
+                          scrapCount={review.scrapCount}
+                          rating={review.rating}
+                          isLiked={false}
+                          isScraped={false}
+                        />
+                      </div>
+                    ))}
                   </div>
-
-                ) : (
+                )  : (
                     <div
                       style={{
                         position: "absolute",
