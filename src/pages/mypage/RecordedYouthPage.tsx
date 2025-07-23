@@ -54,7 +54,7 @@ const RecordedYouthPage: React.FC = () => {
       categoryName: "청춘기록",
       thumbnailUrl: grayThumbnail,
       createdAt: "2025-07-22T12:00:00",
-      likes: 2,
+      likes: 3,
       scrapCount: 2,
       isLiked: false,
       isScraped: false,

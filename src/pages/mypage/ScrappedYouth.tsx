@@ -3,9 +3,6 @@ import Header from "../../components/Header/Header";
 import { Link, useNavigate } from "react-router-dom";
 import defaultProfile from "../../assets/header/default-profile.svg";
 
-import starIcon from "../../assets/interaction/star.svg";
-import empathyIcon from "../../assets/interaction/empathy.svg";
-import scrapIcon from "../../assets/interaction/scrap.svg";
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
 
 import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
