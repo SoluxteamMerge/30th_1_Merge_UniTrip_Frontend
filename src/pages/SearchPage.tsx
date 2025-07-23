@@ -2,10 +2,7 @@
   import Header from "../components/Header/Header";
   import searchIcon from '../assets/search_icon.svg';
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
-  import { useNavigate } from "react-router-dom"; // 이미 있으면 생략
-  import grayThumbnail from "../assets/gray-thumbnail.svg";
-
-
+  import { useNavigate } from "react-router-dom"; 
   import { ReviewCard } from "../pages/reviewcard/ReviewCard";
   import './mainpage/MainPage.css';
   import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
@@ -80,22 +77,13 @@
 
   ];
 
-  /*드롭다운 부분 항목들 */
-  const dropdownRegions = [
-    ["부산", "제주", "바다", "광안리", "속초"],
-    ["강릉", "MT", "대구", "전주", "힐링"]
-  ];
-
+  const popularKeywords = ["부산", "제주", "바다", "광안리", "속초", "강릉", "MT", "대구", "전주", "힐링"];
 
   const SearchPage: React.FC = () => {
       const navigate = useNavigate(); 
       const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태
       const [submitted, setSubmitted] = useState(false);   //엔터 입력 여부 상태
       const [selectedRegion, setSelectedRegion] = useState<string | null>(null); // 라디오 전체 지역 선택 상태
-
-      const [showDropdown, setShowDropdown] = useState(false); //전체 보기 드롭다운 표시여부
-      const [selectedDropdownRegion, setSelectedDropdownRegion] = useState<string | null>(null); // 우측 상단 표시용
-      const dropdownRef = useRef<HTMLDivElement>(null);  //외부 클릭 감지용
 
       const [sortOption, setSortOption] = useState("최신순"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
 
@@ -106,9 +94,9 @@
       };
 
       {/*검색어 필터링*/}
-      const filteredReviews = dummyReviews.filter(review =>
+      const filteredReviews = dummyReviews.filter((review) =>
         review.title.includes(searchQuery)
-      ).slice(0, 6);
+      );
 
       {/*리뷰 정렬(최신순, 인기순, 스크랩순, 공감순)*/}
       const sortedReviews = [...filteredReviews].sort((a, b) => {
@@ -124,24 +112,7 @@
           return 0; // 정렬하지 않음 → 원래 순서 유지 (최신순이라고 간주)
 
       }
-    }).slice(0, 6); // 6개만 잘라서 보여주기
-
-    {/*외부 클릭 시 드롭다운 닫기 */}
-    useEffect(() => {
-      const handleClickOutside = (e: MouseEvent) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-          setShowDropdown(false); // 외부 클릭 시 드롭다운 닫기
-        }
-      };
-
-      if (showDropdown) {
-        document.addEventListener("mousedown", handleClickOutside);
-      }
-
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [showDropdown]);
+    })//.slice(0, 6); // 6개만 잘라서 보여주기
 
     return (
       <>
@@ -152,34 +123,6 @@
           <section className="mainpage-search-section">
             <h2 className="mainpage-sectiontitle">▶ 청춘 발자국</h2>
 
-            {/* 드롭다운에서 선택된 항목 우측 상단에 표시 */}
-            {selectedDropdownRegion && (
-              <div
-                style={{
-                  position: "relative", // 이거는 감싸는 div에서 한 번만 적용
-                  height: 0,             // layout 영향 없도록
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -60,          // 검색창 위
-                    right: 220,        // 검색창 오른쪽 끝 기준 맞추기 (조절 가능)
-                    backgroundColor: "#fff",
-                    border: "1px solid #ccc",
-                    borderRadius: 12,
-                    padding: "12px 24px",
-                    fontSize: 16,
-                    fontWeight: 500,
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                    color: "#333"
-                  }}
-                >
-                  {selectedDropdownRegion}
-                </div>
-              </div>
-            )}
-          
 
             <div className="mainpage-search-container">
               <img src={searchIcon} alt="검색 아이콘" className="mainpage-search-icon"/>
@@ -193,209 +136,115 @@
               />
             </div>
           </section>
+          
 
-          {/* 필터 섹션 (지역) */}
+          {/* 필터 섹션 (지역 + 인기 검색어) */}
           <section style={{ display: "flex", justifyContent: "center", paddingTop: 32, paddingBottom: 16 }}>
+
+            {/* 바깥 wrapper: 검색창과 동일 너비 */}
             <div style={{
               width: "calc(100vw - 400px)",   // 검색창과 동일한 너비
-              backgroundColor: "#fff",
-              borderRadius: 16,
-              padding: "28px 32px",
-              border: "1px solid #ccc",
-              fontFamily: "Pretendard, sans-serif",
+              //backgroundColor: "#fff",
+              //borderRadius: 16,
+              //padding: "28px 32px",
+              //border: "1px solid #ccc",
+              //fontFamily: "Pretendard, sans-serif",
               display: "flex",                 // 가로 정렬
-              alignItems: "flex-start",
-              justifyContent: "center",   // 가운데 정렬 추가
-              flexWrap: "wrap",
-              gap: 50,                      // 버튼 간 간격
+              //alignItems: "flex-start",
+              //justifyContent: "center",   // 가운데 정렬 추가
+              justifyContent: "space-between",
+              alignItems: "flex-start", 
+              //flexWrap: "wrap",
+              gap: 32, // 버튼 간 간격
+              }}
+            >
 
-            }}>
+              {/* 왼쪽: 지역 선택 필터 */}
               <div style={{  
-                fontSize: 18, 
-                fontWeight: 700, 
-                color: "#0B0B61",
-                marginRight: 16, // ← 지역 텍스트 오른쪽 여백
-                paddingTop: 4
-                }}>지역</div>
+                flex: 1,
+                backgroundColor: "#fff",
+                borderRadius: 16,
+                padding: "28px 32px",
+                border: "1px solid #ccc",
+                fontFamily: "Pretendard, sans-serif",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 24,
+                }}
+                >
+                  {/* 지역 제목 */}
+                  <div style={{ fontSize: 18, fontWeight: 700, color: "#0B0B61", width: "100%" }}>지역</div>
+       
               
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {/* 첫 번째 줄: 서울~경기 */}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 50, marginBottom: 3 }}>
-                    {["서울", "인천", "대전", "대구", "광주", "부산", "울산", "세종", "경기"].map(region => (
-                        <label key={region} style={{ 
-                          display: "flex",
-                          alignItems: "center", 
-                          gap: 6, 
-                          cursor: "pointer" 
-                        }}>
-                        <input
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {/* 첫 번째 줄: 서울~경기 */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 50, paddingLeft: 24, }}>
+                      {["서울", "인천", "대전", "대구", "광주", "부산", "울산", "세종", "경기"].map((region) => (
+                        <label key={region} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                          <input
                             type="radio"
                             name="region"
                             value={region}
                             checked={selectedRegion === region}
                             onChange={() => setSelectedRegion(region)}
-                            style={{
-                            accentColor: "#0B0B61",
-                            width: 16,
-                            height: 16
-                            }}
-                        />
-                        <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>
-                            {region}
-                        </span>
+                            style={{ accentColor: "#0B0B61", width: 16, height: 16 }}
+                          />
+                          <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>{region}</span>
                         </label>
-                    ))}
+                      ))}
                     </div>
 
                     {/* 두 번째 줄: 강원~제주 */}
-                    <div style={{ 
-                      display: "flex", 
-                      flexWrap: "wrap", 
-                      gap: 50, 
-                      }}
-                    >
-                    {["강원", "충북", "충남", "경북", "경남", "전북", "전남", "제주", "전체보기"].map(region => (
-                      <label key={region} //label = 드롭다운을 열고 닫는 트리거 버튼
-                      onClick={() => {
-                          /* 전체 보기 옵션 클릭 시 드롭다운 활성화 }*/
-                          if (region === "전체보기") {
-                            setShowDropdown(prev => !prev);
-                            setSelectedRegion(region);
-                          }
-                          
-                        }}
-                        style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
-                          gap: 6, 
-                          cursor: "pointer" ,
-                          //position: region === "전체보기" ? "relative" : "static",
-                          position: "relative" 
-                        }}
-                        >
-                        <input
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 50, paddingLeft: 24, }}>
+                      {["강원", "충북", "충남", "경북", "경남", "전북", "전남", "제주", "전체보기"].map((region) => (
+                        <label key={region} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                          <input
                             type="radio"
                             name="region"
                             value={region}
                             checked={selectedRegion === region}
                             onChange={() => setSelectedRegion(region)}
-                            style={{
-                            accentColor: "#0B0B61",
-                            width: 16,
-                            height: 16
-                            }}
-                        />
-                          <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>
-                              {region}
-                          </span>
+                            style={{ accentColor: "#0B0B61", width: 16, height: 16 }}
+                          />
+                          <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>{region}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
 
-                          {/* 전체보기 클릭 시 드롭다운 부분 */}
-                          {/* 드롭다운 항목을 클릭하면 선택값 저장 + 드롭다운 닫힘 */}
-                          {region === "전체보기" && showDropdown && (
-                          <div ref={dropdownRef} style={{  //드롭다운 메뉴 그 자체
-                            position: "absolute", 
-                            top: 30, 
-                            left: 0, 
-                            background: "#fff", 
-                            border: "1px solid #ccc", 
-                            borderRadius: 12, 
-                            padding: 0, 
-                            width: 360, // 너비 조정
-                            display: "grid", 
-                            gridTemplateColumns: "1fr 1px 1fr",  
-                            zIndex: 10 ,
-                            }}
-                          >
-                            {/* 왼쪽 컬럼 */}
-                            <div style={{ display: "flex", flexDirection: "column", paddingTop:32, paddingBottom:32 }}>
-                              
-                              {/* 상단 가로선 */}
-                              <div style={{ height: 1, backgroundColor: "#eee", width: "100%" }}></div>
-                              {dropdownRegions[0].map((regionName, index) => (
-                                <div 
-                                key={index} 
-                                style={{ 
-                                  display: "flex", 
-                                  gap: 8, 
-                                  borderBottom: "1px solid #eee", 
-                                  padding: "8px 12px",
-                                  transition: "background-color 0.2s ease",
-                                  cursor: "pointer",
-                                }}
-                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")} //드롭다운 내 지역 항목에 마우스를 올렸을 때 배경색을 살짝 회색으로 변경
-                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")} //마우스를 떼면 원래대로 투명하게 돌려줌
-                                
-                                onClick={() => {
-                                  setSelectedRegion(regionName);     // 선택한 지역 업데이트
-                                  setSelectedDropdownRegion(`${index + 1}. ${regionName}`); // 검색창 우측 상단에 버튼 띄우기 
-                                  setShowDropdown(false);            // 드롭다운 닫기
-                                }}
-                                >
-                                  <span style={{ width: 20 }}>{index + 1}.</span>
-                                  <span>{regionName}</span>
-                                </div>
-                              ))}
-                            </div>
-
-                            {/* 세로 구분선 */}
-                            <div
-                              style={{
-                                backgroundColor: "#eee",
-                                width: 1,
-                                alignSelf: "center",    // 중앙 정렬
-                                height: "calc(100% - 64px)", // ← 위아래 padding 합친 높이만큼 빼줌 (32+32)
-                                marginTop: 0,
-                                marginBottom: 0
-                              }}
-                            />
-
-                            {/* 오른쪽 컬럼 */}
-                            <div style={{ display: "flex", flexDirection: "column",  paddingTop: 32, paddingBottom: 32}}>
-                              {/* 상단 가로선 */} 
-                              <div style={{ height: 1, backgroundColor: "#eee", width: "100%" }}></div>
-
-                              {dropdownRegions[1].map((regionName, index) => (
-                                <div 
-                                key={index} 
-                                style={{ 
-                                  display: "flex", 
-                                  gap: 8, 
-                                  borderBottom: "1px solid #eee", 
-                                  padding: "8px 12px",
-                                  transition: "background-color 0.2s ease",
-                                  cursor: "pointer",
-                                  }}
-                                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f5f5f5")}
-                                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
-                                  onClick={() => {
-                                    setSelectedRegion(regionName);     // 선택한 지역 업데이트
-                                    setSelectedDropdownRegion(`${index + 6}. ${regionName}`); // 검색창 우측 상단에 버튼 띄우기 
-                                    setShowDropdown(false);            // 드롭다운 닫기
-                                  }}
-                                >
-                                  <span style={{ width: 20 }}>{index + 6}.</span>
-                                  <span>{regionName}</span>
-                                </div>
-                              ))}
-                            </div>
-
-                          </div>
-                        )}
-                      
-
-                      </label>
+                {/* 오른쪽: 인기 검색어 박스 */}
+                <div
+                  style={{
+                    width: 160,
+                    backgroundColor: "#fff",
+                    border: "1px solid #ccc",
+                    borderRadius: 16,
+                    padding: "20px 16px",
+                    fontFamily: "Pretendard, sans-serif",
+                    fontSize: 14,
+                    color: "#0B0B61",
+                  }}
+                >
+                  <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>🔥 인기 검색어</h4>
+                  <ul style={{ paddingLeft: 12, listStyle: "none" }}>
+                    {popularKeywords.map((word, idx) => (
+                      <li key={idx} style={{ marginBottom: 6, fontSize: 16, color: "#000000", fontWeight: 500, }}>
+                        {idx + 1}. {word}
+                      </li>
                     ))}
-
-                  </div>     
-              </div>       
-            </div>
+                  </ul>
+                </div>
+             </div>
           </section>
+
 
           {/* 관련 리뷰 섹션 - 검색어 입력 후 엔터 눌렀을 때 조건부 렌더링  */}
           {submitted && (
             <section style={{ padding: "48px 160px 120px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, width: "calc(100vw - 400px)",margin: "0 auto" }}>
-                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600, marginBottom:30 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "calc(100vw - 400px)",margin: "0 auto 30px" }}>
+                
+                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600, }}>
                   관련된 {filteredReviews.length}개의 리뷰
                 </h3>
 
