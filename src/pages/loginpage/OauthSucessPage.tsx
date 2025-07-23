@@ -11,7 +11,7 @@ const OauthSuccessPage = () => {
   const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
-    const token = searchParams.get('accessToken');
+    const token = searchParams.get('token');
     if (token) {
       localStorage.setItem('accessToken', token);
 
