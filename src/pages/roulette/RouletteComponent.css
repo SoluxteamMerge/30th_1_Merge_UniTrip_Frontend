@@ -121,11 +121,19 @@
 
 .sector span {
   transform: rotate(-45deg) translateY(25px);
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 600;
   display: block;
   text-align: center;
   white-space: normal; /*줄바꿈 기능 추가, 미니게임 글자가 너무 길음... */
   word-break: break-word;
   max-width: 120px;
+}
+
+.result-text{
+  margin-top: 20px;
+  border: 1px solid #0B0B61;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: #f2f2f2
 }

@@ -2,6 +2,7 @@ import './ReviewCard.css';
 import starIcon from '../../assets/mainpage/star.svg';
 import heartIcon from '../../assets/mainpage/heart.svg';
 import scrapIcon from '../../assets/mainpage/scrap.svg';
+import fillscrap from '../../assets/mainpage/fillscrap.svg';
 
 interface ReviewCardProps {
   postId: number;
@@ -46,7 +47,7 @@ export const ReviewCard = ({
               <span>{likes}</span>
             </div>
             <div className="icon-button">
-              <img src={scrapIcon} alt="스크랩" className={isScraped ? 'scrap-colored' : ''}/>
+              <img src={isScraped? fillscrap : scrapIcon} alt="스크랩" className={isScraped ? 'scrap-colored' : ''}/>
               <span>{scrapCount}</span>
             </div>
           </div>

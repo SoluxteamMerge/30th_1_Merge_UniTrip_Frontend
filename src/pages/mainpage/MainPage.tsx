@@ -6,23 +6,35 @@ import Header from '../../components/Header/Header';
 import './MainPage.css';
 import searchIcon from '../../assets/search_icon.svg';
 import { useNavigate } from "react-router-dom";
-import { fetchReviews } from '../../api/mainpage/getReviews';
+import { fetchReviews } from '../../api/mainpage/getReviews'; 
+import { fetchRecommendedReview } from '../../api/mainpage/getRecommendedReview';
 import type { ReviewItem } from '../../api/mainpage/getReviews';
 
+interface RecommendItem {
+  postId: number;
+  title: string;
+  thumbnailUrl: string;
+  content: string;
+}
 function MainPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
-  const [isMoreClicked, setIsMoreClicked] = useState(false);
+  //const [isMoreClicked, setIsMoreClicked] = useState(false);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
-  const [randomRecommend, setRandomRecommend] = useState<ReviewItem | null>(null);
+  const [randomRecommend, setRandomRecommend] = useState<RecommendItem | null>(null);
   const token = localStorage.getItem('accessToken');
+  const [clickCount, setClickCount] = useState(0); //더보기 버튼 설정
   const navigate = useNavigate();
 
   const handleMoreClick = () => {
-    setVisibleCount((prev) => prev + 3);
-    setIsMoreClicked(true);
-  }
+    if (clickCount < 4) {
+      setVisibleCount((prev) => prev + 3);
+      setClickCount((prev) => prev+1);
+    }
+    
+  };
   {/*더미 테스트 */}
+
   useEffect(() => {
     const dummyData: ReviewItem[] = [
       {
@@ -204,7 +216,99 @@ function MainPage() {
     scrapCount: 4,
     isScraped: true,
     thumbnailUrl: "https://picsum.photos/200/100?random=112"
-  }
+  },
+  {
+  postId: 13,
+  boardType: "모임구인",
+  categoryName: "문화생활",
+  title: "뮤지컬 관람하실 분 구해요",
+  userId: 113,
+  nickname: "뮤덕",
+  createdAt: "2025-07-07T17:00:00",
+  commentCount: 1,
+  likes: 4,
+  isLiked: true,
+  scrapCount: 1,
+  isScraped: true,
+  thumbnailUrl: "https://picsum.photos/200/100?random=113"
+},
+{
+  postId: 14,
+  boardType: "자유게시판",
+  categoryName: "잡담",
+  title: "오늘 날씨 너무 좋다!",
+  userId: 114,
+  nickname: "햇살좋아",
+  createdAt: "2025-07-07T09:30:00",
+  commentCount: 0,
+  likes: 5,
+  isLiked: false,
+  scrapCount: 0,
+  isScraped: false,
+  thumbnailUrl: "https://picsum.photos/200/100?random=114"
+},
+{
+  postId: 15,
+  boardType: "식도락",
+  categoryName: "야식추천",
+  title: "야식으로 추천하는 메뉴?",
+  userId: 115,
+  nickname: "야식러버",
+  createdAt: "2025-07-06T23:45:00",
+  commentCount: 3,
+  likes: 8,
+  isLiked: true,
+  scrapCount: 2,
+  isScraped: false,
+  thumbnailUrl: "https://picsum.photos/200/100?random=115"
+},
+{
+  postId: 16,
+  boardType: "MT/LT",
+  categoryName: "단합대회",
+  title: "단합대회 때 이런 게임 어때요?",
+  userId: 116,
+  nickname: "아이디어뱅크",
+  createdAt: "2025-07-06T15:00:00",
+  commentCount: 2,
+  likes: 6,
+  isLiked: false,
+  scrapCount: 1,
+  isScraped: false,
+  thumbnailUrl: "https://picsum.photos/200/100?random=116"
+},
+{
+  postId: 17,
+  boardType: "모임구인",
+  categoryName: "운동",
+  title: "배드민턴 모임 인원 모집합니다",
+  userId: 117,
+  nickname: "스매싱",
+  createdAt: "2025-07-05T10:00:00",
+  commentCount: 0,
+  likes: 3,
+  isLiked: true,
+  scrapCount: 0,
+  isScraped: false,
+  thumbnailUrl: "https://picsum.photos/200/100?random=117"
+},
+{
+  postId: 18,
+  boardType: "자유게시판",
+  categoryName: "잡담",
+  title: "요즘 듣는 노래 추천해줘요",
+  userId: 118,
+  nickname: "노래쟁이",
+  createdAt: "2025-07-04T21:30:00",
+  commentCount: 5,
+  likes: 9,
+  isLiked: true,
+  scrapCount: 3,
+  isScraped: true,
+  thumbnailUrl: "https://picsum.photos/200/100?random=118"
+}
+
+
 ];
 
 
@@ -214,11 +318,40 @@ function MainPage() {
 
     setReviews(sorted);
 
-    const randomIndex = Math.floor(Math.random() * sorted.length);
-    setRandomRecommend(sorted[randomIndex]);
+    setRandomRecommend({
+    postId: 999,
+    title: "테스트 추천글",
+    thumbnailUrl: "https://picsum.photos/200/100?random=999",
+    content: "<p>추천 테스트용입니다! 길이가 언제까지 갈까요 시험해봅시다 언제까지 가나요? 언제까지언제까지 언제까지</p>"
+  });
+  }, []);
+// 추천 Api
+/*
+ useEffect(() => {
+    const fetchRecommended = async () => {
+      try {
+        const data = await fetchRecommendedReview();
+
+        setRandomRecommend({
+          postId: data.postId,
+          title: data.title,
+          thumbnailUrl: data.thumbnailUrl || '/default-thumbnail.png',
+          content: data.content,
+        });
+      } catch (err) {
+        if (err instanceof Error) {
+        console.error('추천 리뷰 불러오기 실패:', err.message);
+      } else {
+        console.error('추천 리뷰 불러오기 실패:',err);
+      }
+      setRandomRecommend(null);
+      }
+    };
+
+    fetchRecommended();
   }, []);
 
-  /*
+  // 리뷰 리스트 가져오기 
   useEffect(() => {
     const loadReviews = async () => {
       try {
@@ -228,11 +361,13 @@ function MainPage() {
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
         setReviews(sorted);
-        const randomIndex = Math.floor(Math.random() * sorted.length);
-        setRandomRecommend(sorted[randomIndex]);
-      } catch (err: any) {
-        console.error('리뷰 불러오기 실패:', err.message);
-        setReviews([]);
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error('리뷰 불러오기 실패:', err.message);
+        } else {
+          console.error('리뷰 불어오기 실패:',err);
+      } 
+      setReviews([]);
       }
     };
     loadReviews();
@@ -259,13 +394,16 @@ function MainPage() {
 
         {randomRecommend && (
           <section className="mainpage-suggest-section">
-            <div className="mainpage-suggest-card" onClick={() => navigate(`/youth-talk/${randomRecommend.postId}`)}>
+            <div className="mainpage-suggest-card" onClick={() =>  randomRecommend && navigate(`/youth-talk/${randomRecommend.postId}`)}>
               <p className="mainpage-suggest-label">이런 글은 어떠신가요?</p>
               <div className="mainpage-suggest-content-wrapper">
                 <div className="mainpage-suggest-text">
                   <p className="mainpage-recommend-title">{randomRecommend.title}</p>
-                  {/* <p className="mainpage-recommend-summary">{randomRecommend.content.length > 50? `${randomRecommend.content.slice(0, 50)}...`: randomRecommend.content}</p> */}
-                   <p className="mainpage-recommend-summary">#{randomRecommend.categoryName} / by {randomRecommend.nickname}</p>
+                  <p className="mainpage-recommend-summary">
+                    {randomRecommend.content
+                      ? randomRecommend.content.replace(/<[^>]+>/g, '').slice(0, 50) + '...'
+                      : '소개글이 없습니다.'}
+                  </p>
                 </div>
                 <div className="mainpage-suggest-image-wrapper">
                   <img src={randomRecommend.thumbnailUrl} alt="추천 이미지" className="mainpage-suggest-img" />
@@ -299,15 +437,19 @@ function MainPage() {
                     scrapCount={review.scrapCount}
                     rating={4}
                     isLiked={token ? review.isLiked: false}
-                    isScraped={review.isScraped}
+                    isScraped={token ? review.isScraped: false}
                   />
                 </div>
               ))}
             </div>
           </div>
-          {!isMoreClicked && (
+          {clickCount < 4 ? (
             <button className="more-button" onClick={handleMoreClick}>
               <span style={{ textDecoration: 'underline' }}>더보기</span> +
+            </button>
+          ) : (
+            <button className="more-button" onClick={() => navigate('/youth-talk')}>
+              <span style={{ textDecoration: 'underline'}}>청춘톡 전체보기</span> →
             </button>
           )}
 

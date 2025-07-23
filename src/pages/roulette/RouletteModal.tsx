@@ -14,9 +14,9 @@ export default function RouletteModal({ onClose }: Props) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const options = [
-    '미니 게임',
-    '스몰토크 주제 추천',
-    '레크레이션 추천',
+    '스몰토크 및 아이스브레이킹',
+    '레크리에이션(팀,개인)',
+    '미니게임',
   ];
 
   const handleSelect = (option: string) => {

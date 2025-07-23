@@ -192,7 +192,7 @@
 
 
 /*-----핸드폰 용------*/
-/*
+
 @media (max-width: 768px) {
   .mainpage-background {
     padding-top: 60px;
@@ -325,10 +325,18 @@
   }
 
 }
-*/
+
+@media (max-width: 768px) {
+  .more-button {
+    padding: 0 20px;
+    height: 50px;
+    font-size: 16px;
+  }
+}
+
 
 /* ------패드용------ */
-/*
+
 @media (min-width: 769px) and (max-width: 1024px) {
   .mainpage-background {
     padding-top: 70px;
@@ -436,4 +444,11 @@
     font-size: 16px;
   }
 }
-*/
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .more-button {
+    padding: 0 80px;
+    height: 60px;
+    font-size: 18px;
+  }
+}
