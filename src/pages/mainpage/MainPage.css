@@ -189,10 +189,35 @@
   font-size: 20px;
 }
 
+.board-filter-dropdown {
+  border: 1.5px solid rgb(187, 187, 187);
+  border-radius: 10px;
+  padding: 8px 16px;
+  background: rgb(255, 255, 255);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 120px;
+  text-align: center;
+}
+
+.board-sort-button {
+  padding: 8px 16px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: #333333;
+  background-color: #d0e9f5; 
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+}
+
+
 
 
 /*-----핸드폰 용------*/
-/*
+
 @media (max-width: 768px) {
   .mainpage-background {
     padding-top: 60px;
@@ -325,10 +350,18 @@
   }
 
 }
-*/
+
+@media (max-width: 768px) {
+  .more-button {
+    padding: 0 20px;
+    height: 50px;
+    font-size: 16px;
+  }
+}
+
 
 /* ------패드용------ */
-/*
+
 @media (min-width: 769px) and (max-width: 1024px) {
   .mainpage-background {
     padding-top: 70px;
@@ -436,4 +469,11 @@
     font-size: 16px;
   }
 }
-*/
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .more-button {
+    padding: 0 80px;
+    height: 60px;
+    font-size: 18px;
+  }
+}

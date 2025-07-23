@@ -3,10 +3,12 @@
 import axios, { AxiosError } from 'axios';
 
 interface UpdateUserInfoParams {
+  userName: string;
   nickname: string;
   phoneNumber: string;
   userType: string;
   emailVerified: boolean;
+  profileImageUrl: string;
 }
 
 interface UpdateUserInfoResponse {
@@ -18,11 +20,14 @@ interface UpdateUserInfoResponse {
 export const updateMyUserInfo = async (params: UpdateUserInfoParams) => {
   try {
     const accessToken = localStorage.getItem('accessToken');
-    const response = await axios.put<UpdateUserInfoResponse>('/api/user', params, {
+    if (!accessToken) throw new Error('Access token이 없습니다. 다시 로그인 해주세요.');
+
+    const response = await axios.patch<UpdateUserInfoResponse>('/api/user/modify', params, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<{ message: string }>;

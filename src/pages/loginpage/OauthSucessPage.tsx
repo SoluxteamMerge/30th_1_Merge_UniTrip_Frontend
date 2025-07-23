@@ -1,0 +1,64 @@
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+import AlertModal from '../../components/AlertModal/AlertModal';
+
+const OauthSuccessPage = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      localStorage.setItem('accessToken', token);
+
+      const checkUserInfo = async () => {
+        try {
+          const response = await axios.get('/api/user', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const { nickname } = response.data;
+
+          if (!nickname) {
+            setModalMessage(response.data.message || '회원가입이 필요합니다.');
+            setIsModalOpen(true);
+          } else {
+            navigate('/');
+          }
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response) {
+            setModalMessage(error.response.data.message || '회원 정보 조회에 실패했습니다.');
+          } else {
+            setModalMessage('알 수 없는 오류가 발생했습니다.');
+          }
+          setIsModalOpen(true);
+        }
+      };
+
+      checkUserInfo();
+    } else {
+      setModalMessage('토큰이 없습니다. 다시 로그인해주세요.');
+      setIsModalOpen(true);
+    }
+  }, [navigate, searchParams]);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => {
+      navigate('/signup');
+    }, 200);
+  };
+
+
+  return (
+    <>
+      <div>로그인 처리 중입니다...</div>
+      {isModalOpen && <AlertModal message={modalMessage} onClose={handleCloseModal} />}
+    </>
+  );
+};
+
+export default OauthSuccessPage;

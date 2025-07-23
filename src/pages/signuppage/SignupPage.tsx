@@ -4,6 +4,7 @@ import { postUserProfile } from '../../api/Signup/postUserProfile';
 import { checkNicknameDuplicate } from '../../api/Signup/checkNicknameDuplicate';
 import { sendEmailVerification } from '../../api/Signup/sendEmailVerification';
 import { verifyEmailCode } from '../../api/Signup/verifyEmailCode';
+import { uploadUserProfileImage } from '../../api/userProfileImageApi';
 import './SignupPage.css';
 import logo from '../../assets/header/logo.svg';
 import checkIcon from "../../assets/체크아이콘.svg";
@@ -17,22 +18,24 @@ const SignupPage: React.FC = () => {
   const [emailVerified, setEmailVerified] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [fileName, setFileName] = useState('');
-  const [modalMessage, setModalMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
-  const [isCodeSent, setIsCodeSent] = useState(false); //인증 코드 입력창 노출 여부
-  const [verificationCode, setVerificationCode] = useState(''); //인증코드
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,20}$/;
 
   const showModal = (message: string) => {
     setModalMessage(message);
     setIsModalOpen(true);
   };
-  {/* 닉네임 인증 */}
+
   const handleCheckNickname = async () => {
-    if (!nickname) {
-      showModal('닉네임을 입력하세요.');
-      return;
-    }
+    if (!nickname) return showModal('닉네임 입력은 필수입니다.');
+    if (!nicknameRegex.test(nickname)) return showModal('닉네임은 2~20자의 한글, 영문, 숫자만 가능합니다.');
+
     try {
       const result = await checkNicknameDuplicate(nickname);
       showModal(result.message);
@@ -45,7 +48,6 @@ const SignupPage: React.FC = () => {
     }
   };
 
-  {/*휴대폰 번호 하이픈 입력 */}
   const formatPhoneNumber = (value: string) => {
     const onlyNumber = value.replace(/[^0-9]/g, '');
     if (onlyNumber.length < 4) return onlyNumber;
@@ -59,16 +61,21 @@ const SignupPage: React.FC = () => {
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setFileName(file ? file.name : '');
-    setProfileImageUrl(file ? file.name : '');
+    if (!file) return;
+    setSelectedFile(file);
+    setFileName(file.name);
+    setProfileImageUrl(URL.createObjectURL(file));
   };
 
-  {/*학교 이메일 인증 */}
+  const handleCancelUpload = () => {
+    setSelectedFile(null);
+    setProfileImageUrl('');
+    setFileName('');
+  };
+
   const handleSendVerification = async () => {
-    if (!userEmail) {
-      showModal('학교 이메일을 입력하세요.');
-      return;
-    }
+    if (!userEmail.trim()) return showModal('학교 이메일을 입력해주세요.');
+    if (!userEmail.endsWith('@sookmyung.ac.kr')) return showModal('이메일은 @sookmyung.ac.kr로 끝나야 합니다.');
 
     try {
       const result = await sendEmailVerification(userEmail);
@@ -76,40 +83,46 @@ const SignupPage: React.FC = () => {
       setIsCodeSent(true);
       setEmailVerified(false);
     } catch (error) {
-      if (error instanceof Error) {
-        showModal(error.message);
-        setEmailVerified(false);
-      }
+      console.error(error);
+      showModal('이메일 인증 요청에 실패했습니다.');
+      setEmailVerified(false);
     }
   };
 
   const handleVerifyCode = async () => {
-    if (!verificationCode) {
-      showModal('인증 코드를 입력하세요.');
-      return;
-    }
-
+    if (!verificationCode) return showModal('인증 코드를 입력하세요.');
     try {
       const result = await verifyEmailCode(userEmail, verificationCode);
       showModal(result.message);
       setEmailVerified(true);
       setIsCodeSent(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        showModal(error.message);
-      }
+    } catch {
+      showModal('인증에 실패했습니다.');
     }
   };
 
-  const handleRegister = async () => { 
+  const handleRegister = async () => {
+    if (!nickname) return showModal('닉네임 입력은 필수입니다.');
+    if (!isNicknameChecked) return showModal('닉네임 중복 확인을 해주세요.');
+    if (!userType) return showModal('유저 타입 입력은 필수입니다.');
+    if (!userEmail || !emailVerified) return showModal('학교 이메일 인증은 필수입니다.');
+
     try {
+      let uploadedUrl = '';
+      const token = localStorage.getItem('accessToken') || '';
+
+      if (selectedFile) {
+        uploadedUrl = await uploadUserProfileImage(selectedFile, token);
+      }
+
       const response = await postUserProfile({
         nickname,
         phoneNumber,
         userType,
         emailVerified,
-        profileImageUrl,
+        profileImageUrl: uploadedUrl,
       });
+
       showModal(response.message);
     } catch (error) {
       if (error instanceof Error) {
@@ -126,6 +139,7 @@ const SignupPage: React.FC = () => {
         <p className="signup-description">정보를 입력하고 유니트립을 즐겨보세요</p>
 
         <div className="signup-form">
+          {/* 닉네임 */}
           <div className="signup-form-row">
             <div className="signup-form-row-left">
               <label className="signup-label">닉네임</label>
@@ -145,37 +159,46 @@ const SignupPage: React.FC = () => {
             <div className="signup-underline"></div>
           </div>
 
+          {/* 프로필 사진 */}
           <div className="signup-form-row">
             <label className="signup-label">프로필사진</label>
             <div className="signup-row-with-button">
               <span className="signup-file-name">{fileName || ''}</span>
               <input type="file" id="file" className="signup-hidden-file" onChange={handleFileChange} />
               <label htmlFor="file" className="signup-upload-btn">파일 업로드</label>
+              {profileImageUrl && (
+                <button type="button" className="signup-upload-btn" onClick={handleCancelUpload}>
+                  업로드 취소
+                </button>
+              )}
             </div>
             <div className="signup-underline"></div>
           </div>
 
+          {/* 핸드폰 번호 */}
           <div className="signup-form-row">
             <label className="signup-label">핸드폰 번호</label>
             <input type="tel" value={phoneNumber} onChange={handlePhoneNumberChange} placeholder="핸드폰 번호를 입력하세요" />
             <div className="signup-underline"></div>
           </div>
 
+          {/* 유저 타입 */}
           <div className="signup-form-row">
-            <label className="signup-label">유저 타입 (개인/조직)</label>
+            <label className="signup-label" htmlFor="userType">유저 타입 (개인/조직)</label>
             <select
+              id="userType"
               value={userType}
               onChange={(e) => setUserType(e.target.value)}
               className="signup-select"
-              aria-label="회원 유형 선택"
-        
             >
-              <option value="">선택하세요</option>
+              <option value="" disabled hidden>선택하세요</option>
               <option value="개인">개인</option>
               <option value="조직">조직</option>
             </select>
+            <div className="signup-underline"></div>
           </div>
 
+          {/* 이메일 인증 */}
           <div className="signup-form-row">
             <label className="signup-label">
               학교 이메일 인증
@@ -197,7 +220,6 @@ const SignupPage: React.FC = () => {
                 인증요청
               </button>
             </div>
-
             <div className="signup-underline"></div>
 
             {isCodeSent && (

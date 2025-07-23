@@ -167,3 +167,81 @@ input::placeholder {
   font-weight: 300;
   font-size: 12px;
 }
+
+
+/* 모바일용 (768px 이하) */
+@media (max-width: 768px) {
+  .login-card {
+    padding: 20px 20px 30px;
+    max-width: 90%;
+  }
+
+  .logo {
+    width: 200px;
+    height: auto;
+  }
+
+  .description {
+    font-size: 12px;
+    margin-bottom: 30px;
+  }
+
+  .login-btn {
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .google-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
+
+  .signup-link {
+    font-size: 13px;
+    gap: 5px;
+  }
+
+  .signup-link span,
+  .signup-link a {
+    font-size: 11px;
+  }
+}
+
+/* 패드용 (769px ~ 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .login-card {
+    padding: 24px 40px 35px;
+    max-width: 80%;
+  }
+
+  .logo {
+    width: 230px;
+    height: auto;
+  }
+
+  .description {
+    font-size: 13px;
+    margin-bottom: 40px;
+  }
+
+  .login-btn {
+    height: 55px;
+    font-size: 17px;
+  }
+
+  .google-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+  }
+
+  .signup-link {
+    font-size: 14px;
+  }
+
+  .signup-link span,
+  .signup-link a {
+    font-size: 12px;
+  }
+}

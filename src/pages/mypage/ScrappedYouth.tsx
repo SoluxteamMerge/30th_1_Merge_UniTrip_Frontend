@@ -1,12 +1,98 @@
 import React from "react";
 import Header from "../../components/Header/Header";
 import { Link, useNavigate } from "react-router-dom";
-import defaultProfile from "../../assets/header/default-profile.svg";
 
+import grayThumbnail from "../../assets/gray-thumbnail.svg";
+
+import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
+import '../mainpage/MainPage.css';
+import MyPageSidebar from "../../components/MyPageSidebar";
 
 const ScrappedYouthPage: React.FC = () => {
   const navigate = useNavigate();
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요
+  const hasScraps = true; // 스크랩한 게시글이 있다고 가정
+
+  const scrappedData = [
+    {
+      postId: 1,
+      title: "스크랩 게시글 1",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 0,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "스크랩 게시글 2",
+      categoryName: "여행",
+      thumbnailUrl: grayThumbnail,
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 2,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "세번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=103",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 1,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "네 번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 4,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "다섯번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 5,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "여섯번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 6,
+      scrapCount: 2,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+  ];
 
   //스타일
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
@@ -29,57 +115,7 @@ const ScrappedYouthPage: React.FC = () => {
 
         <div style={{ display: "flex", alignItems: "flex-start" }}>
           {/* 사이드바 - 양식 통일) */}
-          <div
-            style={{
-              width: 220,
-              background: "#fff",
-              borderRadius: 15,
-              padding: "32px 24px",
-              boxShadow: "0 1px 6px #0001;",
-              marginRight: 32,
-              textAlign: "center",
-              marginTop: 48
-            }}
-          >
-            <img
-              src={defaultProfile}
-              alt="기본 프로필"
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: "50%",
-                objectFit: "cover",
-                margin: "0 auto 12px",
-                display: "block"
-              }}
-            />
-
-            <p style={{ fontWeight: "bold", marginBottom: 24, color: "#0B0B61" }}>{username}</p>
-            <ul style={{ listStyle: "none", padding: 0, textAlign: "left", fontSize: 14, color: "#888" }}>
-              <li style={{ marginBottom: 12 }}>
-                <Link to="/recorded-youth" style={{ color: "#888", textDecoration: "none" }}>
-                  · 내가 만든 청춘
-                </Link>
-              </li>
-              <li 
-              style={{ 
-                  marginBottom: 12,
-                  fontWeight: 700,
-                  color: "#333",
-                  backgroundColor: "#e0e0e0",
-                  padding: "4px 12px",
-                  borderRadius: 5, 
-                }}
-                >
-                • 스크랩한 청춘
-              </li>
-              <li>
-                <Link to="/recorded-youth/youth-calendar" style={{ color: "#888", textDecoration: "none" }}>
-                  · 청춘 일정
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <MyPageSidebar />  {/* 이 한 줄로 사이드바 대체 */}
 
           {/* 콘텐츠 */}
           <div style={{ flex: 1 }}>
@@ -91,7 +127,7 @@ const ScrappedYouthPage: React.FC = () => {
             <div
               style={{
                 flex: 1,
-                background: "#fff",
+                background: "#FBFBFB",
                 borderRadius: 15,
                 padding: "24px 40px 24px 40px",
                 boxShadow: "0 1px 6px #0001;",
@@ -101,29 +137,51 @@ const ScrappedYouthPage: React.FC = () => {
             >
               <h2 style={{ marginBottom: 8, fontSize: 18, color: "#0B0B61"}}>스크랩한 청춘</h2>
               <p style={{ marginBottom: 30, fontSize: 14, color: "#0B0B61" }}>스크랩한 게시글</p>
-
-              <div
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    textAlign: "center"
-                  }}
-              >
-                <p style={{ fontSize: 20, color: "#0B0B61", fontWeight: 700, margin: 0 }}>
-                  아직 스크랩한 청춘이 없어요
-                </p>
-                
-                <p style={{fontSize: 16, color: "#888", fontWeight: 700, marginTop: 10}}>
-                  <Link to="/mt-journey" style={{ color: "#888", textDecoration: "underline" }}>
-                    청춘을 스크랩하러 가볼까요? &gt;
-                  </Link>
-                </p>
+              
+              {hasScraps ? (
+              //스크랩한 게시글이 있을 때 보여줄 카드 리스트
+              <div className="review-grid">
+                {scrappedData.map((post) => (
+                  <div key={post.postId} onClick={() => navigate(`/youth-talk/${post.postId}`)}>
+                    <ReviewCard
+                      postId={post.postId}
+                      title={post.title}
+                      categoryName={post.categoryName}
+                      thumbnailUrl={post.thumbnailUrl}
+                      nickname={post.nickname}
+                      createdAt={post.createdAt}
+                      likes={post.likes}
+                      scrapCount={post.scrapCount}
+                      rating={post.rating}
+                      isLiked={post.isLiked}
+                      isScraped={post.isScraped}
+                    />
+                  </div>
+                ))}
               </div>
-
+          ) : (
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                textAlign: "center"
+              }}
+            >
+              <p style={{ fontSize: 20, color: "#0B0B61", fontWeight: 700, margin: 0 }}>
+                아직 스크랩한 청춘이 없어요
+              </p>
+                
+              <p style={{fontSize: 16, color: "#888", fontWeight: 700, marginTop: 10}}>
+                <Link to="/mt-journey" style={{ color: "#888", textDecoration: "underline" }}>
+                  청춘을 스크랩하러 가볼까요? &gt;
+                </Link>
+              </p>
             </div>
+          )} 
           </div>
+        </div>
 
         </div>
       </div>

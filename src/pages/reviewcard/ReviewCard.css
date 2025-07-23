@@ -34,7 +34,6 @@
 
 .card-content p {
   font-size: 14px;
-  color: #101010;
   margin-bottom: 10px;
   font-weight: 300;
 }
@@ -43,10 +42,13 @@
   margin-right: 8px;
   display: inline-block;
   font-size: 12px;
-  color: #0B0B61 !important;
+  color: #0B0B61;
   margin-right: 6px;
 }
 
+.card-category{
+  color: #0B0B61;
+}
 .card-author-line {
   display: flex;
   justify-content: space-between;
@@ -87,7 +89,7 @@
 
 
 
-/*
+
 
 @media (max-width: 768px) {
   .review-card {
@@ -112,4 +114,3 @@
   }
 }
 
-*/
