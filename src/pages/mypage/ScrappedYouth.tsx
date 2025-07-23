@@ -8,6 +8,8 @@ import empathyIcon from "../../assets/interaction/empathy.svg";
 import scrapIcon from "../../assets/interaction/scrap.svg";
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
 
+import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
+import '../mainpage/MainPage.css';
 
 const ScrappedYouthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,66 +18,83 @@ const ScrappedYouthPage: React.FC = () => {
 
   const scrappedData = [
     {
-      id: 1,
-      author: "김눈송",
+      postId: 1,
       title: "스크랩 게시글 1",
-      tags: ["#MT", "#강릉"],
-      starCount: 1,
-      empathyCount: 0,
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 0,
       scrapCount: 3,
-      thumbnail: grayThumbnail
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
     },
     {
-      id: 2,
-      author: "김눈송",
-      title: "두 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 2,
-      empathyCount: 0,
+      postId: 1,
+      title: "스크랩 게시글 2",
+      categoryName: "여행",
+      thumbnailUrl: grayThumbnail,
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 2,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "세번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=103",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 1,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "네 번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 4,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "다섯번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 5,
+      scrapCount: 3,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 1,
+      title: "여섯번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 6,
       scrapCount: 2,
-      thumbnail: grayThumbnail
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
     },
-    {
-      id: 3,
-      author: "김눈송",
-      title: "세 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 3,
-      empathyCount: 0,
-      scrapCount: 3,
-      thumbnail: grayThumbnail
-    },
-    {
-      id: 4,
-      author: "김눈송",
-      title: "네 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 4,
-      empathyCount: 0,
-      scrapCount: 4,
-      thumbnail: grayThumbnail
-    },
-    {
-      id: 5,
-      author: "김눈송",
-      title: "다섯 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 5,
-      empathyCount: 0,
-      scrapCount: 5,
-      thumbnail: grayThumbnail
-    },
-    {
-      id: 6,
-      author: "김눈송",
-      title: "여섯 번째 ",
-      tags: ["#태그 1", "태그 2", "#태그3"],
-      starCount: 6,
-      empathyCount: 0,
-      scrapCount: 6,
-      thumbnail: grayThumbnail
-    },
-    
   ];
 
   //스타일
@@ -102,7 +121,7 @@ const ScrappedYouthPage: React.FC = () => {
           <div
             style={{
               width: 220,
-              background: "#fff",
+              background: "#FBFBFB",
               borderRadius: 15,
               padding: "32px 24px",
               boxShadow: "0 1px 6px #0001;",
@@ -161,7 +180,7 @@ const ScrappedYouthPage: React.FC = () => {
             <div
               style={{
                 flex: 1,
-                background: "#fff",
+                background: "#FBFBFB",
                 borderRadius: 15,
                 padding: "24px 40px 24px 40px",
                 boxShadow: "0 1px 6px #0001;",
@@ -173,73 +192,26 @@ const ScrappedYouthPage: React.FC = () => {
               <p style={{ marginBottom: 30, fontSize: 14, color: "#0B0B61" }}>스크랩한 게시글</p>
               
               {hasScraps ? (
-              <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 400px)",
-                    columnGap: 80,
-                    rowGap: 40,
-                    justifyContent: "center",
-                  }}
-              >
-                {scrappedData.slice(0, 6).map((post) => (
-                  <div
-                    key={post.id}
-                    style={{
-                      backgroundColor: "#fff",
-                      borderRadius: 12,
-                      width: "100%",
-                      aspectRatio: "1 / 1",
-                      height: 320,
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
-                      display: "flex",
-                      flexDirection: "column",
-                      overflow: "hidden"
-                    }}
-                  >
-                    {/* 썸네일 영역 */}       
-                    <img
-                      src={post.thumbnail}
-                      alt="썸네일"
-                      style={{
-                        width: "100%",
-                        height: "70%",
-                        objectFit: "cover",
-                        borderRadius: "8px 8px 0 0"
-                      }}
+              //스크랩한 게시글이 있을 때 보여줄 카드 리스트
+              <div className="review-grid">
+                {scrappedData.map((post) => (
+                  <div key={post.postId} onClick={() => navigate(`/youth-talk/${post.postId}`)}>
+                    <ReviewCard
+                      postId={post.postId}
+                      title={post.title}
+                      categoryName={post.categoryName}
+                      thumbnailUrl={post.thumbnailUrl}
+                      nickname={post.nickname}
+                      createdAt={post.createdAt}
+                      likes={post.likes}
+                      scrapCount={post.scrapCount}
+                      rating={post.rating}
+                      isLiked={post.isLiked}
+                      isScraped={post.isScraped}
                     />
-                  
-                  {/* 텍스트 영역 */}
-                  <div style={{ padding: "16px" }}>
-
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                      <p style={{ fontSize: 14, fontWeight: 500, color: "#a3a3a3", margin: 0 }}>{post.author}</p>
-                      
-                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        
-                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <img src={starIcon} alt="별점" style={{ width: 16, height: 16 }} />
-                          <span style={{ fontSize: 13, color: "#333" }}>{post.starCount}</span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <img src={empathyIcon} alt="공감" style={{ width: 16, height: 16 }} />
-                          <span style={{ fontSize: 13, color: "#333" }}>{post.empathyCount}</span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <img src={scrapIcon} alt="스크랩" style={{ width: 16, height: 16 }} />
-                          <span style={{ fontSize: 13, color: "#333" }}>{post.scrapCount}</span>
-                        </div>
-
-                      </div>
-                    </div>
-                    <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>{post.title}</p>
-                    <p style={{ fontSize: 12, color: "#0B0B61" }}>{post.tags.join(", ")}</p>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
           ) : (
             <div
               style={{
