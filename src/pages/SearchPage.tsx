@@ -23,7 +23,7 @@
     scrapCount: 1,
     rating: 1,
     isLiked: false,
-    isScraped: true,
+    isScraped: false,
   },
     {
     postId: 2, 
@@ -36,7 +36,7 @@
     scrapCount: 1,
     rating: 1,
     isLiked: false,
-    isScraped: true,
+    isScraped: false,
   },
   {
     postId: 3, 
@@ -49,7 +49,7 @@
     scrapCount: 3,
     rating: 1,
     isLiked: false,
-    isScraped: true,
+    isScraped: false,
   },
   {
     postId: 4, 
@@ -62,7 +62,7 @@
     scrapCount: 1,
     rating: 1,
     isLiked: false,
-    isScraped: true,
+    isScraped: false,
   },
   {
     postId: 5, 
@@ -75,7 +75,7 @@
     scrapCount: 2,
     rating: 3,
     isLiked: false,
-    isScraped: true,
+    isScraped: false,
   },
 
   ];
@@ -236,17 +236,19 @@
           {/* 관련 리뷰 섹션 - 검색어 입력 후 엔터 눌렀을 때 조건부 렌더링  */}
           {submitted && (
             <section style={{ padding: "48px 160px 120px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600, marginLeft: 45 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, width: "calc(100vw - 400px)",margin: "0 auto" }}>
+                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600, marginBottom:30 }}>
                   관련된 {filteredReviews.length}개의 리뷰
                 </h3>
 
-                <SortDropdown value={sortOption} onChange={setSortOption} /> {/*"최신순", "인기순", "스크랩순", "공감순" */}                        
+                <SortDropdown value={sortOption} onChange={setSortOption} /> {/*정렬 드롭다운 - 최신순 인기순 공감순 스크랩순 */}                        
               </div>
               
 
               {filteredReviews.length === 0 ? (
               <div style={{
+                width: "calc(100vw - 400px)",
+                margin: "0 auto",
                 border: "1px solid #ccc",
                 backgroundColor: "#fff",
                 padding: "80px 32px",
