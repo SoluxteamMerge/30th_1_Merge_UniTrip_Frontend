@@ -33,22 +33,12 @@ function YouthDrawer() {
                 setPhoneNumber(data.phoneNumber);
                 setEmailVerified(data.emailVerified);
                 setProfileImageUrl(data.profileImageUrl);
+                setUserType(data.userType);
             } catch (error) {
                 console.error('회원정보 불러오기 실패', error);
             }
         };
         fetchUserProfile();
-    }, []);
-
-
-    useEffect(() => {
-        // 더미 데이터로 테스트
-        setUserName('김가인');
-        setNickname('가인123');
-        setPhoneNumber('010-1234-5678');
-        setEmailVerified(true);
-        setProfileImageUrl('https://picsum.photos/300');
-        setUserType('개인');
     }, []);
 
     const handleWithdraw = async () => {

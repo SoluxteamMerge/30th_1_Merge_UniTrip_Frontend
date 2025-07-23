@@ -10,7 +10,7 @@ import  UploadModal  from '../../components/AlertModal/UploadModal';
 import { updateMyUserInfo } from '../../api/YouthDrawer/updateMyUserInfo';
 import { fetchMyUserInfo } from '../../api/YouthDrawer/fetchMyUserInfo';
 import { sendEmailVerification } from '../../api/Signup/sendEmailVerification';
-// import { verifyEmailCode } from '../../api/Signup/verifyEmailCode';
+import { verifyEmailCode } from '../../api/Signup/verifyEmailCode';
 import { deleteUserProfileImage, uploadUserProfileImage } from '../../api/userProfileImageApi';
 
 
@@ -36,24 +36,7 @@ function YouthDrawerEdit() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
-    /*더미 테스트*/
-    useEffect(() => {
-        const dummyUser = {
-            name: '홍길동',
-            nickname: '길동이',
-            phoneNumber: '010-1234-5678',
-            userEmail: 'gildong@example.com',
-            profileImageUrl: 'https://picsum.photos/300',
-        };
-        setName(dummyUser.name);
-        setNickname(dummyUser.nickname);
-        setPhoneNumber(dummyUser.phoneNumber);
-        setEmail(dummyUser.userEmail);
-        setProfileImageUrl(dummyUser.profileImageUrl);
-        /*setNicknameChecked(true);*/
-    }, []);
 
-    //실제 사용할 코드
     
     useEffect(() => {
     const fetchUserProfile = async () => {
@@ -63,6 +46,7 @@ function YouthDrawerEdit() {
             setNickname(data.nickname);
             setPhoneNumber(data.phoneNumber);
             setEmailVerified(data.emailVerified);
+            setProfileImageUrl(data.profileImageUrl || '');
             setNicknameChecked(true);
         } catch (error) {
             console.error('회원정보 불러오기 실패', error);
@@ -155,29 +139,25 @@ function YouthDrawerEdit() {
 
 
     const handleVerifyEmailCode = async () => {
-        if (!emailVerificationCode) {
-            setResultMessage('인증 코드를 입력하세요');
-            setIsResultModalOpen(true);
-            return;
-        }
-        {/*더미테스트 */}
-        if (emailVerificationCode === '123456') {
-            setEmailVerified(true);
-            setIsEmailCodeSent(false);
-            setResultMessage('이메일 인증이 완료되었습니다.');
-        } else {
-        setResultMessage('인증 코드가 올바르지 않습니다.');
-        }
-        setIsResultModalOpen(true);
-        {/*연동 시 사용할 코드 }
-        
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        setEmailVerified(true);
-        setIsEmailCodeSent(false);
-        setResultMessage('이메일 인증이 완료되었습니다.');
-        setIsResultModalOpen(true); */
-    };
-}
+  if (!emailVerificationCode) {
+    setResultMessage('인증 코드를 입력하세요');
+    setIsResultModalOpen(true);
+    return;
+  }
+
+  try {
+    const res = await verifyEmailCode(email, emailVerificationCode);
+    setEmailVerified(true);
+    setIsEmailCodeSent(false);
+    setResultMessage(res.message || '이메일 인증이 완료되었습니다.');
+  } catch (error) {
+    setResultMessage((error as Error).message || '인증 실패');
+  } finally {
+    setIsResultModalOpen(true);
+  }
+};
+
+
     {/*인증 코드 보냄 */}
     const handleSendEmailVerification = async () => {
         if (!email) {
@@ -217,12 +197,9 @@ function YouthDrawerEdit() {
             let finalProfileImageUrl = profileImageUrl;
             if (selectedFile) {
                 const uploadedUrl = await uploadUserProfileImage(selectedFile,token);
-                console.log('업로드한 프로필 이미지 URL: ', uploadedUrl); //더미테스트
                 finalProfileImageUrl = uploadedUrl || '';
             } else if (!selectedFile && profileImageUrl === '') {
-                console.log('프로필 이미지 삭제 요청 전송'); //더미 테스트
                 await deleteUserProfileImage(token);
-                console.log('삭제 완료'); //더미테스트
             }
             await updateMyUserInfo({
                 userName: name,
