@@ -369,7 +369,7 @@
                                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                                   onClick={() => {
                                     setSelectedRegion(regionName);     // 선택한 지역 업데이트
-                                    setSelectedDropdownRegion(`${index + 1}. ${regionName}`); // 검색창 우측 상단에 버튼 띄우기 
+                                    setSelectedDropdownRegion(`${index + 6}. ${regionName}`); // 검색창 우측 상단에 버튼 띄우기 
                                     setShowDropdown(false);            // 드롭다운 닫기
                                   }}
                                 >
