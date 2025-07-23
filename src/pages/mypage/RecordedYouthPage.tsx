@@ -127,7 +127,7 @@ const RecordedYouthPage: React.FC = () => {
           <div
             style={{
               width: 220,
-              background: "#fff",
+              background: "#FBFBFB",
               borderRadius: 15,
               padding: "32px 24px",
               boxShadow: "0 1px 6px #0001;",
@@ -186,7 +186,7 @@ const RecordedYouthPage: React.FC = () => {
             <div
               style={{
                 flex: 1,
-                background: "#fff",
+                background: "#FBFBFB",
                 borderRadius: 15,
                 padding: "24px 40px 24px 40px",
                 boxShadow: "0 1px 6px #0001;",
@@ -222,7 +222,7 @@ const RecordedYouthPage: React.FC = () => {
                         </div>
 
                       ))}
-                    </div>
+                  </div>
 
                 ) : (
                     <div
