@@ -11,7 +11,6 @@ const YouthCalendar: React.FC = () => {
   const navigate = useNavigate(); 
   const username = "김눈송";
   const today = new Date();
-
   const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
@@ -140,10 +139,10 @@ const YouthCalendar: React.FC = () => {
   const generateCalendar = (): React.ReactNode[] => {
     const cells: React.ReactNode[] = [];
     const baseCellStyle = {
-      width: `${100 / 7}%`,            // 열 너비를 1/7로 고정
+      width: `${100 / 7}%`,// 열 너비를 1/7로 고정
       height: 90,
       border: "1px solid #ddd",
-      verticalAlign: "top",   // ← 위쪽 정렬 (세로)
+      verticalAlign: "top",   //위쪽 정렬 (세로)
       padding: 10,
     };
 
@@ -182,7 +181,7 @@ const YouthCalendar: React.FC = () => {
         >
           {/* 날짜 숫자 클릭: 새 일정 추가 */}
           <div
-            style={{ textAlign: "left", padding: 4 }}
+            style={{ textAlign: "left", padding: 4,}}
             onClick={(e) => {
               e.stopPropagation(); // 여기 클릭 시 팝업
               setSelectedDate(day);
@@ -194,7 +193,16 @@ const YouthCalendar: React.FC = () => {
               setIsModalOpen(true);
             }}
           >
-            {day}
+            <span
+              style={{ //오늘 날짜 아래 밑줄 추가 
+                borderBottom: isToday
+                  ? `2px solid ${isSunday ? "#e53935" : isSaturday ? "#0b0b61" : "#000"}`
+                  : "none",
+                paddingBottom: 1,
+              }}
+            >
+              {day}
+            </span>
           </div>
 
           {/* 일정 2개까지만 표시 + 클릭 시 해당 메모 내용 불러오기 */}

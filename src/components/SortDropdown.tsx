@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const options = ["최신순", "인기순", "별점순"];
+const options = ["최신순", "인기순", "스크랩순", "공감순"];
 
 interface SortDropdownProps {
   value: string;
