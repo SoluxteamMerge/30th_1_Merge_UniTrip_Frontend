@@ -8,6 +8,7 @@ import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css';
 import MyPageSidebar from "../../components/MyPageSidebar";
 
+
 const ScrappedYouthPage: React.FC = () => {
   const navigate = useNavigate();
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요

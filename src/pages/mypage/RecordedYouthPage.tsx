@@ -7,13 +7,18 @@ import grayThumbnail from "../../assets/gray-thumbnail.svg";
 import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css'; 
 import MyPageSidebar from "../../components/MyPageSidebar";
+import Pagination from "../../components/Pagination";
+
 
 import  {useMyReviews} from "../../api/hooks/useMyReviews"; // 커스텀 훅 import
 
 const RecordedYouthPage: React.FC = () => {
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요
-  const { reviews, loading, error } = useMyReviews(); // ✅ 이 줄 추가
-  const hasPosts = true; // 작성한 글이 있다고 가정
+  const { reviews, loading, error } = useMyReviews(); 
+  //loading에 따라 서버에서 정보 가져옴, 오류 발생 시 error에 에러메시지, reviews 서버에서 받아온 라뷰 데이터 배열
+
+
+  //const hasPosts = true; // 작성한 글이 있다고 가정
 
   // 스타일
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
@@ -151,29 +156,36 @@ const RecordedYouthPage: React.FC = () => {
                 {/* 아래 내용도 실제 사용자가 작성한 게시글과 연동 필요 */}
                 {loading ? (
                   <p>불러오는 중...</p>
-                ) : error ? (
+                ) : error ? ( //서버 오류남
                   <p style={{ color: "red" }}>{error}</p>
-                ) : reviews.length > 0 ? (
+
+                ) : reviews.length > 0 ? ( // 리뷰 카드 보여줌
+
                   <div className="review-grid">
-                    {reviews.map((review) => (
-                      <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                        <ReviewCard
-                          postId={review.postId}
-                          title={review.postTitle}
-                          categoryName={review.category_name}
-                          thumbnailUrl={review.imageUrl}
-                          nickname={review.nickname}
-                          createdAt={""}
-                          likes={review.likeCount}
-                          scrapCount={review.scrapCount}
-                          rating={review.rating}
-                          isLiked={false}
-                          isScraped={false}
-                        />
-                      </div>
-                    ))}
+
+                    <Pagination
+                        items={reviews}
+                        itemsPerPage={6}
+                        renderItem={(review) => (
+                        <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
+                          <ReviewCard
+                            postId={review.postId}
+                            title={review.postTitle}
+                            categoryName={review.category_name}
+                            thumbnailUrl={review.imageUrl}
+                            nickname={review.nickname}
+                            createdAt={""}
+                            likes={review.likeCount}
+                            scrapCount={review.scrapCount}
+                            rating={review.rating}
+                            isLiked={false}
+                            isScraped={false}
+                          />
+                        </div>
+                      )}
+                    />
                   </div>
-                )  : (
+                )  : ( // 아직 쓴 글 없을 때 안내 문구
                     <div
                       style={{
                         position: "absolute",
