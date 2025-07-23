@@ -40,7 +40,7 @@ const YouthCalendar: React.FC = () => {
     [key: string]: { title: string; color: string; memo?: string }[];
   }>({});
 
-  const [editingIndex, setEditingIndex] = useState<number>(0); // 0 또는 1
+  //const [editingIndex, setEditingIndex] = useState<number>(0); // 0 또는 1
   const [editingEntry, setEditingEntry] = useState<{
     title: string;
     memo?: string;
@@ -48,6 +48,9 @@ const YouthCalendar: React.FC = () => {
   } | null>(null); // ← 메모 클릭 시 불러올 일정
 
   const [endDate, setEndDate] = useState<number | null>(null);
+  const [endMonth, setEndMonth] = useState<number | null>(null); 
+  const [endYear, setEndYear] = useState<number | null>(null);
+
 
 
   //const [viewingMemo, setViewingMemo] = useState<{ title: string; memo: string; color: string } | null>(null);
@@ -65,38 +68,55 @@ const YouthCalendar: React.FC = () => {
 
   {/*메모 저장-2개까지만 추가*/}
   const handleSave = () => {
-    if (!selectedDate || !scheduleTitle) return;
-    const end = endDate || selectedDate;
+      if (!selectedDate || !scheduleTitle) return;
 
-    const updated = { ...savedSchedules };
+      const start = new Date(currentYear, currentMonth, selectedDate);
+      const end = new Date(
+        endYear !== null ? endYear : currentYear,
+        endMonth !== null ? endMonth - 1 : currentMonth,
+        endDate || selectedDate
+      );
 
-    for (let day = selectedDate; day <= end; day++) {
-      const key = `${currentYear}-${currentMonth + 1}-${day}`;
-      const existing = updated[key] || [];
+      const updated = { ...savedSchedules };
 
-      if (!editingEntry && existing.length >= 2) {
-        alert("일정은 최대 2개까지 추가할 수 있습니다.");
-        return;
+      let current = new Date(start);
+     while (current <= end) {
+        const y = current.getFullYear();
+        //const m = current.getMonth() + 1; // 0-indexed → 1부터 시작
+        //const d = current.getDate();
+        const m = String(current.getMonth() + 1).padStart(2, "0");
+        const d = String(current.getDate()).padStart(2, "0");
+        const key = `${y}-${m}-${d}`;
+
+        const existing = updated[key] || [];
+
+        if (!editingEntry && existing.length >= 2) {
+          alert("일정은 날짜당 최대 2개까지 추가할 수 있습니다.");
+          return;
+        }
+
+        if (editingEntry) {
+          updated[key] = existing.map((e) =>
+            e.title === editingEntry.title && e.color === editingEntry.color
+              ? { title: scheduleTitle, memo, color: selectedColor }
+              : e
+          );
+        } else {
+          updated[key] = [...existing, { title: scheduleTitle, color: selectedColor, memo }];
+        }
+
+        current.setDate(current.getDate() + 1); // 다음 날짜로 이동
       }
 
-      if (editingEntry) {
-        updated[key] = existing.map((e) =>
-          e.title === editingEntry.title && e.color === editingEntry.color
-            ? { title: scheduleTitle, memo, color: selectedColor }
-            : e
-        );
-      } else {
-        updated[key] = [...existing, { title: scheduleTitle, color: selectedColor, memo }];
-      }
-    }
-
-    setSavedSchedules(updated);
-    localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
-    setIsModalOpen(false);
-    setScheduleTitle("");
-    setMemo("");
-    setEditingEntry(null);
-  };
+      setSavedSchedules(updated);
+      localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
+      setIsModalOpen(false);
+      setScheduleTitle("");
+      setMemo("");
+      setEditingEntry(null);
+      setEndMonth(null); // 선택 해제
+      setEndYear(null);  // 선택 해제
+    };
 
 
     {/*메모 삭제*/}
@@ -165,7 +185,9 @@ const YouthCalendar: React.FC = () => {
           currentMonth === today.getMonth() &&
           currentYear === today.getFullYear();
 
-      const key = `${currentYear}-${currentMonth + 1}-${day}`;
+      //const key = `${currentYear}-${currentMonth + 1}-${day}`;
+      //const entryList = savedSchedules[key] || [];
+      const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const entryList = savedSchedules[key] || [];
       
 
@@ -190,6 +212,7 @@ const YouthCalendar: React.FC = () => {
               setSelectedColor("#8bcece");
               setEditingEntry(null);
               setIsMemoSelected(false);
+              setEndMonth(null); 
               setIsModalOpen(true);
             }}
           >
@@ -372,7 +395,7 @@ const YouthCalendar: React.FC = () => {
                       >
 
                         <h2 style={{ fontSize: 18, marginBottom: 24, display: "flex", alignItems: "center", color: "#0b0b61" }}>
-                          청춘 일정 - {currentMonth + 1}월
+                          청춘 일정 - {currentYear}년 {currentMonth + 1}월
                         </h2>
 
                         <div>
@@ -477,11 +500,32 @@ const YouthCalendar: React.FC = () => {
             <h3 style={{ marginBottom: 16 }}>일정 추가</h3>
 
             <p style={{ fontSize: 14, color: "#666", marginBottom: 4 }}>
-              {currentMonth + 1}월 {selectedDate}일 ~ 
+              {currentYear}년 {currentMonth + 1}월 {selectedDate}일 ~
+
+              <select
+                value={endYear || currentYear}
+                onChange={(e) => setEndYear(Number(e.target.value))}
+                style={{ margin: "0 4px" }}
+              >
+                {[currentYear, currentYear + 1].map((year) => (
+                  <option key={year} value={year}>{year}년</option>
+                ))}
+              </select>
+
+              <select
+                value={endMonth || currentMonth + 1}
+                onChange={(e) => setEndMonth(Number(e.target.value))}
+                style={{ margin: "0 4px" }}
+              >
+                {[...Array(12)].map((_, i) => (
+                  <option key={i} value={i + 1}>{i + 1}월</option>
+                ))}
+              </select>
+
               <input
                 type="number"
-                min={selectedDate || 1}
-                max={new Date(currentYear, currentMonth + 1, 0).getDate()}
+                min={1}
+                max={31}
                 value={endDate || ""}
                 onChange={(e) => setEndDate(Number(e.target.value))}
                 style={{ width: 50, margin: "0 4px", textAlign: "center" }}
