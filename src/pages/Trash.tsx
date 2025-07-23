@@ -4,100 +4,95 @@
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
   import { useNavigate } from "react-router-dom"; // 이미 있으면 생략
   import grayThumbnail from "../assets/gray-thumbnail.svg";
-
-
-  import { ReviewCard } from "../pages/reviewcard/ReviewCard";
-  import './mainpage/MainPage.css';
-  import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
+  import starIcon from "../assets/interaction/star.svg";
+  import empathyIcon from "../assets/interaction/empathy.svg";
+  import scrapIcon from "../assets/interaction/scrap.svg";
 
 
   const dummyReviews = [
     {
-    postId: 1, 
-    thumbnailUrl:  "https://picsum.photos/200/100?random=101", 
-    title: "제주도 3박 4일 여행",
-    categoryName: "#제주도, #4인여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 0,
-    scrapCount: 1,
-    rating: 1,
-    isLiked: false,
-    isScraped: false,
-  },
+      id: 1,
+      image:grayThumbnail,
+      title: "동기들과 함께 제주도 3박 4일 여행",
+      tags: ["#제주도", "#4인여행"],
+      author: "김눈송",
+      starCount: 1,
+      empathyCount: 0,
+      scrapCount: 1,
+    },
     {
-    postId: 2, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-    title: "설악산 단풍 구경 2박 3일",
-    categoryName: "#설악산, #가을여행",
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 2,
-    scrapCount: 1,
-    rating: 1,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 3, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=103", 
-    title: "설악산 3",
-    categoryName: "#설악산", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 0,
-    scrapCount: 3,
-    rating: 1,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 4, 
-    thumbnailUrl:  "https://picsum.photos/200/100?random=104", 
-    title: "설악산 4",
-    categoryName: "#여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 5,
-    scrapCount: 1,
-    rating: 1,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 5, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-    title: "설악산 5",
-    categoryName: "#여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 2,
-    scrapCount: 2,
-    rating: 3,
-    isLiked: false,
-    isScraped: false,
-  },
-
+      id: 2,
+      image:grayThumbnail,
+      title: "설악산 단풍 구경 2박 3일",
+      tags: ["#설악산", "#가을여행"],
+      author: "김눈송",
+      starCount: 2,
+      empathyCount: 0,
+      scrapCount: 2,
+    },
+    {
+      id: 3,
+      image:grayThumbnail,
+      title: "설악산 2",
+      tags: ["#태그1", "#태그2"],
+      author: "김눈송",
+      starCount: 3,
+      empathyCount: 0,
+      scrapCount: 3,
+    },
+    {
+      id: 4,
+      image:grayThumbnail,
+      title: "설악산 3",
+      tags: ["#태그1", "#태그2"],
+      author: "김눈송",
+      starCount: 4,
+      empathyCount: 0,
+      scrapCount: 4,
+    },
+    {
+      id: 5,
+      image:grayThumbnail,
+      title: "설악산 4",
+      tags: ["#태그1", "#태그2"],
+      author: "김눈송",
+      starCount: 5,
+      empathyCount: 0,
+      scrapCount: 5,
+    },
+    {
+      id: 6,
+      image:grayThumbnail,
+      title: "설악산 5",
+      tags: ["#태그1", "#태그2"],
+      author: "김눈송",
+      starCount: 6,
+      empathyCount: 0,
+      scrapCount: 6,
+    },
+    
   ];
 
-  /*드롭다운 부분 항목들 */
+  /*드롭다운 부분 항목들 
   const dropdownRegions = [
     ["부산", "제주", "바다", "광안리", "속초"],
     ["강릉", "MT", "대구", "전주", "힐링"]
   ];
-
+  */
 
   const SearchPage: React.FC = () => {
       const navigate = useNavigate(); 
+
       const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태
       const [submitted, setSubmitted] = useState(false);   //엔터 입력 여부 상태
+
       const [selectedRegion, setSelectedRegion] = useState<string | null>(null); // 라디오 전체 지역 선택 상태
+      //const [showDropdown, setShowDropdown] = useState(false); //전체 보기 드롭다운 표시여부
+      //const [selectedDropdownRegion, setSelectedDropdownRegion] = useState<string | null>(null); // 우측 상단 표시용
+      //const dropdownRef = useRef<HTMLDivElement>(null);  //외부 클릭 감지용
 
-      const [showDropdown, setShowDropdown] = useState(false); //전체 보기 드롭다운 표시여부
-      const [selectedDropdownRegion, setSelectedDropdownRegion] = useState<string | null>(null); // 우측 상단 표시용
-      const dropdownRef = useRef<HTMLDivElement>(null);  //외부 클릭 감지용
+      const [sortOption, setSortOption] = useState("latest"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
 
-      const [sortOption, setSortOption] = useState("최신순"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
 
       const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
@@ -110,38 +105,41 @@
         review.title.includes(searchQuery)
       ).slice(0, 6);
 
-      {/*리뷰 정렬(최신순, 인기순, 스크랩순, 공감순)*/}
+      {/*리뷰 정렬(최신순, 인기순, 즐겨찾기순, 공감순)*/}
       const sortedReviews = [...filteredReviews].sort((a, b) => {
       switch (sortOption) {
-        //case "인기순": 
-          //return b.starCount - a.starCount;
-        case "스크랩순": 
+        case "popular":
+          return b.starCount - a.starCount;
+        case "scrap":
           return b.scrapCount - a.scrapCount;
-        case "공감순": 
-          return b.likes - a.likes;
-        //case "최신순":
+        case "empathy":
+          return b.empathyCount - a.empathyCount;
+        case "latest":
+        //case "latest":
+          //return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         default:
           return 0; // 정렬하지 않음 → 원래 순서 유지 (최신순이라고 간주)
 
       }
     }).slice(0, 6); // 6개만 잘라서 보여주기
 
-    {/*외부 클릭 시 드롭다운 닫기 */}
-    useEffect(() => {
-      const handleClickOutside = (e: MouseEvent) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-          setShowDropdown(false); // 외부 클릭 시 드롭다운 닫기
+      {/*외부 클릭 시 드롭다운 닫기
+      useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+          if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+            setShowDropdown(false); // 외부 클릭 시 드롭다운 닫기
+          }
+        };
+
+        if (showDropdown) {
+          document.addEventListener("mousedown", handleClickOutside);
         }
-      };
 
-      if (showDropdown) {
-        document.addEventListener("mousedown", handleClickOutside);
-      }
-
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [showDropdown]);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, [showDropdown]);
+      */}
 
     return (
       <>
@@ -152,7 +150,7 @@
           <section className="mainpage-search-section">
             <h2 className="mainpage-sectiontitle">▶ 청춘 발자국</h2>
 
-            {/* 드롭다운에서 선택된 항목 우측 상단에 표시 */}
+            {/* 드롭다운에서 선택된 항목 우측 상단에 표시 
             {selectedDropdownRegion && (
               <div
                 style={{
@@ -179,10 +177,14 @@
                 </div>
               </div>
             )}
-          
+          */}
 
             <div className="mainpage-search-container">
-              <img src={searchIcon} alt="검색 아이콘" className="mainpage-search-icon"/>
+              <img
+                src={searchIcon}
+                alt="검색 아이콘"
+                className="mainpage-search-icon"
+              />
               <input
                 type="text"
                 //value="검색어를 입력하세요"
@@ -195,20 +197,17 @@
           </section>
 
           {/* 필터 섹션 (지역) */}
-          <section style={{ display: "flex", justifyContent: "center", paddingTop: 32, paddingBottom: 16 }}>
+          <section style={{ padding: "32px 160px 16px" }}>
             <div style={{
-              width: "calc(100vw - 400px)",   // 검색창과 동일한 너비
               backgroundColor: "#fff",
               borderRadius: 16,
               padding: "28px 32px",
               border: "1px solid #ccc",
               fontFamily: "Pretendard, sans-serif",
-              display: "flex",                 // 가로 정렬
+              display: "flex",                 // ← 가로 정렬
               alignItems: "flex-start",
-              justifyContent: "center",   // 가운데 정렬 추가
               flexWrap: "wrap",
-              gap: 50,                      // 버튼 간 간격
-
+              gap: 50                      // ← 버튼 간 간격
             }}>
               <div style={{  
                 fontSize: 18, 
@@ -254,15 +253,14 @@
                       gap: 50, 
                       }}
                     >
-                    {["강원", "충북", "충남", "경북", "경남", "전북", "전남", "제주", "전체보기"].map(region => (
+                    {["강원", "충북", "충남", "경북", "경남", "전북", "전남", "제주"].map(region => (
                       <label key={region} //label = 드롭다운을 열고 닫는 트리거 버튼
-                      onClick={() => {
-                          /* 전체 보기 옵션 클릭 시 드롭다운 활성화 }*/
+                        onClick={() => {
+                          /* 전체 보기 옵션 클릭 시 드롭다운 활성화 
                           if (region === "전체보기") {
                             setShowDropdown(prev => !prev);
                             setSelectedRegion(region);
-                          }
-                          
+                          }*/
                         }}
                         style={{ 
                           display: "flex", 
@@ -288,9 +286,10 @@
                           <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>
                               {region}
                           </span>
-
+                      
                           {/* 전체보기 클릭 시 드롭다운 부분 */}
-                          {/* 드롭다운 항목을 클릭하면 선택값 저장 + 드롭다운 닫힘 */}
+
+                          {/* 드롭다운 항목을 클릭하면 선택값 저장 + 드롭다운 닫힘 
                           {region === "전체보기" && showDropdown && (
                           <div ref={dropdownRef} style={{  //드롭다운 메뉴 그 자체
                             position: "absolute", 
@@ -306,10 +305,10 @@
                             zIndex: 10 ,
                             }}
                           >
-                            {/* 왼쪽 컬럼 */}
+                            // 왼쪽 컬럼 
                             <div style={{ display: "flex", flexDirection: "column", paddingTop:32, paddingBottom:32 }}>
                               
-                              {/* 상단 가로선 */}
+                              //상단 가로선 
                               <div style={{ height: 1, backgroundColor: "#eee", width: "100%" }}></div>
                               {dropdownRegions[0].map((regionName, index) => (
                                 <div 
@@ -337,7 +336,7 @@
                               ))}
                             </div>
 
-                            {/* 세로 구분선 */}
+                            //세로 구분선 
                             <div
                               style={{
                                 backgroundColor: "#eee",
@@ -349,9 +348,9 @@
                               }}
                             />
 
-                            {/* 오른쪽 컬럼 */}
+                            //오른쪽 컬럼 
                             <div style={{ display: "flex", flexDirection: "column",  paddingTop: 32, paddingBottom: 32}}>
-                              {/* 상단 가로선 */} 
+                              //상단 가로선 
                               <div style={{ height: 1, backgroundColor: "#eee", width: "100%" }}></div>
 
                               {dropdownRegions[1].map((regionName, index) => (
@@ -369,7 +368,7 @@
                                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                                   onClick={() => {
                                     setSelectedRegion(regionName);     // 선택한 지역 업데이트
-                                    setSelectedDropdownRegion(`${index + 6}. ${regionName}`); // 검색창 우측 상단에 버튼 띄우기 
+                                    setSelectedDropdownRegion(`${index + 1}. ${regionName}`); // 검색창 우측 상단에 버튼 띄우기 
                                     setShowDropdown(false);            // 드롭다운 닫기
                                   }}
                                 >
@@ -381,8 +380,7 @@
 
                           </div>
                         )}
-                      
-
+                      */}
                       </label>
                     ))}
 
@@ -394,19 +392,23 @@
           {/* 관련 리뷰 섹션 - 검색어 입력 후 엔터 눌렀을 때 조건부 렌더링  */}
           {submitted && (
             <section style={{ padding: "48px 160px 120px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, width: "calc(100vw - 400px)",margin: "0 auto" }}>
-                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600, marginBottom:30 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600 }}>
                   관련된 {filteredReviews.length}개의 리뷰
                 </h3>
-
-                <SortDropdown value={sortOption} onChange={setSortOption} /> {/*정렬 드롭다운 - 최신순 인기순 공감순 스크랩순 */}                        
+                <select 
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #ccc" }}>
+                  <option value="latest">최신순</option>
+                  <option value="popular">인기순</option>
+                  <option value="scrap">즐겨찾기순</option>
+                  <option value="rating">공감순</option>
+                </select>
               </div>
-              
 
               {filteredReviews.length === 0 ? (
               <div style={{
-                width: "calc(100vw - 400px)",
-                margin: "0 auto",
                 border: "1px solid #ccc",
                 backgroundColor: "#fff",
                 padding: "80px 32px",
@@ -430,25 +432,38 @@
                 }}>직접 후기 쓰기</button>
               </div>
               ) : (
-                <div 
-                  className="review-grid"
-                  style={{ backgroundColor: "transparent" }}
-                >
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
                   {sortedReviews.map((review) => (
-                    <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCard
-                        postId={review.postId}
-                        title={review.title}
-                        categoryName={review.categoryName}
-                        thumbnailUrl={review.thumbnailUrl}
-                        nickname={review.nickname}
-                        createdAt={review.createdAt}
-                        likes={review.likes}
-                        scrapCount={review.scrapCount}
-                        rating={review.rating}
-                        isLiked={review.isLiked}
-                        isScraped={review.isScraped}
-                      />
+                    <div key={review.id} style={{ backgroundColor: "#fff", borderRadius: 16, boxShadow: "0 1px 6px #0001", overflow: "hidden" }}>
+                      <img src={review.image} alt={review.title} style={{ width: "100%", height: 200, objectFit: "cover" }} />
+
+                      <div style={{ padding: 16 }}>
+
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                          <p style={{ fontSize: 13, color: "#666", marginBottom: 4 }}>{review.author}</p>
+                          
+                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                              <img src={starIcon} alt="댓글" style={{ width: 16, height: 16 }} />
+                              <span style={{ fontSize: 13, color: "#333" }}>{review.starCount}</span>
+                            </div>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                              <img src={empathyIcon} alt="공감" style={{ width: 16, height: 16 }} />
+                              <span style={{ fontSize: 13, color: "#333" }}>{review.empathyCount}</span>
+                            </div>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                              <img src={scrapIcon} alt="스크랩" style={{ width: 16, height: 16 }} />
+                              <span style={{ fontSize: 13, color: "#333" }}>{review.scrapCount}</span>
+                            </div>
+
+                          </div>
+                        </div>
+                        <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>{review.title}</p>
+                        <div style={{ fontSize: 12, color: "#888" }}>{review.tags.join(", ")}</div>
+                      </div>
                     </div>
                   ))}
                 </div>
