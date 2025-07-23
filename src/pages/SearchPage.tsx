@@ -8,69 +8,77 @@
   import empathyIcon from "../assets/interaction/empathy.svg";
   import scrapIcon from "../assets/interaction/scrap.svg";
 
+  import { ReviewCard } from "../pages/reviewcard/ReviewCard";
+  import './mainpage/MainPage.css';
+
 
   const dummyReviews = [
     {
-      id: 1,
-      image:grayThumbnail,
-      title: "동기들과 함께 제주도 3박 4일 여행",
-      tags: ["#제주도", "#4인여행"],
-      author: "김눈송",
-      starCount: 1,
-      empathyCount: 0,
-      scrapCount: 1,
-    },
+    postId: 1, 
+    thumbnailUrl:  "https://picsum.photos/200/100?random=101", 
+    title: "동기들과 함께 제주도 3박 4일 여행",
+    categoryName: "#제주도, #4인여행", 
+    nickname: "김눈송", 
+    createdAt: "2025-07-23", 
+    likes: 0,
+    scrapCount: 1,
+    rating: 1,
+    isLiked: false,
+    isScraped: true,
+  },
     {
-      id: 2,
-      image:grayThumbnail,
-      title: "설악산 단풍 구경 2박 3일",
-      tags: ["#설악산", "#가을여행"],
-      author: "김눈송",
-      starCount: 2,
-      empathyCount: 0,
-      scrapCount: 2,
-    },
-    {
-      id: 3,
-      image:grayThumbnail,
-      title: "설악산 2",
-      tags: ["#태그1", "#태그2"],
-      author: "김눈송",
-      starCount: 3,
-      empathyCount: 0,
-      scrapCount: 3,
-    },
-    {
-      id: 4,
-      image:grayThumbnail,
-      title: "설악산 3",
-      tags: ["#태그1", "#태그2"],
-      author: "김눈송",
-      starCount: 4,
-      empathyCount: 0,
-      scrapCount: 4,
-    },
-    {
-      id: 5,
-      image:grayThumbnail,
-      title: "설악산 4",
-      tags: ["#태그1", "#태그2"],
-      author: "김눈송",
-      starCount: 5,
-      empathyCount: 0,
-      scrapCount: 5,
-    },
-    {
-      id: 6,
-      image:grayThumbnail,
-      title: "설악산 5",
-      tags: ["#태그1", "#태그2"],
-      author: "김눈송",
-      starCount: 6,
-      empathyCount: 0,
-      scrapCount: 6,
-    },
-    
+    postId: 2, 
+    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+    title: "설악산 단풍 구경 2박 3일",
+    categoryName: "#설악산, #가을여행",
+    nickname: "김눈송", 
+    createdAt: "2025-07-23", 
+    likes: 2,
+    scrapCount: 1,
+    rating: 1,
+    isLiked: false,
+    isScraped: true,
+  },
+  {
+    postId: 3, 
+    thumbnailUrl: "https://picsum.photos/200/100?random=103", 
+    title: "설악산 3",
+    categoryName: "#설악산", 
+    nickname: "김눈송", 
+    createdAt: "2025-07-23", 
+    likes: 0,
+    scrapCount: 3,
+    rating: 1,
+    isLiked: false,
+    isScraped: true,
+  },
+  {
+    postId: 4, 
+    thumbnailUrl:  "https://picsum.photos/200/100?random=104", 
+    title: "설악산 4",
+    categoryName: "#여행", 
+    nickname: "김눈송", 
+    createdAt: "2025-07-23", 
+    likes: 5,
+    scrapCount: 1,
+    rating: 1,
+    isLiked: false,
+    isScraped: true,
+  },
+  {
+    postId: 5, 
+    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+    title: "설악산 5",
+    categoryName: "#여행", 
+    nickname: "김눈송", 
+    createdAt: "2025-07-23", 
+    likes: 2,
+    scrapCount: 2,
+    rating: 3,
+    isLiked: false,
+    isScraped: true,
+  },
+
   ];
 
   const SearchPage: React.FC = () => {
@@ -91,23 +99,24 @@
         review.title.includes(searchQuery)
       ).slice(0, 6);
 
-      {/*리뷰 정렬(최신순, 인기순, 즐겨찾기순, 공감순)*/}
+      {/*리뷰 정렬(최신순, 인기순, 스크랩순, 공감순)*/}
       const sortedReviews = [...filteredReviews].sort((a, b) => {
       switch (sortOption) {
-        case "popular":
-          return b.starCount - a.starCount;
-        case "scrap":
+        //case "popular": //인기순
+          //return b.starCount - a.starCount;
+        case "scrap": //스크랩순
           return b.scrapCount - a.scrapCount;
-        case "empathy":
-          return b.empathyCount - a.empathyCount;
+        case "empathy": //공감순
+          return b.likes - a.likes;
         case "latest":
-        //case "latest":
+        //case "latest": //최신순
           //return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         default:
           return 0; // 정렬하지 않음 → 원래 순서 유지 (최신순이라고 간주)
 
       }
     }).slice(0, 6); // 6개만 잘라서 보여주기
+    
 
 
     return (
@@ -240,8 +249,8 @@
                 style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #ccc" }}>
                   <option value="latest">최신순</option>
                   <option value="popular">인기순</option>
-                  <option value="scrap">즐겨찾기순</option>
-                  <option value="rating">공감순</option>
+                  <option value="empathy">공감순</option>
+                  <option value="scrap">스크랩순</option>
                 </select>
               </div>
 
@@ -270,38 +279,25 @@
                 }}>직접 후기 쓰기</button>
               </div>
               ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
+                <div 
+                  className="review-grid"
+                  style={{ backgroundColor: "transparent" }}
+                >
                   {sortedReviews.map((review) => (
-                    <div key={review.id} style={{ backgroundColor: "#fff", borderRadius: 16, boxShadow: "0 1px 6px #0001", overflow: "hidden" }}>
-                      <img src={review.image} alt={review.title} style={{ width: "100%", height: 200, objectFit: "cover" }} />
-
-                      <div style={{ padding: 16 }}>
-
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                          <p style={{ fontSize: 13, color: "#666", marginBottom: 4 }}>{review.author}</p>
-                          
-                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-
-                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                              <img src={starIcon} alt="댓글" style={{ width: 16, height: 16 }} />
-                              <span style={{ fontSize: 13, color: "#333" }}>{review.starCount}</span>
-                            </div>
-
-                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                              <img src={empathyIcon} alt="공감" style={{ width: 16, height: 16 }} />
-                              <span style={{ fontSize: 13, color: "#333" }}>{review.empathyCount}</span>
-                            </div>
-
-                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                              <img src={scrapIcon} alt="스크랩" style={{ width: 16, height: 16 }} />
-                              <span style={{ fontSize: 13, color: "#333" }}>{review.scrapCount}</span>
-                            </div>
-
-                          </div>
-                        </div>
-                        <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>{review.title}</p>
-                        <div style={{ fontSize: 12, color: "#888" }}>{review.tags.join(", ")}</div>
-                      </div>
+                    <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
+                      <ReviewCard
+                        postId={review.postId}
+                        title={review.title}
+                        categoryName={review.categoryName}
+                        thumbnailUrl={review.thumbnailUrl}
+                        nickname={review.nickname}
+                        createdAt={review.createdAt}
+                        likes={review.likes}
+                        scrapCount={review.scrapCount}
+                        rating={review.rating}
+                        isLiked={review.isLiked}
+                        isScraped={review.isScraped}
+                      />
                     </div>
                   ))}
                 </div>
