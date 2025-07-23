@@ -352,7 +352,7 @@ function YouthDrawerEdit() {
 
             </div>
             <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-                <a href="#" style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px', marginRight: '24px' }}>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLScc04yLaBsTFIQN3jp7MJJoCSvAWcx2vorbfpZbor4kFeAe1w/viewform?usp=header" style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px', marginRight: '24px' }}>
                     고객센터
                 </a>
                 <a href="#" onClick={(e) => { e.preventDefault(); setIsWithdrawModalOpen(true); }} style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px' }}>
