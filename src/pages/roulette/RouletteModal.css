@@ -18,6 +18,8 @@
   border-radius: 16px;
   position: relative;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .close-btn {
