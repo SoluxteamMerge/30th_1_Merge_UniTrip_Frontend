@@ -4,19 +4,18 @@
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
   import { useNavigate } from "react-router-dom"; // 이미 있으면 생략
   import grayThumbnail from "../assets/gray-thumbnail.svg";
-  import starIcon from "../assets/interaction/star.svg";
-  import empathyIcon from "../assets/interaction/empathy.svg";
-  import scrapIcon from "../assets/interaction/scrap.svg";
+
 
   import { ReviewCard } from "../pages/reviewcard/ReviewCard";
   import './mainpage/MainPage.css';
+  import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
 
 
   const dummyReviews = [
     {
     postId: 1, 
     thumbnailUrl:  "https://picsum.photos/200/100?random=101", 
-    title: "동기들과 함께 제주도 3박 4일 여행",
+    title: "제주도 3박 4일 여행",
     categoryName: "#제주도, #4인여행", 
     nickname: "김눈송", 
     createdAt: "2025-07-23", 
@@ -86,7 +85,7 @@
       const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태
       const [submitted, setSubmitted] = useState(false);   //엔터 입력 여부 상태
       const [selectedRegion, setSelectedRegion] = useState<string | null>(null); // 라디오 전체 지역 선택 상태
-      const [sortOption, setSortOption] = useState("latest"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
+      const [sortOption, setSortOption] = useState("최신순"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
 
       const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
@@ -102,15 +101,13 @@
       {/*리뷰 정렬(최신순, 인기순, 스크랩순, 공감순)*/}
       const sortedReviews = [...filteredReviews].sort((a, b) => {
       switch (sortOption) {
-        //case "popular": //인기순
+        //case "인기순": 
           //return b.starCount - a.starCount;
-        case "scrap": //스크랩순
+        case "스크랩순": 
           return b.scrapCount - a.scrapCount;
-        case "empathy": //공감순
+        case "공감순": 
           return b.likes - a.likes;
-        case "latest":
-        //case "latest": //최신순
-          //return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        //case "최신순":
         default:
           return 0; // 정렬하지 않음 → 원래 순서 유지 (최신순이라고 간주)
 
@@ -240,19 +237,13 @@
           {submitted && (
             <section style={{ padding: "48px 160px 120px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600 }}>
+                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600, marginLeft: 45 }}>
                   관련된 {filteredReviews.length}개의 리뷰
                 </h3>
-                <select 
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-                style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #ccc" }}>
-                  <option value="latest">최신순</option>
-                  <option value="popular">인기순</option>
-                  <option value="empathy">공감순</option>
-                  <option value="scrap">스크랩순</option>
-                </select>
+
+                <SortDropdown value={sortOption} onChange={setSortOption} /> {/*"최신순", "인기순", "스크랩순", "공감순" */}                        
               </div>
+              
 
               {filteredReviews.length === 0 ? (
               <div style={{
