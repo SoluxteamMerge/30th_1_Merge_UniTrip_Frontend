@@ -1,12 +1,12 @@
 import React from "react";
 import Header from "../../components/Header/Header";
 import { Link, useNavigate } from "react-router-dom";
-import defaultProfile from "../../assets/header/default-profile.svg";
 
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
 
 import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css';
+import MyPageSidebar from "../../components/MyPageSidebar";
 
 const ScrappedYouthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -115,57 +115,7 @@ const ScrappedYouthPage: React.FC = () => {
 
         <div style={{ display: "flex", alignItems: "flex-start" }}>
           {/* 사이드바 - 양식 통일) */}
-          <div
-            style={{
-              width: 220,
-              background: "#FBFBFB",
-              borderRadius: 15,
-              padding: "32px 24px",
-              boxShadow: "0 1px 6px #0001;",
-              marginRight: 32,
-              textAlign: "center",
-              marginTop: 48
-            }}
-          >
-            <img
-              src={defaultProfile}
-              alt="기본 프로필"
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: "50%",
-                objectFit: "cover",
-                margin: "0 auto 12px",
-                display: "block"
-              }}
-            />
-
-            <p style={{ fontWeight: "bold", marginBottom: 24, color: "#0B0B61" }}>{username}</p>
-            <ul style={{ listStyle: "none", padding: 0, textAlign: "left", fontSize: 14, color: "#888" }}>
-              <li style={{ marginBottom: 12 }}>
-                <Link to="/recorded-youth" style={{ color: "#888", textDecoration: "none" }}>
-                  · 내가 만든 청춘
-                </Link>
-              </li>
-              <li 
-              style={{ 
-                  marginBottom: 12,
-                  fontWeight: 700,
-                  color: "#333",
-                  backgroundColor: "#e0e0e0",
-                  padding: "4px 12px",
-                  borderRadius: 5, 
-                }}
-                >
-                • 스크랩한 청춘
-              </li>
-              <li>
-                <Link to="/recorded-youth/youth-calendar" style={{ color: "#888", textDecoration: "none" }}>
-                  · 청춘 일정
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <MyPageSidebar />  {/* 이 한 줄로 사이드바 대체 */}
 
           {/* 콘텐츠 */}
           <div style={{ flex: 1 }}>
