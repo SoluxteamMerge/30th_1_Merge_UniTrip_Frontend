@@ -107,6 +107,21 @@ const RecordedYouthPage: React.FC = () => {
       isLiked: false,
       isScraped: false,
     },
+    {
+      postId: 7,
+      boardType: "모임구인",
+      categoryName: "여행",
+      title: "서울 근교 나들이 후기",
+      userId: 101,
+      nickname: "여행러1",
+      createdAt: "2025-07-15T10:00:00",
+      commentCount: 2,
+      likes: 5,
+      isLiked: false,
+      scrapCount: 1,
+      isScraped: false,
+      thumbnailUrl: "https://picsum.photos/200/100?random=101"
+    },
   
   ];
   
