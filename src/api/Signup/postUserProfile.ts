@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios';
+import api from '../api';
+import { AxiosError } from 'axios';
 
 interface UserProfileData {
   nickname: string;
@@ -20,7 +21,7 @@ export const postUserProfile = async (data: UserProfileData) => {
   }
 
   try {
-    const response = await axios.post('/api/user/profile', data, {
+    const response = await api.post('/api/user/profile', data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

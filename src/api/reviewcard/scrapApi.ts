@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../api';
 
 export interface ToggleScrapResponse {
   status: number;
@@ -8,7 +8,7 @@ export interface ToggleScrapResponse {
 }
 
 export const toggleScrap = async (postId: number, token: string): Promise<ToggleScrapResponse> => {
-  const response = await axios.post(`/api/scraps/${postId}`, {}, {
+  const response = await api.post(`/api/scraps/${postId}`, {}, {
     headers: { Authorization: token },
   });
   return response.data;

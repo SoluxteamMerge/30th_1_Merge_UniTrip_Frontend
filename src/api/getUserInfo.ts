@@ -1,8 +1,8 @@
-import axios from 'axios';
+import api from './api';
 
 export const getUserInfo = async () => {
   const token = localStorage.getItem('accessToken');
-  return axios.get('/api/user', {
+  return api.get('/api/user', {
     headers: {
       Authorization: `Bearer ${token}`
     }
