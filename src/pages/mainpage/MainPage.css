@@ -189,28 +189,68 @@
   font-size: 20px;
 }
 
-.board-filter-dropdown {
-  border: 1.5px solid rgb(187, 187, 187);
-  border-radius: 10px;
-  padding: 8px 16px;
-  background: rgb(255, 255, 255);
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  min-width: 120px;
-  text-align: center;
+
+/* 드롭다운 전체 박스 */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
 }
 
-.board-sort-button {
+/* 선택된 항목 (버튼) */
+.dropdown-toggle {
   padding: 8px 16px;
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 14px;
-  color: #333333;
-  background-color: #d0e9f5; 
-  border-radius: 6px;
   font-weight: 600;
+  color: #101010;
+  border: 1px solid #BBBBBB;
+  border-radius: 10px;
   cursor: pointer;
   text-align: center;
+  min-width: 140px;
+  background-color: #FBFBFB;
+}
+
+/* ▼ 화살표 */
+.dropdown-toggle .arrow {
+  margin-left: 8px;
+}
+
+/* 드롭다운 메뉴 리스트 */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  text-align: center; /* li 가운데 정렬 */
+}
+
+/* 각 항목 */
+.dropdown-menu li {
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: black;
+}
+
+
+/* 호버 효과 */
+.dropdown-menu li:hover {
+  background-color: #f0f0f0;
+  border: #DEDEDE;
+}
+
+/* 선택된 항목 강조 */
+.dropdown-menu li.selected {
+  background-color: #DEDEDE;
+  color: black;
 }
 
 
