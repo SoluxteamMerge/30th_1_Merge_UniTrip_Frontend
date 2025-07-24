@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios';
+import api from '../api';
+import { AxiosError } from 'axios';
 
 interface EmailVerificationResponse {
   message: string;
@@ -7,7 +8,7 @@ interface EmailVerificationResponse {
 
 export const sendEmailVerification = async (email: string) => {
   try {
-    const response = await axios.post<EmailVerificationResponse>('/api/user/email', {
+    const response = await api.post<EmailVerificationResponse>('/api/user/email', {
       email,
     });
 

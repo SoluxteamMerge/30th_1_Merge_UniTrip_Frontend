@@ -7,8 +7,7 @@ import Google from '../../assets/Google_Logo.svg';
 const LoginPage: FC = () => {
   const handleGoogleLogin = () => {
     //window.location.href = '/api/google/login';  // ✅ 실제 구글 OAuth 연결
-    window.location.href = 'https://unitrip.duckdns.org/oauth2/authorization/google';
-
+    window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
   };
 
   return (

@@ -1,5 +1,5 @@
-import axios from "axios";
+import api from "./api";
  
 export const writeReview = async (data: any) => {
-  return axios.post("/api/reviews", data);
+  return api.post("/api/reviews", data);
 }; 

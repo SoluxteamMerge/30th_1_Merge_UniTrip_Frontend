@@ -1,8 +1,15 @@
-import axios from 'axios';
+import api from '../api';
 
-export const toggleLike = async (postId: number, token: string) => {
-  const response = await axios.post(`/api/likes/${postId}`, {}, {
+export interface ToggleLikeResponse {
+  status: number;
+  postId: number;
+  liked: boolean;
+  likeCount: number;
+}
+
+export const toggleLike = async (postId: number, token: string): Promise<ToggleLikeResponse> => {
+  const response = await api.post(`/api/likes/${postId}`, {}, {
     headers: { Authorization: token },
   });
-  return response.data;  // { status, postId, liked, likeCount }
+  return response.data;
 };
