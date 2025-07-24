@@ -6,6 +6,8 @@
   import { ReviewCard } from "../pages/reviewcard/ReviewCard";
   import './mainpage/MainPage.css';
   import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
+  import Pagination from "../components/Pagination";
+
 
 
   const dummyReviews = [
@@ -65,6 +67,45 @@
     postId: 5, 
     thumbnailUrl: "https://picsum.photos/200/100?random=102", 
     title: "설악산 5",
+    categoryName: "#여행", 
+    nickname: "김눈송", 
+    createdAt: "2025-07-23", 
+    likes: 2,
+    scrapCount: 2,
+    rating: 3,
+    isLiked: false,
+    isScraped: false,
+  },
+  {
+    postId: 6, 
+    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+    title: "설악산 6",
+    categoryName: "#여행", 
+    nickname: "김눈송", 
+    createdAt: "2025-07-23", 
+    likes: 2,
+    scrapCount: 2,
+    rating: 3,
+    isLiked: false,
+    isScraped: false,
+  },
+  {
+    postId: 7, 
+    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+    title: "설악산 7",
+    categoryName: "#여행", 
+    nickname: "김눈송", 
+    createdAt: "2025-07-23", 
+    likes: 2,
+    scrapCount: 2,
+    rating: 3,
+    isLiked: false,
+    isScraped: false,
+  },
+  {
+    postId: 8, 
+    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+    title: "설악산 8",
     categoryName: "#여행", 
     nickname: "김눈송", 
     createdAt: "2025-07-23", 
@@ -278,12 +319,12 @@
                   cursor: "pointer"
                 }}>직접 후기 쓰기</button>
               </div>
-              ) : (
-                <div 
-                  className="review-grid"
-                  style={{ backgroundColor: "transparent" }}
-                >
-                  {sortedReviews.map((review) => (
+              ) : 
+              (
+                <Pagination
+                  items={sortedReviews}
+                  itemsPerPage={6}
+                  renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
                       <ReviewCard
                         postId={review.postId}
@@ -299,8 +340,8 @@
                         isScraped={review.isScraped}
                       />
                     </div>
-                  ))}
-                </div>
+                  )}
+                />
               )}
             </section>
           )}
