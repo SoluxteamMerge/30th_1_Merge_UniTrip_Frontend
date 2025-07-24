@@ -7,6 +7,8 @@ import grayThumbnail from "../../assets/gray-thumbnail.svg";
 import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css';
 import MyPageSidebar from "../../components/MyPageSidebar";
+import Pagination from "../../components/Pagination"; 
+
 
 const ScrappedYouthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ const ScrappedYouthPage: React.FC = () => {
       isScraped: true,
     },
     {
-      postId: 1,
+      postId: 2,
       title: "스크랩 게시글 2",
       categoryName: "여행",
       thumbnailUrl: grayThumbnail,
@@ -41,7 +43,7 @@ const ScrappedYouthPage: React.FC = () => {
       isScraped: true,
     },
     {
-      postId: 1,
+      postId: 3,
       title: "세번째",
       categoryName: "여행",
       thumbnailUrl: "https://picsum.photos/200/100?random=103",
@@ -54,7 +56,7 @@ const ScrappedYouthPage: React.FC = () => {
       isScraped: true,
     },
     {
-      postId: 1,
+      postId: 4,
       title: "네 번째",
       categoryName: "여행",
       thumbnailUrl: "https://picsum.photos/200/100?random=101",
@@ -67,7 +69,7 @@ const ScrappedYouthPage: React.FC = () => {
       isScraped: true,
     },
     {
-      postId: 1,
+      postId: 5,
       title: "다섯번째",
       categoryName: "여행",
       thumbnailUrl: "https://picsum.photos/200/100?random=101",
@@ -80,10 +82,62 @@ const ScrappedYouthPage: React.FC = () => {
       isScraped: true,
     },
     {
-      postId: 1,
+      postId: 6,
       title: "여섯번째",
       categoryName: "여행",
       thumbnailUrl: "https://picsum.photos/200/100?random=101",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 6,
+      scrapCount: 2,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 7,
+      title: "일곱번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=107",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 6,
+      scrapCount: 2,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 8,
+      title: "여닯번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=108",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 6,
+      scrapCount: 2,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 9,
+      title: "아홉번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=109",
+      nickname: "김눈송",
+      createdAt: "2025-07-20T10:00:00",
+      likes: 6,
+      scrapCount: 2,
+      rating: 1,
+      isLiked: false,
+      isScraped: true,
+    },
+    {
+      postId: 10,
+      title: "10번째",
+      categoryName: "여행",
+      thumbnailUrl: "https://picsum.photos/200/100?random=110",
       nickname: "김눈송",
       createdAt: "2025-07-20T10:00:00",
       likes: 6,
@@ -140,8 +194,11 @@ const ScrappedYouthPage: React.FC = () => {
               
               {hasScraps ? (
               //스크랩한 게시글이 있을 때 보여줄 카드 리스트
-              <div className="review-grid">
-                {scrappedData.map((post) => (
+
+              <Pagination
+                items={scrappedData}
+                itemsPerPage={6}
+                renderItem={(post) => (
                   <div key={post.postId} onClick={() => navigate(`/youth-talk/${post.postId}`)}>
                     <ReviewCard
                       postId={post.postId}
@@ -157,8 +214,8 @@ const ScrappedYouthPage: React.FC = () => {
                       isScraped={post.isScraped}
                     />
                   </div>
-                ))}
-              </div>
+                )}
+              />
           ) : (
             <div
               style={{
