@@ -21,7 +21,15 @@ const Pagination = <T,>({ items, itemsPerPage, renderItem }: PaginationProps<T>)
   return (
     <div>
       {/* 현재 페이지 아이템 렌더링 */}
-      <div>{currentItems.map(renderItem)}</div>
+      <div 
+        style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: "24px",
+        }}
+        >
+         {currentItems.map(renderItem)}
+       </div>
 
       {/* 페이지네이션 버튼 */}
       <div style={{ textAlign: "center", marginTop: 24 }}>
