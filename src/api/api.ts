@@ -2,11 +2,11 @@
 //Axios 기본 설정 (모든 API 요청의 기반)
 import axios from 'axios';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: 'http://localhost:8080', // 실제 백엔드 주소로 변경
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: apiUrl,
+  withCredentials: true, // 필요에 따라
 });
 
 export default api;
