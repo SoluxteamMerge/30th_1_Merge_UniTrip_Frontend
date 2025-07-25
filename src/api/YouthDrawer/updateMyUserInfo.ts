@@ -1,6 +1,7 @@
 // src/api/YouthDrawer/updateMyUserInfo.ts
 
-import axios, { AxiosError } from 'axios';
+import api from '../api';
+import { AxiosError } from 'axios';
 
 interface UpdateUserInfoParams {
   userName: string;
@@ -22,7 +23,7 @@ export const updateMyUserInfo = async (params: UpdateUserInfoParams) => {
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) throw new Error('Access token이 없습니다. 다시 로그인 해주세요.');
 
-    const response = await axios.patch<UpdateUserInfoResponse>('/api/user/modify', params, {
+    const response = await api.patch<UpdateUserInfoResponse>('/api/user/modify', params, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

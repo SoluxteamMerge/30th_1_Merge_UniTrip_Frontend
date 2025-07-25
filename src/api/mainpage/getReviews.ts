@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios';
+import api from '../api';
+import { AxiosError } from 'axios';
 
 export interface ReviewItem {
     postId: number;
@@ -30,7 +31,7 @@ interface ErrorResponse {
 
 export const fetchReviews = async (token?: string): Promise<GetReviewsResponse> => {
     try {
-        const response = await axios.get('/api/reviews', {
+        const response = await api.get('/api/reviews', {
             headers: token ? { Authorization: token } : {},
         });
         return response.data;

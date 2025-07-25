@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios';
+import api from '../api';
+import { AxiosError } from 'axios';
 
 interface MyUserInfo {
   userName: string;          
@@ -23,7 +24,7 @@ export const fetchMyUserInfo = async (): Promise<MyUserInfo> => {
   }
 
   try {
-    const response = await axios.get<FetchUserInfoResponse>('/api/user/getProfile', {
+    const response = await api.get<FetchUserInfoResponse>('/api/user/getProfile', {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -1,14 +1,15 @@
 // /api/YouthDrawer/userProfileImageApi.ts
 
-import axios, { AxiosError } from 'axios';
+import api from './api';
+import { AxiosError } from 'axios';
 
 // 공통 헤더 생성 함수
 const getAuthHeader = (token: string) => ({
   Authorization: `Bearer ${token}`,
 });
 
-// 공통 에러 핸들링 함수
-const handleApiError = (error: unknown, defaultMessage: string) => {
+// 공통 에러 처리 함수
+const handleApiError = (error: unknown, defaultMessage: string): never => {
   const axiosError = error as AxiosError<{ message: string }>;
   if (axiosError.response?.data?.message) {
     throw new Error(axiosError.response.data.message);
@@ -25,7 +26,7 @@ export const uploadUserProfileImage = async (file: File, token: string) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await axios.post('/api/user/profileImage', formData, {
+    const response = await api.post('/api/user/profileImage', formData, {
       headers: {
         ...getAuthHeader(token),
         'Content-Type': 'multipart/form-data',
@@ -47,7 +48,7 @@ export const deleteUserProfileImage = async (token: string) => {
   if (!token) throw new Error('토큰이 없습니다.');
 
   try {
-    const response = await axios.delete('/api/user/profileImage', {
+    const response = await api.delete('/api/user/profileImage', {
       headers: getAuthHeader(token),
     });
 

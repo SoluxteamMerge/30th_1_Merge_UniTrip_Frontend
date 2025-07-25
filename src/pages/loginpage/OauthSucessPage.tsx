@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/api';
+import { AxiosError } from 'axios';
 import AlertModal from '../../components/AlertModal/AlertModal';
 
 const OauthSuccessPage = () => {
@@ -17,7 +18,7 @@ const OauthSuccessPage = () => {
 
       const checkUserInfo = async () => {
         try {
-          const response = await axios.get('/api/user', {
+          const response = await api.get('/api/user', {
             headers: { Authorization: `Bearer ${token}` },
           });
 
@@ -30,8 +31,9 @@ const OauthSuccessPage = () => {
             navigate('/');
           }
         } catch (error) {
-          if (axios.isAxiosError(error) && error.response) {
-            setModalMessage(error.response.data.message || '회원 정보 조회에 실패했습니다.');
+          const axiosError = error as AxiosError<{ message: string }>;
+          if (axiosError.response) {
+            setModalMessage(axiosError.response.data?.message || '회원 정보 조회에 실패했습니다.');
           } else {
             setModalMessage('알 수 없는 오류가 발생했습니다.');
           }

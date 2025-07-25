@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../api';
 
 export interface RecommendedReviewResponse {
   postId: number;
@@ -8,6 +8,6 @@ export interface RecommendedReviewResponse {
 }
 
 export const fetchRecommendedReview = async (): Promise<RecommendedReviewResponse> => {
-  const response = await axios.get('/api/reviews/recommend');
+  const response = await api.get('/api/reviews/recommend');
   return response.data;
 };

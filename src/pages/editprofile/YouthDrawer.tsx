@@ -5,7 +5,8 @@ import './YouthDrawer.css';
 import { fetchMyUserInfo } from '../../api/YouthDrawer/fetchMyUserInfo';
 import DrawerCheckIcon from '../../assets/체크아이콘.svg';
 import AlertModal from '../../components/AlertModal/AlertModal';
-import axios from 'axios';
+import api from '../../api/api';
+import { AxiosError } from 'axios';
 
 
 function YouthDrawer() {
@@ -50,7 +51,7 @@ function YouthDrawer() {
     }
 
     try {
-        const res = await axios.delete('/api/user/signout', {
+        const res = await api.delete('/user/signout', {
             headers: { Authorization: token },
         });
 
@@ -64,12 +65,8 @@ function YouthDrawer() {
             setIsResultModalOpen(true);
         }
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            setResultMessage(error.response?.data?.message || '회원탈퇴 실패');
-        } else {
-            setResultMessage('회원탈퇴 실패');
-        }
-        setIsResultModalOpen(true);
+        const axiosError = error as AxiosError<{ message: string }>;
+        setResultMessage(axiosError.response?.data?.message || '회원탈퇴 실패');
     }
 };
 

@@ -15,6 +15,7 @@ import rightlistIcon from "../assets/toolbar/rightlist.svg";
 import closeIcon from "../assets/module/close.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
+import api from "../api/api"; // api 인스턴스 추가
 
 const WriteReviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -294,15 +295,9 @@ const WriteReviewPage: React.FC = () => {
       };
 
       // 백엔드 API 호출 (예시)
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData)
-      });
+      const response = await api.post('/api/posts', postData);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         // 성공 시 해당 카테고리 페이지로 이동
         switch (selectedCategory) {
           case "청춘톡":

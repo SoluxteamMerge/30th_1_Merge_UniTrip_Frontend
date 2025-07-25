@@ -3,7 +3,8 @@ import type { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from "../../components/Header/Header";
 import './YouthDrawer.css';
-import axios from 'axios';
+import api from '../../api/api';
+import { AxiosError } from 'axios';
 import DrawerCheckIcon from '../../assets/체크아이콘.svg';
 import AlertModal from '../../components/AlertModal/AlertModal';
 import  UploadModal  from '../../components/AlertModal/UploadModal';
@@ -114,7 +115,7 @@ function YouthDrawerEdit() {
     }
 
     try {
-        const res = await axios.delete('/api/user/signout', {
+        const res = await api.delete('/user/signout', {
             headers: { Authorization: token },
         });
 
@@ -128,11 +129,9 @@ function YouthDrawerEdit() {
             setIsResultModalOpen(true);
         }
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            setResultMessage(error.response?.data?.message || '회원탈퇴 실패');
-        } else {
-            setResultMessage('회원탈퇴 실패');
-        }
+        const axiosError = error as AxiosError<{ message: string }>;
+        setResultMessage(axiosError.response?.data?.message || '회원탈퇴 실패');
+    } finally {
         setIsResultModalOpen(true);
     }
 };
