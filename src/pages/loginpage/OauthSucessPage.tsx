@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import api from '../../api/api';
-import { AxiosError } from 'axios';
 import AlertModal from '../../components/AlertModal/AlertModal';
+import api from '../../api/api';
+import { AxiosError } from 'axios'; 
 
 const OauthSuccessPage = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const OauthSuccessPage = () => {
           } else {
             navigate('/');
           }
-        } catch (error) {
+        } catch (error: unknown) {
           const axiosError = error as AxiosError<{ message: string }>;
           if (axiosError.response) {
             setModalMessage(axiosError.response.data?.message || '회원 정보 조회에 실패했습니다.');
@@ -47,13 +47,13 @@ const OauthSuccessPage = () => {
       setIsModalOpen(true);
     }
   }, [navigate, searchParams]);
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setTimeout(() => {
       navigate('/signup');
     }, 200);
   };
-
 
   return (
     <>
