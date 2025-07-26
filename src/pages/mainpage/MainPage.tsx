@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import type { ChangeEvent } from 'react';
 import RouletteModal from "../roulette/RouletteModal";
 import '../../App.css';
 import { ReviewCard } from '../../pages/reviewcard/ReviewCard';
@@ -7,9 +6,10 @@ import Header from '../../components/Header/Header';
 import './MainPage.css';
 import searchIcon from '../../assets/search_icon.svg';
 import { useNavigate } from "react-router-dom";
-//import { fetchReviews } from '../../api/mainpage/getReviews'; 
-//import { fetchRecommendedReview } from '../../api/mainpage/getRecommendedReview';
 import type { ReviewItem } from '../../api/mainpage/getReviews';
+//import { fetchRecommendedReview } from '../../api/mainpage/getRecommendedReview';
+//import { fetchReviews } from '../../api/mainpage/getReviews';
+
 
 interface RecommendItem {
   postId: number;
@@ -17,31 +17,27 @@ interface RecommendItem {
   thumbnailUrl: string;
   content: string;
 }
+
 function MainPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
-  //const [isMoreClicked, setIsMoreClicked] = useState(false);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [randomRecommend, setRandomRecommend] = useState<RecommendItem | null>(null);
   const token = localStorage.getItem('accessToken');
-  const [clickCount, setClickCount] = useState(0); //더보기 버튼 설정
-  const [selectedBoard, setSelectedBoard] = useState('전체 보기');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
 
   const navigate = useNavigate();
 
   const handleMoreClick = () => {
     if (clickCount < 4) {
       setVisibleCount((prev) => prev + 3);
-      setClickCount((prev) => prev+1);
+      setClickCount((prev) => prev + 1);
     }
-    
   };
-  {/*더미 테스트 */}
 
   useEffect(() => {
     const dummyData: ReviewItem[] = [
-      {
+       {
         postId: 1,
         boardType: "졸업/휴학여행",
         categoryName: "여행",
@@ -312,9 +308,7 @@ function MainPage() {
   thumbnailUrl: "https://picsum.photos/200/100?random=118"
 }
 
-
-];
-
+    ];
 
     const sorted = dummyData.sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -323,13 +317,14 @@ function MainPage() {
     setReviews(sorted);
 
     setRandomRecommend({
-    postId: 999,
-    title: "테스트 추천글",
-    thumbnailUrl: "https://picsum.photos/200/100?random=999",
-    content: "<p>추천 테스트용입니다! 길이가 언제까지 갈까요 시험해봅시다 언제까지 가나요? 언제까지언제까지 언제까지</p>"
-  });
+      postId: 999,
+      title: "테스트 추천글",
+      thumbnailUrl: "https://picsum.photos/200/100?random=999",
+      content: "<p>추천 테스트용입니다! 길이가 언제까지 갈까요 시험해봅시다 언제까지 가나요? 언제까지언제까지 언제까지</p>"
+    });
   }, []);
-// 추천 Api
+
+  // 추천 Api
 /*
  useEffect(() => {
     const fetchRecommended = async () => {
@@ -378,11 +373,6 @@ function MainPage() {
   }, []);
   */
 
-  const filteredReviews = selectedBoard === '전체 보기'
-  ? reviews
-  : reviews.filter((review) => review.boardType === selectedBoard);
-
-
   return (
     <>
       <Header />
@@ -403,7 +393,10 @@ function MainPage() {
 
         {randomRecommend && (
           <section className="mainpage-suggest-section">
-            <div className="mainpage-suggest-card" onClick={() =>  randomRecommend && navigate(`/youth-talk/${randomRecommend.postId}`)}>
+            <div
+              className="mainpage-suggest-card"
+              onClick={() => navigate(`/youth-talk/${randomRecommend.postId}`)}
+            >
               <p className="mainpage-suggest-label">이런 글은 어떠신가요?</p>
               <div className="mainpage-suggest-content-wrapper">
                 <div className="mainpage-suggest-text">
@@ -430,42 +423,10 @@ function MainPage() {
           <div className="today-board">
             <div className="section-header">
               <h2 className="today-section">오늘의 청춘</h2>
-              <div className="custom-dropdown">
-                <button
-                  className="dropdown-toggle"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                >
-                  {selectedBoard} <span className="arrow">{dropdownOpen ? '▲' : '▼' }</span>
-                </button>
-                {dropdownOpen && (
-                  <ul className="dropdown-menu">
-                    {[
-                      '전체 보기',
-                      '졸업/휴학여행',
-                      '국내학점교류',
-                      '해외교환학생',
-                      'MT여정지도',
-                    ].map((option) => (
-                      <li
-                        key={option}
-                        className={selectedBoard === option ? 'selected' : ''}
-                        onClick={() => {
-                          setSelectedBoard(option);
-                          setDropdownOpen(false);
-                        }}
-                      >
-                        {option}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-
             </div>
             <div className="review-grid">
-              {filteredReviews.slice(0, visibleCount).map((review) => (
-                <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
+              {reviews.slice(0, visibleCount).map((review) => (
+                <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}> {/*카드 누르면 해당 글로 넘어감*/}
                   <ReviewCard
                     postId={review.postId}
                     title={review.title}
@@ -476,8 +437,8 @@ function MainPage() {
                     likes={review.likes}
                     scrapCount={review.scrapCount}
                     rating={4}
-                    isLiked={token ? review.isLiked: false}
-                    isScraped={token ? review.isScraped: false}
+                    isLiked={token ? review.isLiked : false}
+                    isScraped={token ? review.isScraped : false}
                   />
                 </div>
               ))}
@@ -488,20 +449,10 @@ function MainPage() {
               <span style={{ textDecoration: 'underline' }}>더보기</span> +
             </button>
           ) : (
-            <button className="more-button" onClick={() => { 
-              if (selectedBoard === 'MT여정지도') {
-                navigate('/mt-journey');
-              } else {
-                navigate(`/together?board=${encodeURIComponent(selectedBoard)}`);
-
-              }
-            }}
-          >
-            <span style={{ textDecoration: 'underline'}}>
-              {selectedBoard === 'MT여정지도' ? 'MT여정지도' : '함께해요'}</span>{' '} 전체보기 →
+            <button className="more-button" onClick={() => navigate('/youth-talk')}>
+              <span style={{ textDecoration: 'underline' }}>전체 글 보기</span> →
             </button>
           )}
-
         </section>
       </div>
 
