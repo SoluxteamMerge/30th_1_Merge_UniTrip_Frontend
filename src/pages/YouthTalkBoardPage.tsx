@@ -3,13 +3,126 @@ import Header from "../components/Header/Header";
 import SortDropdown from "../components/SortDropdown";
 import { useNavigate } from "react-router-dom";
 import writeIcon from "../assets/write-icon.svg";
+import starIcon from "../assets/interaction/star.svg";
+import starFillIcon from "../assets/interaction/star_fill.svg";
 import { getAllReviews, ReviewItem } from '../api/Review/getReviewsApi';
+import { getAverageRating } from '../api/Review/getAverageRatingApi';
 
 const YouthTalkBoardPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [averageRatings, setAverageRatings] = useState<Record<string, number>>({});
+
+  // 별점 표시 컴포넌트
+  const renderStars = (rating: number) => {
+    const stars = [];
+    
+    for (let i = 0; i < 5; i++) {
+      const starValue = Math.max(0, Math.min(1, rating - i));
+      
+      if (starValue >= 1) {
+        // 완전히 채워진 별
+        stars.push(
+          <img 
+            key={i}
+            src={starFillIcon} 
+            alt="별점" 
+            style={{ 
+              width: '14px', 
+              height: '14px',
+              marginRight: '2px'
+            }} 
+          />
+        );
+      } else if (starValue > 0) {
+        // 부분적으로 채워진 별 (CSS로 구현)
+        stars.push(
+          <div 
+            key={i}
+            style={{ 
+              position: 'relative',
+              width: '14px', 
+              height: '14px',
+              marginRight: '2px',
+              display: 'inline-block'
+            }}
+          >
+            <img 
+              src={starIcon} 
+              alt="별점" 
+              style={{ 
+                width: '14px', 
+                height: '14px',
+                position: 'absolute',
+                top: 0,
+                left: 0
+              }} 
+            />
+            <div 
+              style={{
+                position: 'absolute',
+                top: -1.8,
+                left: 0,
+                width: `${starValue * 100}%`,
+                height: '15px',
+                overflow: 'hidden'
+              }}
+            >
+              <img 
+                src={starFillIcon} 
+                alt="별점" 
+                style={{ 
+                  width: '14px', 
+                  height: '14px'
+                }} 
+              />
+            </div>
+          </div>
+        );
+      } else {
+        // 빈 별
+        stars.push(
+          <img 
+            key={i}
+            src={starIcon} 
+            alt="별점" 
+            style={{ 
+              width: '14px', 
+              height: '14px',
+              marginRight: '2px'
+            }} 
+          />
+        );
+      }
+    }
+    
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        {stars}
+        <span style={{ fontSize: '12px', color: '#666', marginLeft: '4px' }}>
+          {rating.toFixed(1)}
+        </span>
+      </div>
+    );
+  };
+
+  // 평균 별점 조회 함수
+  const fetchAverageRating = async (keyword: string) => {
+    try {
+      const token = localStorage.getItem('accessToken') || undefined;
+      const response = await getAverageRating(keyword, token);
+      if (response.code === 200 && response.data) {
+        setAverageRatings(prev => ({
+          ...prev,
+          [keyword]: response.data!.averageRating
+        }));
+      }
+    } catch (error) {
+      console.error('평균 별점 조회 실패:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -18,6 +131,17 @@ const YouthTalkBoardPage: React.FC = () => {
         const token = localStorage.getItem('accessToken') || undefined;
         const res = await getAllReviews(token);
         setReviews(res.reviews);
+        
+        // 각 게시글의 키워드(장소명, 태그)에 대해 평균 별점 조회
+        const keywords = new Set<string>();
+        res.reviews.forEach(review => {
+          if (review.placeName) keywords.add(review.placeName);
+          if (review.categoryName) keywords.add(review.categoryName);
+        });
+        
+        keywords.forEach(keyword => {
+          fetchAverageRating(keyword);
+        });
       } catch (error) {
         setReviews([]);
       } finally {
@@ -113,7 +237,34 @@ const YouthTalkBoardPage: React.FC = () => {
                   {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
                   <div className="yt-main-row">
                     <div className="yt-main-texts">
-                      <div className="yt-post-title">{review.title}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div className="yt-post-title">{review.title}</div>
+                        {/* 평균 별점 표시 */}
+                        {(review.placeName && averageRatings[review.placeName]) && (
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px',
+                            fontSize: '14px',
+                            color: '#666',
+                            marginTop: '0px'
+                          }}>
+                            {renderStars(averageRatings[review.placeName])}
+                          </div>
+                        )}
+                        {(review.categoryName && averageRatings[review.categoryName] && !review.placeName) && (
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px',
+                            fontSize: '14px',
+                            color: '#666',
+                            marginTop: '0px'
+                          }}>
+                            {renderStars(averageRatings[review.categoryName])}
+                          </div>
+                        )}
+                      </div>
                       <div className="yt-post-content">{review.content}</div>
                     </div>
                     <img src={review.thumbnailUrl} alt="썸네일" className="yt-thumbnail" />

@@ -18,6 +18,14 @@ export interface ReviewItem {
   scrapCount: number; // 추가
   isScraped: boolean; // 추가
   thumbnailUrl: string; // 추가
+  // 장소정보 추가
+  placeName?: string; // 카카오 제공
+  address?: string; // 카카오 제공
+  kakaoId?: string; // 카카오 제공
+  categoryGroupName?: string; // 카카오 제공
+  region?: string; // 카카오 제공
+  lat?: number; // 위도
+  lng?: number; // 경도
 }
 
 export interface GetReviewsResponse {
@@ -43,7 +51,15 @@ const mockReviews: Record<string, ReviewItem[]> = {
       rating: 4.5,
       scrapCount: 3,
       isScraped: false,
-      thumbnailUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
+      thumbnailUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+      // 장소정보 추가
+      placeName: "가평 대성리 MT캠프",
+      address: "경기도 가평군 청평면 대성리 123-45",
+      kakaoId: "123456789",
+      categoryGroupName: "숙박",
+      region: "GYEONGGI",
+      lat: 37.7749,
+      lng: 127.4194
     },
     {
       postId: 2,
@@ -60,7 +76,15 @@ const mockReviews: Record<string, ReviewItem[]> = {
       rating: 5.0,
       scrapCount: 1,
       isScraped: true,
-      thumbnailUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80"
+      thumbnailUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80",
+      // 장소정보 추가
+      placeName: "제주도 한라산 펜션",
+      address: "제주특별자치도 제주시 조천읍 조천리 456-78",
+      kakaoId: "987654321",
+      categoryGroupName: "숙박",
+      region: "JEJU",
+      lat: 33.4996,
+      lng: 126.5312
     }
   ],
   "동행모집": [
@@ -238,6 +262,14 @@ export interface ReviewDetailResponse {
   bookmarkCount?: number; // 북마크 개수
   overnightFlag?: boolean; // 모임구인만
   recruitmentCnt?: number; // 모임구인만
+  // 장소정보 추가
+  placeName?: string; // 카카오 제공
+  address?: string; // 카카오 제공
+  kakaoId?: string; // 카카오 제공
+  categoryGroupName?: string; // 카카오 제공
+  region?: string; // 카카오 제공
+  lat?: number; // 위도
+  lng?: number; // 경도
 }
 
 export const getReviewDetail = async (
@@ -276,7 +308,15 @@ export const getReviewDetail = async (
       isLiked: foundPost.isLiked,
       bookmarkCount: foundPost.scrapCount, // scrapCount를 bookmarkCount로 매핑
       overnightFlag: foundPost.overnightFlag,
-      recruitmentCnt: foundPost.recruitmentCnt
+      recruitmentCnt: foundPost.recruitmentCnt,
+      // 장소정보 추가
+      placeName: foundPost.placeName,
+      address: foundPost.address,
+      kakaoId: foundPost.kakaoId,
+      categoryGroupName: foundPost.categoryGroupName,
+      region: foundPost.region,
+      lat: foundPost.lat,
+      lng: foundPost.lng
     };
     
     return detailData;

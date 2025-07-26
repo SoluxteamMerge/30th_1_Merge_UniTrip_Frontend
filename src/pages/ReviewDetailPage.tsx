@@ -8,6 +8,7 @@ import starFillIcon from "../assets/interaction/scrap_fill.svg";
 import starRatingIcon from "../assets/interaction/star.svg";
 import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
+import locationIcon from "../assets/toolbar/location.svg";
 import { deleteReview } from '../api/Review/deleteReviewApi';
 import { getReviewDetail, ReviewDetailResponse } from '../api/Review/getReviewsApi';
 import { likeReview } from '../api/Review/likeReviewApi';
@@ -1113,7 +1114,45 @@ const YouthTalkDetailPage: React.FC = () => {
 
           {/* 게시글 내용 */}
           <div className="ytd-post-content">
+            {/* 장소정보가 있을 때 표시 (내용 위에 배치) */}
+            {postData.placeName && (
+              <div style={{ 
+                marginBottom: '30px',
+                textAlign: 'right'
+              }}>
+                <div style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  color: '#333'
+                }}>
+                  <img 
+                    src={locationIcon} 
+                    alt="위치" 
+                    style={{ 
+                      width: '16px', 
+                      height: '16px', 
+                      marginRight: '8px',
+                      verticalAlign: 'middle'
+                    }} 
+                  />
+                  {postData.placeName}
+                </div>
+                {postData.address && (
+                  <div style={{ 
+                    fontSize: '14px',
+                    color: '#666',
+                    marginTop: '4px'
+                  }}>
+                    {postData.address}
+                  </div>
+                )}
+              </div>
+            )}
+            
             <div className="ytd-content-text" dangerouslySetInnerHTML={{ __html: postData.content }}></div>
+            
             {/* 태그들 */}
             <div className="ytd-tags-container">
               {/* 카테고리 태그 */}
