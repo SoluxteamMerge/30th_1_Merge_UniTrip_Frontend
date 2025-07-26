@@ -15,6 +15,9 @@ export interface ReviewItem {
   likes: number;
   isLiked: boolean;
   rating: number;
+  scrapCount: number; // 추가
+  isScraped: boolean; // 추가
+  thumbnailUrl: string; // 추가
 }
 
 export interface GetReviewsResponse {
@@ -37,7 +40,10 @@ const mockReviews: Record<string, ReviewItem[]> = {
       views: 150,
       likes: 25,
       isLiked: false,
-      rating: 4.5
+      rating: 4.5,
+      scrapCount: 3,
+      isScraped: false,
+      thumbnailUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
     },
     {
       postId: 2,
@@ -51,7 +57,10 @@ const mockReviews: Record<string, ReviewItem[]> = {
       views: 89,
       likes: 12,
       isLiked: true,
-      rating: 5.0
+      rating: 5.0,
+      scrapCount: 1,
+      isScraped: true,
+      thumbnailUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80"
     }
   ],
   "동행모집": [
@@ -67,7 +76,10 @@ const mockReviews: Record<string, ReviewItem[]> = {
       views: 67,
       likes: 8,
       isLiked: false,
-      rating: 0
+      rating: 0,
+      scrapCount: 0,
+      isScraped: false,
+      thumbnailUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
     }
   ],
   "모임구인": [
@@ -83,7 +95,10 @@ const mockReviews: Record<string, ReviewItem[]> = {
       views: 45,
       likes: 15,
       isLiked: true,
-      rating: 0
+      rating: 0,
+      scrapCount: 2,
+      isScraped: false,
+      thumbnailUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
     }
   ],
   "졸업/휴학여행": [
@@ -99,7 +114,10 @@ const mockReviews: Record<string, ReviewItem[]> = {
       views: 234,
       likes: 45,
       isLiked: false,
-      rating: 5.0
+      rating: 5.0,
+      scrapCount: 5,
+      isScraped: false,
+      thumbnailUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
     }
   ],
   "국내학점교류": [
@@ -115,7 +133,10 @@ const mockReviews: Record<string, ReviewItem[]> = {
       views: 178,
       likes: 32,
       isLiked: true,
-      rating: 4.5
+      rating: 4.5,
+      scrapCount: 4,
+      isScraped: true,
+      thumbnailUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
     }
   ],
   "해외교환": [
@@ -131,7 +152,10 @@ const mockReviews: Record<string, ReviewItem[]> = {
       views: 312,
       likes: 67,
       isLiked: false,
-      rating: 5.0
+      rating: 5.0,
+      scrapCount: 7,
+      isScraped: false,
+      thumbnailUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
     }
   ]
 };
@@ -170,6 +194,29 @@ export const getReviews = async (
     return {
       total: mockData.length,
       reviews: mockData
+    };
+  }
+};
+
+// 전체 조회 (청춘톡 등)
+export const getAllReviews = async (
+  accessToken?: string
+): Promise<GetReviewsResponse> => {
+  try {
+    const headers: Record<string, string> = {};
+    if (accessToken) headers.Authorization = accessToken;
+    const response = await api.get('/api/reviews', { headers });
+    return response.data;
+  } catch (error) {
+    console.error('전체 리뷰 API 호출 실패, 임시 데이터 사용:', error);
+    // API 실패 시 모든 mock 데이터를 합쳐서 반환
+    const allMockData: ReviewItem[] = [];
+    Object.values(mockReviews).forEach(reviews => {
+      allMockData.push(...reviews);
+    });
+    return {
+      total: allMockData.length,
+      reviews: allMockData
     };
   }
 }; 

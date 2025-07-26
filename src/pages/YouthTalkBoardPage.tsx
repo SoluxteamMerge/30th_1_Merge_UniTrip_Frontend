@@ -1,36 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import SortDropdown from "../components/SortDropdown";
 import { useNavigate } from "react-router-dom";
 import writeIcon from "../assets/write-icon.svg";
-
-// todo
-const posts = [
-  {
-    id: 1,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "제목칸",
-    content: "내용칸",
-    tags: ["#가평", "#대성리"],
-    imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-    profileUrl: ""
-  },
-  {
-    id: 2,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "제목칸",
-    content: "내용란",
-    tags: ["#제주도", "#4인"],
-    imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80",
-    profileUrl: ""
-  }
-];
+import { getAllReviews, ReviewItem } from '../api/Review/getReviewsApi';
 
 const YouthTalkBoardPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
   const navigate = useNavigate();
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('accessToken') || undefined;
+        const res = await getAllReviews(token);
+        setReviews(res.reviews);
+      } catch (error) {
+        setReviews([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   return (
     <div className="yt-bg">
@@ -83,7 +78,7 @@ const YouthTalkBoardPage: React.FC = () => {
       `}</style>
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
       <div className="yt-container">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div className="yt-title-box">
             <span className="yt-title-icon">▶</span>청춘톡
           </div>
@@ -91,43 +86,36 @@ const YouthTalkBoardPage: React.FC = () => {
         </div>
         <div className="yt-white-container">
           <div className="yt-board-title">게시글 모음</div>
-          <div className="yt-post-list">
-            {posts.map(post => (
-              <div key={post.id} className="yt-post-card" onClick={() => navigate(`/review/${post.id}?category=청춘톡`)} style={{ cursor: 'pointer' }}>
-                {/* 상단: 프로필/닉네임/날짜(왼쪽) + 태그(오른쪽) */}
-                <div className="yt-post-top-row">
-                  <div className="yt-post-info-row">
-                    {post.profileUrl ? (
-                      <img src={post.profileUrl} alt="프로필" className="yt-profile" />
-                    ) : (
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+          ) : (
+            <div className="yt-post-list">
+              {reviews.map(review => (
+                <div key={review.postId} className="yt-post-card" onClick={() => navigate(`/review/${review.postId}?category=청춘톡`)} style={{ cursor: 'pointer' }}>
+                  {/* 상단: 프로필/닉네임/날짜(왼쪽) + 태그(오른쪽) */}
+                  <div className="yt-post-top-row">
+                    <div className="yt-post-info-row">
                       <div className="yt-profile yt-profile-default" />
-                    )}
-                    <span className="yt-username">{post.username}</span>
-                    <div className="yt-info-divider" />
-                    <span className="yt-date">{post.date}</span>
+                      <span className="yt-username">{review.nickname}</span>
+                      <div className="yt-info-divider" />
+                      <span className="yt-date">{new Date(review.createdAt).toLocaleString('ko-KR')}</span>
+                    </div>
+                    <div className="yt-tag-row">
+                      <span className="yt-tag yt-tag-main">#{review.categoryName}</span>
+                    </div>
                   </div>
-                  <div className="yt-tag-row">
-                    {post.tags.map((tag, idx) => (
-                      <span
-                        key={tag}
-                        className={idx === 0 ? "yt-tag yt-tag-main" : "yt-tag yt-tag-sub"}
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                  {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
+                  <div className="yt-main-row">
+                    <div className="yt-main-texts">
+                      <div className="yt-post-title">{review.title}</div>
+                      <div className="yt-post-content">{review.content}</div>
+                    </div>
+                    <img src={review.thumbnailUrl} alt="썸네일" className="yt-thumbnail" />
                   </div>
                 </div>
-                {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
-                <div className="yt-main-row">
-                  <div className="yt-main-texts">
-                    <div className="yt-post-title">{post.title}</div>
-                    <div className="yt-post-content">{post.content}</div>
-                  </div>
-                  <img src={post.imageUrl} alt="썸네일" className="yt-thumbnail" />
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       {/* 플로팅 버튼 */}
