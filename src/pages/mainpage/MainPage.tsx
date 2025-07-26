@@ -26,6 +26,8 @@ function MainPage() {
   const token = localStorage.getItem('accessToken');
   const [clickCount, setClickCount] = useState(0); //더보기 버튼 설정
   const [selectedBoard, setSelectedBoard] = useState('전체 보기');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const handleMoreClick = () => {
@@ -428,21 +430,37 @@ function MainPage() {
           <div className="today-board">
             <div className="section-header">
               <h2 className="today-section">오늘의 청춘</h2>
-              <select
-                title="게시판 필터 선택"
-                value={selectedBoard}
-                onChange={(e) => {
-                  console.log('선택된 게시판:', e.target.value);
-                  setSelectedBoard(e.target.value);
-                }}
-                className="board-filter-dropdown"
+              <div className="custom-dropdown">
+                <button
+                  className="dropdown-toggle"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
-                  <option value="전체 보기">전체 보기</option>
-                  <option value="졸업/휴학여행">졸업/휴학여행</option>
-                  <option value="국내학점교류">국내학점교류</option>
-                  <option value="해외교환학생">해외교환학생</option>
-                  <option value="MT여정지도">MT여정지도</option>
-                </select>
+                  {selectedBoard} <span className="arrow">{dropdownOpen ? '▲' : '▼' }</span>
+                </button>
+                {dropdownOpen && (
+                  <ul className="dropdown-menu">
+                    {[
+                      '전체 보기',
+                      '졸업/휴학여행',
+                      '국내학점교류',
+                      '해외교환학생',
+                      'MT여정지도',
+                    ].map((option) => (
+                      <li
+                        key={option}
+                        className={selectedBoard === option ? 'selected' : ''}
+                        onClick={() => {
+                          setSelectedBoard(option);
+                          setDropdownOpen(false);
+                        }}
+                      >
+                        {option}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
 
             </div>
             <div className="review-grid">
