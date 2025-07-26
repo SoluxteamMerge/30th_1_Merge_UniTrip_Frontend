@@ -171,7 +171,13 @@ const MTJourneyPage: React.FC = () => {
                       <div className="mt-profile mt-profile-default" />
                       <span className="mt-username">{review.nickname} 님</span>
                       <div className="mt-info-divider" />
-                      <span className="mt-date">{new Date(review.createdAt).toLocaleString('ko-KR')}</span>
+                      <span className="mt-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}</span>
                       <div className="mt-rating-container">
                         {renderStars(review.rating)}
                       </div>

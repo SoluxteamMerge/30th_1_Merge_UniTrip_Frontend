@@ -250,7 +250,13 @@ const TogetherPage: React.FC = () => {
                       <div className="together-profile together-profile-default" />
                       <span className="together-username">{review.nickname} 님</span>
                       <div className="together-info-divider" />
-                      <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR')}</span>
+                      <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}</span>
                       {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
                       {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
                         <div className="together-rating-container">

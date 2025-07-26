@@ -219,4 +219,82 @@ export const getAllReviews = async (
       reviews: allMockData
     };
   }
+};
+
+// 리뷰 상세 조회
+export interface ReviewDetailResponse {
+  postId: number;
+  boardType: string;
+  categoryName: string;
+  title: string;
+  content: string; // HTML 문자열
+  userId: number;
+  nickname: string;
+  createdAt: string;
+  views: number;
+  rating: number;
+  likes: number;
+  isLiked: boolean;
+  overnightFlag?: boolean; // 모임구인만
+  recruitmentCnt?: number; // 모임구인만
+}
+
+export const getReviewDetail = async (
+  postId: number,
+  accessToken?: string
+): Promise<ReviewDetailResponse> => {
+  // 임시로 API 호출을 건너뛰고 바로 임시 데이터 반환
+  console.log('임시 데이터 사용 (API 호출 건너뜀)');
+  
+  // getReviews의 임시 데이터에서 해당 postId 찾기
+  const allMockData = [
+    ...mockReviews["MT/LT"],
+    ...mockReviews["동행모집"],
+    ...mockReviews["모임구인"],
+    ...mockReviews["졸업/휴학여행"],
+    ...mockReviews["국내학점교류"],
+    ...mockReviews["해외교환"]
+  ];
+  
+  const foundPost = allMockData.find(post => post.postId === postId);
+  
+  if (foundPost) {
+    // 기존 데이터를 ReviewDetailResponse 형태로 변환
+    const detailData: ReviewDetailResponse = {
+      postId: foundPost.postId,
+      boardType: foundPost.boardType,
+      categoryName: foundPost.categoryName,
+      title: foundPost.title,
+      content: `<p>${foundPost.content}</p><img src="${foundPost.thumbnailUrl}" alt="게시글 이미지" style="max-width: 100%; height: auto; margin: 20px 0;">`,
+      userId: foundPost.userId,
+      nickname: foundPost.nickname,
+      createdAt: foundPost.createdAt,
+      views: foundPost.views,
+      rating: foundPost.rating,
+      likes: foundPost.likes,
+      isLiked: foundPost.isLiked,
+      overnightFlag: foundPost.overnightFlag,
+      recruitmentCnt: foundPost.recruitmentCnt
+    };
+    
+    return detailData;
+  }
+  
+  // 해당 postId가 없으면 기본 데이터 반환
+  const mockDetailData: ReviewDetailResponse = {
+    postId: postId,
+    boardType: "청춘톡",
+    categoryName: "청춘톡",
+    title: `임시 게시글 제목 ${postId}`,
+    content: `<p>이것은 임시 게시글 ${postId}의 내용입니다. 실제 API가 연결되면 이 내용이 실제 데이터로 교체됩니다.</p>`,
+    userId: 1,
+    nickname: "임시사용자",
+    createdAt: new Date().toISOString(),
+    views: Math.floor(Math.random() * 100) + 10,
+    rating: Math.floor(Math.random() * 5) + 1,
+    likes: Math.floor(Math.random() * 50) + 5,
+    isLiked: Math.random() > 0.5
+  };
+  
+  return mockDetailData;
 }; 
