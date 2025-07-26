@@ -1074,6 +1074,16 @@ const WriteReviewPage: React.FC = () => {
                         <div className="wr-location-container">
                           <div className="wr-location-info">
                             <div className="wr-location-name">
+                              <img 
+                                src={locationIcon} 
+                                alt="위치" 
+                                style={{ 
+                                  width: '16px', 
+                                  height: '16px', 
+                                  marginRight: '8px',
+                                  verticalAlign: 'middle'
+                                }} 
+                              />
                               {selectedLocation.name}
                             </div>
                             <div className="wr-location-address">
