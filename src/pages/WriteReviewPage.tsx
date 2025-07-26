@@ -17,6 +17,7 @@ import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 import { postReview } from '../api/Review/writeReviewApi';
 import { updateReview } from '../api/Review/updateReviewApi';
+import { rateReview } from '../api/Review/ratingReviewApi';
 
 const WriteReviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -186,9 +187,39 @@ const WriteReviewPage: React.FC = () => {
     setShowRatingModal(true);
   };
 
-  const handleStarClick = (starIndex: number, isHalf: boolean = false) => {
+  const handleStarClick = async (starIndex: number, isHalf: boolean = false) => {
     const newRating = starIndex + (isHalf ? 0.5 : 1);
     setRating(newRating);
+    
+    // 수정 모드이고 postId가 있을 때만 API 호출
+    if (isEditMode && editPostId) {
+      try {
+        const accessToken = localStorage.getItem('accessToken') || '';
+        if (!accessToken) {
+          alert('로그인이 필요합니다.');
+          return;
+        }
+
+        const response = await rateReview(editPostId, newRating, accessToken);
+        
+        if (response.code === 200) {
+          // 성공 메시지는 표시하지 않음 (사용자 경험상)
+          console.log('별점 업데이트 성공:', response.message);
+        }
+      } catch (error: any) {
+        console.error('별점 업데이트 오류:', error);
+        
+        if (error.response?.status === 401) {
+          alert('로그인이 필요합니다.');
+        } else if (error.response?.status === 400) {
+          alert('요청 값이 올바르지 않습니다.');
+        } else if (error.response?.status === 404) {
+          alert('해당 리뷰를 찾을 수 없습니다.');
+        } else {
+          alert('별점 업데이트 중 오류가 발생했습니다.');
+        }
+      }
+    }
   };
 
   const handleStarHover = (starIndex: number, isHalf: boolean = false) => {

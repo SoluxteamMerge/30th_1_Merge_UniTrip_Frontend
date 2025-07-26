@@ -1004,6 +1004,9 @@ const YouthTalkDetailPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 별점 선택 모달 */}
+      {/* showRatingModal 제거 */}
     </div>
   );
 };
