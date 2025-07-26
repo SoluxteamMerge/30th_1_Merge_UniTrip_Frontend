@@ -15,6 +15,7 @@ import { bookmarkReview } from '../api/Review/bookmarkReviewApi';
 import { postComment } from '../api/Comment/postCommentApi';
 import { updateComment } from '../api/Comment/updateCommentApi';
 import { deleteComment } from '../api/Comment/deleteCommentApi';
+import { getComments } from '../api/Comment/getCommentsApi';
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,6 +67,71 @@ const YouthTalkDetailPage: React.FC = () => {
         console.log('API 응답:', data);
         setPostData(data);
         setIsLiked(data.isLiked);
+        
+        // 댓글 목록도 함께 가져오기
+        try {
+          const commentsResponse = await getComments(parseInt(id));
+          if (commentsResponse.code === 200) {
+            const commentList = commentsResponse.data.content.map(comment => ({
+              id: comment.commentId,
+              username: comment.author,
+              date: new Date(comment.createdAt).toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              content: comment.content,
+              likes: comment.likeCount,
+              isLiked: false,
+              isEditing: false,
+              editText: ""
+            }));
+            setComments(commentList);
+            console.log('댓글 목록 로드 완료:', commentList);
+          }
+        } catch (commentError) {
+          console.error('댓글 목록 조회 실패:', commentError);
+          // 백엔드 연동 전까지 임시 댓글 데이터 사용
+          console.log('백엔드 연동 전 임시 댓글 데이터 사용');
+          const tempComments = [
+            {
+              id: 1,
+              username: '김눈송',
+              date: new Date().toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              content: '정말 좋은 게시글이네요! 👍',
+              likes: 3,
+              isLiked: false,
+              isEditing: false,
+              editText: ""
+            },
+            {
+              id: 2,
+              username: '다른사용자',
+              date: new Date(Date.now() - 60000).toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              content: '저도 같은 생각이에요!',
+              likes: 1,
+              isLiked: false,
+              isEditing: false,
+              editText: ""
+            }
+          ];
+          setComments(tempComments);
+          console.log('임시 댓글 데이터 설정 완료');
+        }
       } catch (error) {
         console.error('게시글 조회 실패:', error);
         setPostData({
