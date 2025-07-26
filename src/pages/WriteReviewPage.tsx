@@ -15,7 +15,7 @@ import rightlistIcon from "../assets/toolbar/rightlist.svg";
 import closeIcon from "../assets/module/close.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
-import api from "../api/api"; // api 인스턴스 추가
+import { postReview } from '../api/Review/writeReviewApi';
 
 const WriteReviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -259,7 +259,6 @@ const WriteReviewPage: React.FC = () => {
 
   const handlePublishConfirm = async () => {
     try {
-      // 제목과 내용이 있는지 확인
       if (!title.trim()) {
         alert('제목을 입력해주세요.');
         return;
@@ -273,32 +272,31 @@ const WriteReviewPage: React.FC = () => {
         return;
       }
 
-      // 게시글 데이터 수집 (기본 정보만)
-      const postData = {
+      // 리뷰 JSON 객체 생성
+      const reviewData = {
+        boardType: selectedCategory, // 실제 boardType 값에 맞게 매핑 필요
+        categoryName: selectedCategory, // 실제 categoryName 값에 맞게 매핑 필요
         title: title.trim(),
-        description: content.trim(),
-        category: selectedCategory,
-        isPublic: true,
-        // 선택적 정보들
-        travelType: getTravelType(selectedCategory),
-        startDate: scheduleInput.split(' ~ ')[0] || "",
-        endDate: scheduleInput.split(' ~ ')[1] || "",
-        companions: tags.join(', '),
-        rating: rating,
-        location: selectedLocation ? {
-          name: selectedLocation.name,
-          address: selectedLocation.address,
-          lat: selectedLocation.lat,
-          lng: selectedLocation.lng
-        } : null,
-        imageUrl: selectedImage || null,
+        content: content, // HTML 문자열
+        placeName: selectedLocation?.name || '',
+        address: selectedLocation?.address || '',
+        kakaoId: selectedLocation ? String(selectedLocation.lat) : '', // 예시, 실제 kakaoId로 대체
+        categoryGroupName: '', // 필요시 추가
+        region: '', // 필요시 추가
+        // overnightFlag, recruitmentCnt 등 필요시 추가
       };
 
-      // 백엔드 API 호출 (예시)
-      const response = await api.post('/api/posts', postData);
+      // 이미지 파일 배열 준비 (selectedImage가 File 객체라면 배열로, 아니면 빈 배열)
+      const images: File[] = [];
+      // 예시: selectedImage가 File 객체라면 images.push(selectedImage)
+      // 실제로는 이미지 업로드 로직과 연동 필요
 
-      if (response.status === 200 || response.status === 201) {
-        // 성공 시 해당 카테고리 페이지로 이동
+      const accessToken = localStorage.getItem('accessToken') || '';
+
+      const res = await postReview(reviewData, images, accessToken);
+      if (res.status === 200) {
+        alert(res.message);
+        // 성공 시 페이지 이동
         switch (selectedCategory) {
           case "청춘톡":
             navigate('/youth-talk');
@@ -331,7 +329,6 @@ const WriteReviewPage: React.FC = () => {
       console.error('게시글 등록 오류:', error);
       alert('게시글 등록 중 오류가 발생했습니다.');
     }
-    
     setShowPublishModal(false);
   };
 
