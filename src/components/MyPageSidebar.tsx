@@ -12,7 +12,7 @@ const MyPageSidebar: React.FC = () => {
   useEffect(() => {
     const getUserInfo = async () => {
       try {
-        const data = await fetchUserInfo();
+        const data = await fetchUserInfo(); 
         setUsername(data.username);
         setProfileUrl(data.profileImageUrl || defaultProfile);
       } catch (error) {
