@@ -316,7 +316,7 @@ const WriteReviewPage: React.FC = () => {
         const updateData = {
           boardType: selectedCategory,
           categoryName: selectedCategory,
-          title: title.trim(),
+        title: title.trim(),
           content: content,
         };
 
@@ -340,40 +340,40 @@ const WriteReviewPage: React.FC = () => {
           kakaoId: selectedLocation ? String(selectedLocation.lat) : '',
           categoryGroupName: '',
           region: '',
-        };
+      };
 
         const images: File[] = [];
         const res = await postReview(reviewData, images, accessToken);
         if (res.status === 200) {
           alert(res.message);
           // 성공 시 페이지 이동
-          switch (selectedCategory) {
-            case "청춘톡":
-              navigate('/youth-talk');
-              break;
-            case "MT여정지도":
-              navigate('/mt-journey');
-              break;
-            case "함께해요-동행구해요":
-              navigate('/together?category=동행구해요');
-              break;
-            case "함께해요-번개모임":
-              navigate('/together?category=번개모임');
-              break;
-            case "함께해요-졸업/휴학여행":
-              navigate('/together?category=졸업/휴학여행');
-              break;
-            case "함께해요-국내학점교류":
-              navigate('/together?category=국내학점교류');
-              break;
-            case "함께해요-해외교환학생":
-              navigate('/together?category=해외교환학생');
-              break;
-            default:
-              navigate('/youth-talk');
-          }
-        } else {
-          alert('게시글 등록에 실패했습니다.');
+        switch (selectedCategory) {
+          case "청춘톡":
+            navigate('/youth-talk');
+            break;
+          case "MT여정지도":
+            navigate('/mt-journey');
+            break;
+          case "함께해요-동행구해요":
+            navigate('/together?category=동행구해요');
+            break;
+          case "함께해요-번개모임":
+            navigate('/together?category=번개모임');
+            break;
+          case "함께해요-졸업/휴학여행":
+            navigate('/together?category=졸업/휴학여행');
+            break;
+          case "함께해요-국내학점교류":
+            navigate('/together?category=국내학점교류');
+            break;
+          case "함께해요-해외교환학생":
+            navigate('/together?category=해외교환학생');
+            break;
+          default:
+            navigate('/youth-talk');
+        }
+      } else {
+        alert('게시글 등록에 실패했습니다.');
         }
       }
     } catch (error) {

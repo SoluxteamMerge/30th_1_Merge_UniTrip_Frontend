@@ -12,6 +12,9 @@ import { deleteReview } from '../api/Review/deleteReviewApi';
 import { getReviewDetail, ReviewDetailResponse } from '../api/Review/getReviewsApi';
 import { likeReview } from '../api/Review/likeReviewApi';
 import { bookmarkReview } from '../api/Review/bookmarkReviewApi';
+import { postComment } from '../api/Comment/postCommentApi';
+import { updateComment } from '../api/Comment/updateCommentApi';
+import { deleteComment } from '../api/Comment/deleteCommentApi';
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -301,11 +304,70 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 댓글 등록
-  const handleCommentSubmit = () => {
-    if (commentText.trim()) {
-      const newComment = {
-        id: comments.length + 1,
-        username: currentUser,
+  const handleCommentSubmit = async () => {
+    if (!commentText.trim()) {
+      return;
+    }
+
+    if (!postData) {
+      alert('게시글 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      console.log('댓글 작성 시도:', {
+        postId: postData.postId,
+        content: commentText.trim(),
+        hasToken: !!accessToken
+      });
+
+      const response = await postComment(postData.postId, commentText.trim(), accessToken);
+      
+      if (response.code === 201) {
+        // API 응답으로 새 댓글 생성
+        const newComment = {
+          id: response.data.commentId,
+          username: response.data.author,
+          date: new Date(response.data.createdAt).toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+          content: response.data.content,
+          likes: 0,
+          isLiked: false,
+          isEditing: false,
+          editText: ""
+        };
+        
+        setComments([...comments, newComment]);
+        setCommentText("");
+        
+        console.log('댓글이 성공적으로 작성되었습니다.');
+      }
+    } catch (error: any) {
+      console.error('댓글 작성 오류 상세:', {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // 백엔드 연동 전까지 임시 성공 처리
+      console.log('백엔드 연동 전 임시 성공 처리');
+      
+      const tempComment = {
+        id: Date.now(), // 임시 ID
+        username: '김눈송',
         date: new Date().toLocaleString('ko-KR', {
           year: 'numeric',
           month: '2-digit',
@@ -319,8 +381,11 @@ const YouthTalkDetailPage: React.FC = () => {
         isEditing: false,
         editText: ""
       };
-      setComments([...comments, newComment]);
+      
+      setComments([...comments, tempComment]);
       setCommentText("");
+      console.log('임시 댓글 추가 완료');
+      return;
     }
   };
 
@@ -360,17 +425,127 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 댓글 수정 완료
-  const handleCommentEditSubmit = (commentId: number) => {
-    setComments(comments.map(comment => 
-      comment.id === commentId 
-        ? { ...comment, content: comment.editText, isEditing: false, editText: "" }
-        : comment
-    ));
+  const handleCommentEditSubmit = async (commentId: number) => {
+    if (!postData) {
+      alert('게시글 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    const updatedContent = comments.find(comment => comment.id === commentId)?.editText || "";
+
+    if (!updatedContent.trim()) {
+      alert('수정할 내용이 없습니다.');
+      return;
+    }
+
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      console.log('댓글 수정 시도:', {
+        postId: postData.postId,
+        commentId: commentId,
+        content: updatedContent,
+        hasToken: !!accessToken
+      });
+
+      const response = await updateComment(commentId, updatedContent, accessToken);
+
+      if (response.code === 200) {
+        setComments(comments.map(comment => 
+          comment.id === commentId 
+            ? { ...comment, content: updatedContent, isEditing: false, editText: "" }
+            : comment
+        ));
+        console.log('댓글이 성공적으로 수정되었습니다.');
+      }
+    } catch (error: any) {
+      console.error('댓글 수정 오류 상세:', {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // 백엔드 연동 전까지 임시 성공 처리
+      console.log('백엔드 연동 전 임시 성공 처리 (수정)');
+      setComments(comments.map(comment => 
+        comment.id === commentId 
+          ? { ...comment, content: updatedContent, isEditing: false, editText: "" }
+          : comment
+      ));
+      console.log('임시 댓글 수정 완료');
+      return;
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 403) {
+        alert('수정 권한이 없습니다.');
+      } else if (error.response?.status === 404) {
+        alert('댓글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 수정 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   // 댓글 삭제
-  const handleCommentDelete = (commentId: number) => {
-    setComments(comments.filter(comment => comment.id !== commentId));
+  const handleCommentDelete = async (commentId: number) => {
+    if (!postData) {
+      alert('게시글 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      console.log('댓글 삭제 시도:', {
+        postId: postData.postId,
+        commentId: commentId,
+        hasToken: !!accessToken
+      });
+
+      const response = await deleteComment(commentId, accessToken); // deleteComment API를 사용하여 댓글 삭제
+
+      if (response.code === 200) {
+        setComments(comments.filter(comment => comment.id !== commentId));
+        console.log('댓글이 성공적으로 삭제되었습니다.');
+      } else {
+        alert('댓글 삭제에 실패했습니다.');
+      }
+    } catch (error: any) {
+      console.error('댓글 삭제 오류 상세:', {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // 백엔드 연동 전까지 임시 성공 처리
+      console.log('백엔드 연동 전 임시 성공 처리 (삭제)');
+      setComments(comments.filter(comment => comment.id !== commentId));
+      console.log('임시 댓글 삭제 완료');
+      return;
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 403) {
+        alert('삭제 권한이 없습니다.');
+      } else if (error.response?.status === 404) {
+        alert('댓글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 삭제 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   // 댓글 수정 텍스트 변경
