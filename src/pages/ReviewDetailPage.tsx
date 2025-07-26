@@ -16,6 +16,7 @@ import { postComment } from '../api/Comment/postCommentApi';
 import { updateComment } from '../api/Comment/updateCommentApi';
 import { deleteComment } from '../api/Comment/deleteCommentApi';
 import { getComments } from '../api/Comment/getCommentsApi';
+import { likeComment } from '../api/Comment/likeCommentApi';
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -464,12 +465,68 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 댓글 좋아요 토글
-  const handleCommentLike = (commentId: number) => {
-    setComments(comments.map(comment => 
-      comment.id === commentId 
-        ? { ...comment, isLiked: !comment.isLiked, likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1 }
-        : comment
-    ));
+  const handleCommentLike = async (commentId: number) => {
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      console.log('댓글 좋아요 시도:', {
+        commentId: commentId,
+        hasToken: !!accessToken
+      });
+
+      const response = await likeComment(commentId, accessToken);
+      
+      if (response.code === 200) {
+        // API 응답으로 댓글 좋아요 상태 업데이트
+        setComments(comments.map(comment => 
+          comment.id === commentId 
+            ? { 
+                ...comment, 
+                isLiked: response.data.isLiked, 
+                likes: response.data.likeCount 
+              }
+            : comment
+        ));
+        
+        console.log('댓글 좋아요 성공:', response.message);
+      }
+    } catch (error: any) {
+      console.error('댓글 좋아요 오류 상세:', {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // 백엔드 연동 전까지 임시 성공 처리
+      console.log('백엔드 연동 전 임시 성공 처리 (댓글 좋아요)');
+      setComments(comments.map(comment => 
+        comment.id === commentId 
+          ? { 
+              ...comment, 
+              isLiked: !comment.isLiked, 
+              likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1 
+            }
+          : comment
+      ));
+      console.log('임시 댓글 좋아요 처리 완료');
+      return;
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 400) {
+        alert('요청 값이 올바르지 않습니다.');
+      } else if (error.response?.status === 404) {
+        alert('해당 댓글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 좋아요 처리 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   // 댓글 수정 모드 시작
