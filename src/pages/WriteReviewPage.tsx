@@ -16,10 +16,13 @@ import closeIcon from "../assets/module/close.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 import { postReview } from '../api/Review/writeReviewApi';
+import { updateReview } from '../api/Review/updateReviewApi';
 
 const WriteReviewPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editPostId, setEditPostId] = useState<number | null>(null);
 
   const categories = [
     "청춘톡",
@@ -50,10 +53,13 @@ const WriteReviewPage: React.FC = () => {
   useEffect(() => {
     const editParam = searchParams.get('edit');
     const dataParam = searchParams.get('data');
+    const postIdParam = searchParams.get('postId');
     
     if (editParam === 'true' && dataParam) {
       try {
         const editData = JSON.parse(dataParam);
+        setIsEditMode(true);
+        setEditPostId(postIdParam ? parseInt(postIdParam) : null);
         setTitle(editData.title || '');
         setContent(editData.content || '');
         setSelectedCategory(editData.category || categories[0]);
@@ -272,62 +278,76 @@ const WriteReviewPage: React.FC = () => {
         return;
       }
 
-      // 리뷰 JSON 객체 생성
-      const reviewData = {
-        boardType: selectedCategory, // 실제 boardType 값에 맞게 매핑 필요
-        categoryName: selectedCategory, // 실제 categoryName 값에 맞게 매핑 필요
-        title: title.trim(),
-        content: content, // HTML 문자열
-        placeName: selectedLocation?.name || '',
-        address: selectedLocation?.address || '',
-        kakaoId: selectedLocation ? String(selectedLocation.lat) : '', // 예시, 실제 kakaoId로 대체
-        categoryGroupName: '', // 필요시 추가
-        region: '', // 필요시 추가
-        // overnightFlag, recruitmentCnt 등 필요시 추가
-      };
-
-      // 이미지 파일 배열 준비 (selectedImage가 File 객체라면 배열로, 아니면 빈 배열)
-      const images: File[] = [];
-      // 예시: selectedImage가 File 객체라면 images.push(selectedImage)
-      // 실제로는 이미지 업로드 로직과 연동 필요
-
       const accessToken = localStorage.getItem('accessToken') || '';
 
-      const res = await postReview(reviewData, images, accessToken);
-      if (res.status === 200) {
-        alert(res.message);
-        // 성공 시 페이지 이동
-        switch (selectedCategory) {
-          case "청춘톡":
-            navigate('/youth-talk');
-            break;
-          case "MT여정지도":
-            navigate('/mt-journey');
-            break;
-          case "함께해요-동행구해요":
-            navigate('/together?category=동행구해요');
-            break;
-          case "함께해요-번개모임":
-            navigate('/together?category=번개모임');
-            break;
-          case "함께해요-졸업/휴학여행":
-            navigate('/together?category=졸업/휴학여행');
-            break;
-          case "함께해요-국내학점교류":
-            navigate('/together?category=국내학점교류');
-            break;
-          case "함께해요-해외교환학생":
-            navigate('/together?category=해외교환학생');
-            break;
-          default:
-            navigate('/youth-talk');
+      if (isEditMode && editPostId) {
+        // 수정 모드
+        const updateData = {
+          boardType: selectedCategory,
+          categoryName: selectedCategory,
+          title: title.trim(),
+          content: content,
+        };
+
+        const res = await updateReview(editPostId, updateData, accessToken);
+        if (res.status === 200) {
+          alert(res.message);
+          // 수정 완료 후 상세 페이지로 이동
+          navigate(`/review-detail/${editPostId}`);
+        } else {
+          alert('리뷰 수정에 실패했습니다.');
         }
       } else {
-        alert('게시글 등록에 실패했습니다.');
+        // 새로 작성 모드
+        const reviewData = {
+          boardType: selectedCategory,
+          categoryName: selectedCategory,
+          title: title.trim(),
+          content: content,
+          placeName: selectedLocation?.name || '',
+          address: selectedLocation?.address || '',
+          kakaoId: selectedLocation ? String(selectedLocation.lat) : '',
+          categoryGroupName: '',
+          region: '',
+        };
+
+        const images: File[] = [];
+        const res = await postReview(reviewData, images, accessToken);
+        if (res.status === 200) {
+          alert(res.message);
+          // 성공 시 페이지 이동
+          switch (selectedCategory) {
+            case "청춘톡":
+              navigate('/youth-talk');
+              break;
+            case "MT여정지도":
+              navigate('/mt-journey');
+              break;
+            case "함께해요-동행구해요":
+              navigate('/together?category=동행구해요');
+              break;
+            case "함께해요-번개모임":
+              navigate('/together?category=번개모임');
+              break;
+            case "함께해요-졸업/휴학여행":
+              navigate('/together?category=졸업/휴학여행');
+              break;
+            case "함께해요-국내학점교류":
+              navigate('/together?category=국내학점교류');
+              break;
+            case "함께해요-해외교환학생":
+              navigate('/together?category=해외교환학생');
+              break;
+            default:
+              navigate('/youth-talk');
+          }
+        } else {
+          alert('게시글 등록에 실패했습니다.');
+        }
       }
     } catch (error) {
-      console.error('게시글 등록 오류:', error);
-      alert('게시글 등록 중 오류가 발생했습니다.');
+      console.error('게시글 처리 오류:', error);
+      alert(isEditMode ? '리뷰 수정 중 오류가 발생했습니다.' : '게시글 등록 중 오류가 발생했습니다.');
     }
     setShowPublishModal(false);
   };

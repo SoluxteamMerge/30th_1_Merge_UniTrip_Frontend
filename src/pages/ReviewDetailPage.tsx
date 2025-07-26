@@ -8,6 +8,7 @@ import starFillIcon from "../assets/interaction/scrap_fill.svg";
 import starRatingIcon from "../assets/interaction/star.svg";
 import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
+import { deleteReview } from '../api/Review/deleteReviewApi';
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -238,9 +239,37 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 삭제 확인
-  const handleDeleteConfirm = () => {
-    setShowDeleteModal(false);
-    setShowDeleteSuccessModal(true);
+  const handleDeleteConfirm = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      const postId = parseInt(id || '0');
+      
+      if (!postId) {
+        alert('잘못된 게시글 ID입니다.');
+        return;
+      }
+
+      const response = await deleteReview(postId, accessToken);
+      
+      if (response.status === 200) {
+        setShowDeleteModal(false);
+        setShowDeleteSuccessModal(true);
+      } else {
+        alert('삭제에 실패했습니다.');
+      }
+    } catch (error: any) {
+      console.error('삭제 오류:', error);
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 403) {
+        alert('삭제 권한이 없습니다.');
+      } else if (error.response?.status === 404) {
+        alert('게시글을 찾을 수 없습니다.');
+      } else {
+        alert('삭제 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   // 삭제 취소
