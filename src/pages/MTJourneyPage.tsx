@@ -1,40 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import SortDropdown from "../components/SortDropdown";
 import { useNavigate } from "react-router-dom";
 import writeIcon from "../assets/write-icon.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
+import { getReviews, ReviewItem } from '../api/Review/getReviewsApi';
 
-// todo
-const posts = [
-  {
-    id: 1,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "제목칸",
-    content: "내용칸",
-    tags: ["#가평", "#대성리", "#40명이상 숙소"],
-    rating: 2.5,
-    imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-    profileUrl: ""
-  },
-  {
-    id: 2,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "제목칸",
-    content: "내용칸",
-    tags: ["#제주도", "#4인", "#펜션"],
-    rating: 5,
-    imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80",
-    profileUrl: ""
-  }
-];
+const categoryToBoardType: Record<string, string> = {
+  "MT여정지도": "MT/LT",
+  "함께해요-동행구해요": "동행모집",
+  "함께해요-번개모임": "모임구인",
+  "함께해요-졸업/휴학여행": "졸업/휴학여행",
+  "함께해요-국내학점교류": "국내학점교류",
+  "함께해요-해외교환학생": "해외교환",
+};
 
 const MTJourneyPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
   const navigate = useNavigate();
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      setLoading(true);
+      try {
+        const boardType = categoryToBoardType["MT여정지도"];
+        const accessToken = localStorage.getItem('accessToken') || undefined;
+        // 임시 데이터 사용 (API 준비 전까지)
+        const res = await getReviews(boardType, accessToken, true);
+        setReviews(res.reviews);
+      } catch (error) {
+        console.error('리뷰 조회 오류:', error);
+        setReviews([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => {
@@ -126,7 +131,7 @@ const MTJourneyPage: React.FC = () => {
         .mt-post-title { font-weight: 700; font-size: 22px; color: #0b0b61; padding: 0 0 0 10px; margin-bottom: 2px; margin-top: 0; }
         .mt-post-content { color: #black; padding: 10px 0 0 10px; font-size: 15px; font-weight:600; white-space: pre-line; }
         .mt-thumbnail { width: 220px; height: 130px; border-radius: 0px; object-fit: cover; margin-left: 24px; }
-        .mt-rating-container { display: flex; align-items: center; margin-left: 650px; }
+        .mt-rating-container { display: flex; align-items: center; margin-left: 600px; }
         .mt-floating-write-btn {
           position: fixed;
           right: 60px;
@@ -154,49 +159,42 @@ const MTJourneyPage: React.FC = () => {
         </div>
         <div className="mt-white-container">
           <div className="mt-board-title">리뷰모음</div>
-          <div className="mt-post-list">
-            {posts.map(post => (
-              <div key={post.id} className="mt-post-card" onClick={() => navigate(`/review/${post.id}?category=MT여정지도`)} style={{ cursor: 'pointer' }}>
-                {/* 상단: 프로필/닉네임/날짜 */}
-                <div className="mt-post-top-row">
-                  <div className="mt-post-info-row">
-                    {post.profileUrl ? (
-                      <img src={post.profileUrl} alt="프로필" className="mt-profile" />
-                    ) : (
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+          ) : (
+            <div className="mt-post-list">
+              {reviews.map(review => (
+                <div key={review.postId} className="mt-post-card" onClick={() => navigate(`/review/${review.postId}?category=MT여정지도`)} style={{ cursor: 'pointer' }}>
+                  {/* 상단: 프로필/닉네임/날짜 */}
+                  <div className="mt-post-top-row">
+                    <div className="mt-post-info-row">
                       <div className="mt-profile mt-profile-default" />
-                    )}
-                    <span className="mt-username">{post.username}</span>
-                    <div className="mt-info-divider" />
-                    <span className="mt-date">{post.date}</span>
-                    <div className="mt-rating-container">
-                        {renderStars(post.rating)}
+                      <span className="mt-username">{review.nickname} 님</span>
+                      <div className="mt-info-divider" />
+                      <span className="mt-date">{new Date(review.createdAt).toLocaleString('ko-KR')}</span>
+                      <div className="mt-rating-container">
+                        {renderStars(review.rating)}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {/* 제목+별점(왼쪽) + 썸네일(오른쪽) 한 줄 */}
-                <div className="mt-main-row">
-                  <div className="mt-main-texts">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div className="mt-post-title">{post.title}</div>
+                  {/* 제목+별점(왼쪽) + 썸네일(오른쪽) 한 줄 */}
+                  <div className="mt-main-row">
+                    <div className="mt-main-texts">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="mt-post-title">{review.title}</div>
+                      </div>
+                      <div className="mt-post-content">{review.content}</div>
                     </div>
-                    <div className="mt-post-content">{post.content}</div>
+                    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="썸네일" className="mt-thumbnail" />
                   </div>
-                  <img src={post.imageUrl} alt="썸네일" className="mt-thumbnail" />
+                  {/* 태그들 (사진 아래) */}
+                  <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <span className="mt-tag mt-tag-main">#{review.categoryName}</span>
+                  </div>
                 </div>
-                {/* 태그들 (사진 아래) */}
-                <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                  {post.tags.map((tag, idx) => (
-                    <span
-                      key={tag}
-                      className={idx === 0 ? "mt-tag mt-tag-main" : "mt-tag mt-tag-sub"}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       {/* 플로팅 버튼 */}
