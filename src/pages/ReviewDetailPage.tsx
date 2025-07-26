@@ -10,6 +10,8 @@ import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
 import { deleteReview } from '../api/Review/deleteReviewApi';
 import { getReviewDetail, ReviewDetailResponse } from '../api/Review/getReviewsApi';
+import { likeReview } from '../api/Review/likeReviewApi';
+import { bookmarkReview } from '../api/Review/bookmarkReviewApi';
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -130,15 +132,63 @@ const YouthTalkDetailPage: React.FC = () => {
     );
   }
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
+  const handleLike = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const response = await likeReview(postData.postId, accessToken);
+      
+      // 좋아요 상태와 개수 업데이트
+      setIsLiked(response.liked);
+      setPostData(prev => prev ? {
+        ...prev,
+        likes: response.likeCount
+      } : null);
+      
+    } catch (error: any) {
+      console.error('좋아요 오류:', error);
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('좋아요 처리 중 오류가 발생했습니다.');
+      }
+    }
   };
 
-  const handleStar = () => {
-    setIsStarred(!isStarred);
-    // 다른 사용자가 스크랩할 때 모달 표시
-    if (!isStarred && currentUser !== postData.nickname) {
-      setShowScrapModal(true);
+  const handleStar = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const response = await bookmarkReview(postData.postId, accessToken);
+      setIsStarred(response.bookmarked);
+      
+      // 북마크 개수 업데이트
+      setPostData(prev => prev ? {
+        ...prev,
+        bookmarkCount: response.bookmarkCount
+      } : null);
+
+      // 다른 사용자가 스크랩할 때 모달 표시
+      if (!response.bookmarked && currentUser !== postData.nickname) {
+        setShowScrapModal(true);
+      }
+    } catch (error: any) {
+      console.error('스크랩 오류:', error);
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('스크랩 처리 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -729,7 +779,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   onClick={handleStar}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
-                  <span className="ytd-interaction-count">0</span>
+                  <span className="ytd-interaction-count">{postData.bookmarkCount}</span>
                 </button>
                 <button 
                   className="ytd-interaction-btn"

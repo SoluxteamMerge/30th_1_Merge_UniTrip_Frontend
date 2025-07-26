@@ -235,6 +235,7 @@ export interface ReviewDetailResponse {
   rating: number;
   likes: number;
   isLiked: boolean;
+  bookmarkCount?: number; // 북마크 개수
   overnightFlag?: boolean; // 모임구인만
   recruitmentCnt?: number; // 모임구인만
 }
@@ -273,6 +274,7 @@ export const getReviewDetail = async (
       rating: foundPost.rating,
       likes: foundPost.likes,
       isLiked: foundPost.isLiked,
+      bookmarkCount: foundPost.scrapCount, // scrapCount를 bookmarkCount로 매핑
       overnightFlag: foundPost.overnightFlag,
       recruitmentCnt: foundPost.recruitmentCnt
     };
@@ -293,7 +295,8 @@ export const getReviewDetail = async (
     views: Math.floor(Math.random() * 100) + 10,
     rating: Math.floor(Math.random() * 5) + 1,
     likes: Math.floor(Math.random() * 50) + 5,
-    isLiked: Math.random() > 0.5
+    isLiked: Math.random() > 0.5,
+    bookmarkCount: Math.floor(Math.random() * 20) + 1
   };
   
   return mockDetailData;
