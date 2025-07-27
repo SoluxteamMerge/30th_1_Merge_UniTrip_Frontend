@@ -11,9 +11,7 @@
   import { getPlaceByRegion } from "../api/getPlaceByRegion";
   import { searchReviews } from "../api/search/searchReviews";
   import { getPopularKeywords } from "../api/popularKeywords/getPopularKeywords";
-
-
-
+  import { updateKeywordRank } from "../api/popularKeywords/updateKeywordRank"; // import 추가
 
 
 
@@ -143,16 +141,34 @@
 
       const [popularKeywords, setPopularKeywords] = useState<{ keyword: string, rank: number, searchCount: number }[]>([]);
 
+      //인기 키워드 조회
       useEffect(() => {
         const fetchPopularKeywords = async () => {
           try {
             const keywords = await getPopularKeywords(10);
-            setPopularKeywords(keywords);
+            setPopularKeywords(keywords);// 상태 업데이트 완료
           } catch (err) {
             console.error("인기 키워드 조회 실패:", err);
           }
         };
         fetchPopularKeywords();
+      }, []);
+
+      //인기 검색어 하루 단위로 갱신
+      useEffect(() => {
+        const today = new Date().toISOString().split("T")[0]; // 오늘 날짜
+        const lastUpdate = localStorage.getItem("lastKeywordUpdateDate");
+
+        if (lastUpdate !== today) {
+          updateKeywordRank()
+            .then(() => {
+              console.log("인기 키워드 랭킹 갱신 완료");
+              localStorage.setItem("lastKeywordUpdateDate", today); // 성공 시에만 저장
+            })
+            .catch((err) => {
+              console.error("인기 키워드 랭킹 갱신 실패:", err.message);
+            });
+        }
       }, []);
 
       {/*정렬*/}
