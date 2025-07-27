@@ -1,15 +1,17 @@
-  import React, { useState} from "react";
+  import React, { useEffect, useState } from "react";
   import Header from "../components/Header/Header";
   import searchIcon from '../assets/search_icon.svg';
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
   import { useNavigate } from "react-router-dom"; 
   import { ReviewCard } from "../pages/reviewcard/ReviewCard";
-  import './mainpage/MainPage.css';
+
   import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
   import Pagination from "../components/Pagination";
 
   import { getPlaceByRegion } from "../api/getPlaceByRegion";
   import { searchReviews } from "../api/search/searchReviews";
+  import { getPopularKeywords } from "../api/popularKeywords/getPopularKeywords";
+
 
 
 
@@ -123,7 +125,8 @@
 
   // ];
 
-  const popularKeywords = ["부산", "제주", "바다", "광안리", "속초", "강릉", "MT", "대구", "전주", "힐링"];
+  
+  //const popularKeywords = ["부산", "제주", "바다", "광안리", "속초", "강릉", "MT", "대구", "전주", "힐링"];
 
   const SearchPage: React.FC = () => {
       const navigate = useNavigate(); 
@@ -137,6 +140,20 @@
 
       const [searchResults, setSearchResults] = useState<any[]>([]);
       const [isSearchActive, setIsSearchActive] = useState(false);
+
+      const [popularKeywords, setPopularKeywords] = useState<{ keyword: string, rank: number, searchCount: number }[]>([]);
+
+      useEffect(() => {
+        const fetchPopularKeywords = async () => {
+          try {
+            const keywords = await getPopularKeywords(10);
+            setPopularKeywords(keywords);
+          } catch (err) {
+            console.error("인기 키워드 조회 실패:", err);
+          }
+        };
+        fetchPopularKeywords();
+      }, []);
 
       {/*정렬*/}
       //regionReviews에서 정렬 후 사용(지역 필터 결과 정렬)
@@ -251,6 +268,7 @@
           alert(err.message || "검색 중 오류 발생");
         }
       };
+
 
 
       {/*검색어 필터링 - 삭제(주석처리)
@@ -392,19 +410,19 @@
                 >
                   <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>🔥 인기 검색어</h4>
                   <ul style={{ paddingLeft: 12, listStyle: "none" }}>
-                    {popularKeywords.map((word, idx) => (
+                    {popularKeywords.map((item, idx) => (
                       <li
                         key={idx}
-                        onClick={() => handleKeywordClick(word)}
+                        onClick={() => handleKeywordClick(item.keyword)}
                         style={{
                           marginBottom: 6,
                           fontSize: 16,
                           color: "#000",
                           fontWeight: 500,
-                          cursor: "pointer", // 마우스 커서 변경
+                          cursor: "pointer",
                         }}
                       >
-                        {idx + 1}. {word}
+                        {item.rank}. {item.keyword}
                       </li>
                     ))}
                   </ul>
@@ -469,8 +487,8 @@
                         likes={review.likeCount}
                         scrapCount={review.scrapCount}
                         rating={review.rating}
-                        isLiked={review.isLiked}
-                        isScraped={review.isScraped}
+                        isLiked={false} //일단 false로
+                        isScraped={false} //일단 false로
                       />
                     </div>
                   )}
@@ -510,12 +528,12 @@
                       <ReviewCard
                         postId={review.postId}
                         title={review.title}
-                        categoryName={review.hashtag.join(", ")} // 문자열로 연결
-                        thumbnailUrl={"https://picsum.photos/200/100?random=" + review.postId}
+                        categoryName={review.hashtag.join(", ")}
+                        thumbnailUrl={"https://picsum.photos/200/100?random=" + review.postId} //필요
                         nickname={review.author}
                         likes={review.likedCount}
                         scrapCount={review.bookmarkCount}
-                        rating={0} // 서버에서 rating 없으면 0 또는 제거
+                        rating={0} //필요2 서버에서 rating 없으면 0 또는 제거 
                         isLiked={review.liked}
                         isScraped={review.bookmarked}
                       />
