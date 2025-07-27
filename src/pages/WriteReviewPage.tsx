@@ -15,11 +15,15 @@ import rightlistIcon from "../assets/toolbar/rightlist.svg";
 import closeIcon from "../assets/module/close.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
-import api from "../api/api"; // api 인스턴스 추가
+import { postReview } from '../api/Review/writeReviewApi';
+import { updateReview } from '../api/Review/updateReviewApi';
+import { rateReview } from '../api/Review/ratingReviewApi';
 
 const WriteReviewPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editPostId, setEditPostId] = useState<number | null>(null);
 
   const categories = [
     "청춘톡",
@@ -50,10 +54,13 @@ const WriteReviewPage: React.FC = () => {
   useEffect(() => {
     const editParam = searchParams.get('edit');
     const dataParam = searchParams.get('data');
+    const postIdParam = searchParams.get('postId');
     
     if (editParam === 'true' && dataParam) {
       try {
         const editData = JSON.parse(dataParam);
+        setIsEditMode(true);
+        setEditPostId(postIdParam ? parseInt(postIdParam) : null);
         setTitle(editData.title || '');
         setContent(editData.content || '');
         setSelectedCategory(editData.category || categories[0]);
@@ -180,9 +187,39 @@ const WriteReviewPage: React.FC = () => {
     setShowRatingModal(true);
   };
 
-  const handleStarClick = (starIndex: number, isHalf: boolean = false) => {
+  const handleStarClick = async (starIndex: number, isHalf: boolean = false) => {
     const newRating = starIndex + (isHalf ? 0.5 : 1);
     setRating(newRating);
+    
+    // 수정 모드이고 postId가 있을 때만 API 호출
+    if (isEditMode && editPostId) {
+      try {
+        const accessToken = localStorage.getItem('accessToken') || '';
+        if (!accessToken) {
+          alert('로그인이 필요합니다.');
+          return;
+        }
+
+        const response = await rateReview(editPostId, newRating, accessToken);
+        
+        if (response.code === 200) {
+          // 성공 메시지는 표시하지 않음 (사용자 경험상)
+          console.log('별점 업데이트 성공:', response.message);
+        }
+      } catch (error: any) {
+        console.error('별점 업데이트 오류:', error);
+        
+        if (error.response?.status === 401) {
+          alert('로그인이 필요합니다.');
+        } else if (error.response?.status === 400) {
+          alert('요청 값이 올바르지 않습니다.');
+        } else if (error.response?.status === 404) {
+          alert('해당 리뷰를 찾을 수 없습니다.');
+        } else {
+          alert('별점 업데이트 중 오류가 발생했습니다.');
+        }
+      }
+    }
   };
 
   const handleStarHover = (starIndex: number, isHalf: boolean = false) => {
@@ -259,7 +296,6 @@ const WriteReviewPage: React.FC = () => {
 
   const handlePublishConfirm = async () => {
     try {
-      // 제목과 내용이 있는지 확인
       if (!title.trim()) {
         alert('제목을 입력해주세요.');
         return;
@@ -273,32 +309,44 @@ const WriteReviewPage: React.FC = () => {
         return;
       }
 
-      // 게시글 데이터 수집 (기본 정보만)
-      const postData = {
+      const accessToken = localStorage.getItem('accessToken') || '';
+
+      if (isEditMode && editPostId) {
+        // 수정 모드
+        const updateData = {
+          boardType: selectedCategory,
+          categoryName: selectedCategory,
         title: title.trim(),
-        description: content.trim(),
-        category: selectedCategory,
-        isPublic: true,
-        // 선택적 정보들
-        travelType: getTravelType(selectedCategory),
-        startDate: scheduleInput.split(' ~ ')[0] || "",
-        endDate: scheduleInput.split(' ~ ')[1] || "",
-        companions: tags.join(', '),
-        rating: rating,
-        location: selectedLocation ? {
-          name: selectedLocation.name,
-          address: selectedLocation.address,
-          lat: selectedLocation.lat,
-          lng: selectedLocation.lng
-        } : null,
-        imageUrl: selectedImage || null,
+          content: content,
+        };
+
+        const res = await updateReview(editPostId, updateData, accessToken);
+        if (res.status === 200) {
+          alert(res.message);
+          // 수정 완료 후 상세 페이지로 이동
+          navigate(`/review-detail/${editPostId}`);
+        } else {
+          alert('리뷰 수정에 실패했습니다.');
+        }
+      } else {
+        // 새로 작성 모드
+        const reviewData = {
+          boardType: selectedCategory,
+          categoryName: selectedCategory,
+          title: title.trim(),
+          content: content,
+          placeName: selectedLocation?.name || '',
+          address: selectedLocation?.address || '',
+          kakaoId: selectedLocation ? String(selectedLocation.lat) : '',
+          categoryGroupName: '',
+          region: '',
       };
 
-      // 백엔드 API 호출 (예시)
-      const response = await api.post('/api/posts', postData);
-
-      if (response.status === 200 || response.status === 201) {
-        // 성공 시 해당 카테고리 페이지로 이동
+        const images: File[] = [];
+        const res = await postReview(reviewData, images, accessToken);
+        if (res.status === 200) {
+          alert(res.message);
+          // 성공 시 페이지 이동
         switch (selectedCategory) {
           case "청춘톡":
             navigate('/youth-talk');
@@ -326,12 +374,12 @@ const WriteReviewPage: React.FC = () => {
         }
       } else {
         alert('게시글 등록에 실패했습니다.');
+        }
       }
     } catch (error) {
-      console.error('게시글 등록 오류:', error);
-      alert('게시글 등록 중 오류가 발생했습니다.');
+      console.error('게시글 처리 오류:', error);
+      alert(isEditMode ? '리뷰 수정 중 오류가 발생했습니다.' : '게시글 등록 중 오류가 발생했습니다.');
     }
-    
     setShowPublishModal(false);
   };
 
@@ -1026,6 +1074,16 @@ const WriteReviewPage: React.FC = () => {
                         <div className="wr-location-container">
                           <div className="wr-location-info">
                             <div className="wr-location-name">
+                              <img 
+                                src={locationIcon} 
+                                alt="위치" 
+                                style={{ 
+                                  width: '16px', 
+                                  height: '16px', 
+                                  marginRight: '8px',
+                                  verticalAlign: 'middle'
+                                }} 
+                              />
                               {selectedLocation.name}
                             </div>
                             <div className="wr-location-address">

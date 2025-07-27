@@ -5,63 +5,16 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import writeIcon from "../../assets/write-icon.svg";
 import starWishIcon from "../../assets/module/star_wish.svg";
 import starWishFillIcon from "../../assets/module/star_wish_fill.svg";
+import { getReviews, ReviewItem } from '../../api/Review/getReviewsApi';
 
-// todo
-const posts = [
-  {
-    id: 1,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "제목칸",
-    content: "내용칸",
-    category: "동행구해요",
-    tags: ["#가평", "#대성리", "#40명이상 숙소"],
-    profileUrl: ""
-  },
-  {
-    id: 2,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "제목칸",
-    content: "내용칸",
-    category: "번개모임",
-    tags: ["#제주도", "#4인", "#펜션"],
-    profileUrl: ""
-  },
-  {
-    id: 3,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "졸업여행 제목",
-    content: "내용칸",
-    category: "졸업/휴학여행",
-    tags: ["#유럽", "#3주", "#백팩"],
-    rating: 5,
-    profileUrl: ""
-  },
-  {
-    id: 4,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "국내학점교류 제목",
-    content: "내용칸",
-    category: "국내학점교류",
-    tags: ["#서울대", "#1학기", "#기숙사"],
-    rating: 4,
-    profileUrl: ""
-  },
-  {
-    id: 5,
-    username: "김눈송 님",
-    date: "2025.05.06 12:01",
-    title: "해외교환학생 제목",
-    content: "내용칸",
-    category: "해외교환학생",
-    tags: ["#미국", "#1년", "#캠퍼스"],
-    rating: 5,
-    profileUrl: ""
-  }
-];
+const categoryToBoardType: Record<string, string> = {
+  "함께해요-동행구해요": "동행모집",
+  "함께해요-번개모임": "모임구인",
+  "함께해요-졸업/휴학여행": "졸업/휴학여행",
+  "함께해요-국내학점교류": "국내학점교류",
+  "함께해요-해외교환학생": "해외교환",
+  "MT여정지도": "MT/LT",
+};
 
 const categories = [
   "동행구해요",
@@ -76,6 +29,8 @@ const TogetherPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("동행구해요");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // URL 파라미터에서 카테고리 읽어오기
   useEffect(() => {
@@ -85,7 +40,25 @@ const TogetherPage: React.FC = () => {
     }
   }, [searchParams]);
 
-  const filteredPosts = posts.filter(post => post.category === selectedCategory);
+  useEffect(() => {
+    const fetchReviews = async () => {
+      setLoading(true);
+      try {
+        const fullCategoryName = `함께해요-${selectedCategory}`;
+        const boardType = categoryToBoardType[fullCategoryName];
+        const accessToken = localStorage.getItem('accessToken') || undefined;
+        // 임시 데이터 사용 (API 준비 전까지)
+        const res = await getReviews(boardType, accessToken, true);
+        setReviews(res.reviews);
+      } catch (error) {
+        console.error('리뷰 조회 오류:', error);
+        setReviews([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, [selectedCategory]);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => {
@@ -236,7 +209,7 @@ const TogetherPage: React.FC = () => {
         .together-tag { border-radius: 20px; padding: 6px 18px; font-size: 15px; font-weight: 400; }
         .together-tag-main { background: #0b0b61; color: #fff; }
         .together-tag-sub { background: #fff; border: 1.5px solid #0b0b61; color: #0b0b61; }
-        .together-rating-container { display: flex; align-items: center; margin-left: 650px; }
+        .together-rating-container { display: flex; align-items: center; margin-left: 580px; }
       `}</style>
       
       <Header isLoggedIn={true} username="김눈송" profileUrl="" />
@@ -265,53 +238,50 @@ const TogetherPage: React.FC = () => {
         </div>
         <div className="together-white-container">
           <div className="together-board-title">{selectedCategory}</div>
-          <div className="together-post-list">
-            {filteredPosts.map(post => (
-              <div key={post.id} className="together-post-card" onClick={() => navigate(`/review/${post.id}?category=${selectedCategory}`)} style={{ cursor: 'pointer' }}>
-                {/* 상단: 프로필/닉네임/날짜 */}
-                <div className="together-post-top-row">
-                  <div className="together-post-info-row">
-                    {post.profileUrl ? (
-                      <img src={post.profileUrl} alt="프로필" className="together-profile" />
-                    ) : (
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+          ) : (
+            <div className="together-post-list">
+              {reviews.map(review => (
+                <div key={review.postId} className="together-post-card" onClick={() => navigate(`/review/${review.postId}?category=${selectedCategory}`)} style={{ cursor: 'pointer' }}>
+                  {/* 상단: 프로필/닉네임/날짜 */}
+                  <div className="together-post-top-row">
+                    <div className="together-post-info-row">
                       <div className="together-profile together-profile-default" />
-                    )}
-                    <span className="together-username">{post.username}</span>
-                    <div className="together-info-divider" />
-                    <span className="together-date">{post.date}</span>
-                    {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
-                    {(post.category === "졸업/휴학여행" || post.category === "국내학점교류" || post.category === "해외교환학생") && post.rating && (
-                      <div className="together-rating-container">
-                        {renderStars(post.rating)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {/* 제목+내용 */}
-                <div className="together-main-row">
-                  <div className="together-main-texts">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div className="together-post-title">{post.title}</div>
+                      <span className="together-username">{review.nickname} 님</span>
+                      <div className="together-info-divider" />
+                      <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}</span>
+                      {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
+                      {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
+                        <div className="together-rating-container">
+                          {renderStars(review.rating)}
+                        </div>
+                      )}
                     </div>
-                    <div className="together-post-content">{post.content}</div>
+                  </div>
+                  {/* 제목+내용 */}
+                  <div className="together-main-row">
+                    <div className="together-main-texts">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="together-post-title">{review.title}</div>
+                      </div>
+                      <div className="together-post-content">{review.content}</div>
+                    </div>
+                  </div>
+                  {/* 태그들 */}
+                  <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <span className="together-tag together-tag-main">#{review.categoryName}</span>
                   </div>
                 </div>
-                {/* 태그들 */}
-                {post.tags && (
-                  <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                    {post.tags.map((tag, idx) => (
-                      <span
-                        key={tag}
-                        className={idx === 0 ? "together-tag together-tag-main" : "together-tag together-tag-sub"}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

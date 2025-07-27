@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header/Header";
 import heartIcon from "../assets/interaction/empathy.svg";
@@ -8,6 +8,16 @@ import starFillIcon from "../assets/interaction/scrap_fill.svg";
 import starRatingIcon from "../assets/interaction/star.svg";
 import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
+import locationIcon from "../assets/toolbar/location.svg";
+import { deleteReview } from '../api/Review/deleteReviewApi';
+import { getReviewDetail, ReviewDetailResponse } from '../api/Review/getReviewsApi';
+import { likeReview } from '../api/Review/likeReviewApi';
+import { bookmarkReview } from '../api/Review/bookmarkReviewApi';
+import { postComment } from '../api/Comment/postCommentApi';
+import { updateComment } from '../api/Comment/updateCommentApi';
+import { deleteComment } from '../api/Comment/deleteCommentApi';
+import { getComments } from '../api/Comment/getCommentsApi';
+import { likeComment } from '../api/Comment/likeCommentApi';
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,141 +48,218 @@ const YouthTalkDetailPage: React.FC = () => {
   }>>([]);
   const commentInputRef = React.useRef<HTMLTextAreaElement>(null);
 
-  // 카테고리별 게시글 데이터
-  const getPostData = (category: string) => {
-    switch (category) {
-      case "MT여정지도":
-        return {
-          id: id || "1",
-          title: "MT여정지도 제목",
-          content: "주소\n예산\n인원\n입 · 퇴실시간",
-          username: "김눈송",
-          date: "2025.05.06 12:01",
-          imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-          profileUrl: "",
-          isPublic: true,
-          commentCount: 1,
-          likeCount: 2,
-          starCount: 2,
-          rating: 4.5,
-          tags: ["#가평", "#대성리", "#40명이상 숙소"],
-          location: {
-            name: "가평 펜션",
-            address: "경기 가평군 가평읍 가화로 123-45"
+  // API에서 게시글 데이터 가져오기
+  const [postData, setPostData] = useState<ReviewDetailResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPostData = async () => {
+      if (!id) {
+        console.log('id가 없습니다');
+        setLoading(false);
+        return;
+      }
+      
+      console.log('게시글 상세 조회 시작:', id);
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('accessToken') || undefined;
+        console.log('API 호출:', `/api/reviews/${id}`);
+        const data = await getReviewDetail(parseInt(id), token);
+        console.log('API 응답:', data);
+        setPostData(data);
+        setIsLiked(data.isLiked);
+        
+        // 댓글 목록도 함께 가져오기
+        try {
+          const commentsResponse = await getComments(parseInt(id));
+          if (commentsResponse.code === 200) {
+            const commentList = commentsResponse.data.content.map(comment => ({
+              id: comment.commentId,
+              username: comment.author,
+              date: new Date(comment.createdAt).toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              content: comment.content,
+              likes: comment.likeCount,
+              isLiked: false,
+              isEditing: false,
+              editText: ""
+            }));
+            setComments(commentList);
+            console.log('댓글 목록 로드 완료:', commentList);
           }
-        };
-      case "동행구해요":
-        return {
-          id: id || "1",
-          title: "동행구해요 제목",
-          content: "내용칸",
-          username: "김눈송 님",
-          date: "2025.05.06 12:01",
-          imageUrl: "",
-          profileUrl: "",
-          isPublic: true,
-          commentCount: 1,
-          likeCount: 2,
-          starCount: 2,
-          tags: ["#가평", "#대성리", "#40명이상 숙소"]
-        };
-      case "번개모임":
-        return {
-          id: id || "1",
-          title: "번개모임 제목",
-          content: "내용칸",
-          username: "김눈송 님",
-          date: "2025.05.06 12:01",
-          imageUrl: "",
-          profileUrl: "",
-          isPublic: true,
-          commentCount: 1,
-          likeCount: 2,
-          starCount: 2,
-          tags: ["#제주도", "#4인", "#펜션"]
-        };
-      case "졸업/휴학여행":
-        return {
-          id: id || "1",
-          title: "졸업여행 제목",
-          content: "주소\n예산\n인원\n입 · 퇴실시간",
-          username: "김눈송 님",
-          date: "2025.05.06 12:01",
-          imageUrl: "",
-          profileUrl: "",
-          isPublic: true,
-          commentCount: 1,
-          likeCount: 2,
-          starCount: 2,
-          rating: 5,
-          tags: ["#유럽", "#3주", "#백팩"]
-        };
-      case "국내학점교류":
-        return {
-          id: id || "1",
-          title: "국내학점교류 제목",
-          content: "주소\n예산\n인원\n입 · 퇴실시간",
-          username: "김눈송 님",
-          date: "2025.05.06 12:01",
-          imageUrl: "",
-          profileUrl: "",
-          isPublic: true,
-          commentCount: 1,
-          likeCount: 2,
-          starCount: 2,
-          rating: 4,
-          tags: ["#서울대", "#1학기", "#기숙사"]
-        };
-      case "해외교환학생":
-        return {
-          id: id || "1",
-          title: "해외교환학생 제목",
-          content: "주소\n예산\n인원\n입 · 퇴실시간",
-          username: "김눈송 님",
-          date: "2025.05.06 12:01",
-          imageUrl: "",
-          profileUrl: "",
-          isPublic: true,
-          commentCount: 1,
-          likeCount: 2,
-          starCount: 2,
-          rating: 5,
-          tags: ["#미국", "#1년", "#캠퍼스"]
-        };
-      default: // 청춘톡
-        return {
-          id: id || "1",
-          title: "동기들과 함께 제주도 3박 4일 여행 다녀왔습니다",
-          content: "동기들과 함께 제주도에 다녀왔습니다!\n\n바닷바람이 너무 심해서 날아가는 줄 알았지만 근처에 있는 한옥을 모티브로 한 베이커리 카페가 정말 맛있었습니다. 기회가 된다면 다녀오시는 걸 추천할게요!",
-          username: "김눈송 님",
-          date: "2025.05.06 12:01",
-          imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-          profileUrl: "",
-          isPublic: true,
-          commentCount: 1,
-          likeCount: 2,
-          starCount: 2,
-          tags: ["#제주도", "#4인여행"],
-          location: {
-            name: "서울역",
-            address: "서울 중구 봉래동2가 122-11"
-          }
-        };
+        } catch (commentError) {
+          console.error('댓글 목록 조회 실패:', commentError);
+          // 백엔드 연동 전까지 임시 댓글 데이터 사용
+          console.log('백엔드 연동 전 임시 댓글 데이터 사용');
+          const tempComments = [
+            {
+              id: 1,
+              username: '김눈송',
+              date: new Date().toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              content: '정말 좋은 게시글이네요! 👍',
+              likes: 3,
+              isLiked: false,
+              isEditing: false,
+              editText: ""
+            },
+            {
+              id: 2,
+              username: '다른사용자',
+              date: new Date(Date.now() - 60000).toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              content: '저도 같은 생각이에요!',
+              likes: 1,
+              isLiked: false,
+              isEditing: false,
+              editText: ""
+            }
+          ];
+          setComments(tempComments);
+          console.log('임시 댓글 데이터 설정 완료');
+        }
+      } catch (error) {
+        console.error('게시글 조회 실패:', error);
+        setPostData({
+          postId: parseInt(id),
+          boardType: "자유게시판",
+          categoryName: "청춘톡",
+          title: "게시글을 불러올 수 없습니다",
+          content: "게시글을 불러오는 중 오류가 발생했습니다.",
+          userId: 0,
+          nickname: "알 수 없음",
+          createdAt: new Date().toISOString(),
+          views: 0,
+          rating: 0,
+          likes: 0,
+          isLiked: false
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPostData();
+  }, [id]);
+
+  // 클릭 외부 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.ytd-more-btn') && !target.closest('.ytd-more-menu')) {
+        setShowMoreMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // 페이지 로드 시 댓글 입력창에 포커스
+  useEffect(() => {
+    setTimeout(() => {
+      commentInputRef.current?.focus();
+    }, 100);
+  }, []);
+
+  // 로딩 중일 때
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '40px' }}>
+        로딩 중...
+      </div>
+    );
+  }
+
+  console.log('postData 렌더링:', postData);
+
+  // 데이터가 없을 때도 기본 UI 표시
+  if (!postData) {
+    return (
+      <div className="ytd-bg">
+        <Header isLoggedIn={true} username="김눈송" profileUrl="" />
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          게시글을 찾을 수 없습니다.
+        </div>
+      </div>
+    );
+  }
+
+  const handleLike = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const response = await likeReview(postData.postId, accessToken);
+      
+      // 좋아요 상태와 개수 업데이트
+      setIsLiked(response.liked);
+      setPostData(prev => prev ? {
+        ...prev,
+        likes: response.likeCount
+      } : null);
+      
+    } catch (error: any) {
+      console.error('좋아요 오류:', error);
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('좋아요 처리 중 오류가 발생했습니다.');
+      }
     }
   };
 
-  const category = searchParams.get('category') || '청춘톡';
-  const post = getPostData(category);
+  const handleStar = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-  };
+      const response = await bookmarkReview(postData.postId, accessToken);
+      setIsStarred(response.bookmarked);
+      
+      // 북마크 개수 업데이트
+      setPostData(prev => prev ? {
+        ...prev,
+        bookmarkCount: response.bookmarkCount
+      } : null);
 
-  const handleStar = () => {
-    setIsStarred(!isStarred);
-    // 다른 사용자가 스크랩할 때 모달 표시
-    if (!isStarred && currentUser !== post.username) {
-      setShowScrapModal(true);
+      // 다른 사용자가 스크랩할 때 모달 표시
+      if (!response.bookmarked && currentUser !== postData.nickname) {
+        setShowScrapModal(true);
+      }
+    } catch (error: any) {
+      console.error('스크랩 오류:', error);
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('스크랩 처리 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -207,19 +294,14 @@ const YouthTalkDetailPage: React.FC = () => {
     navigate('/review-write?category=청춘톡');
   };
 
-  // 수정하기 클릭
+  // 수정하기
   const handleEditClick = () => {
-    // 게시글 정보를 URL 파라미터로 전달하여 WriteReviewPage로 이동
     const editData = {
-      id: post.id,
-      title: post.title,
-      content: post.content,
-      category: category,
-      imageUrl: post.imageUrl,
-      location: post.location,
-      tags: post.tags,
-      rating: post.rating,
-      isPublic: post.isPublic
+      id: postData.postId,
+      title: postData.title,
+      content: postData.content,
+      category: postData.categoryName,
+      rating: postData.rating
     };
     
     const queryString = new URLSearchParams({
@@ -238,9 +320,37 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 삭제 확인
-  const handleDeleteConfirm = () => {
-    setShowDeleteModal(false);
-    setShowDeleteSuccessModal(true);
+  const handleDeleteConfirm = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      const postId = parseInt(id || '0');
+      
+      if (!postId) {
+        alert('잘못된 게시글 ID입니다.');
+        return;
+      }
+
+      const response = await deleteReview(postId, accessToken);
+      
+      if (response.status === 200) {
+        setShowDeleteModal(false);
+        setShowDeleteSuccessModal(true);
+      } else {
+        alert('삭제에 실패했습니다.');
+      }
+    } catch (error: any) {
+      console.error('삭제 오류:', error);
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 403) {
+        alert('삭제 권한이 없습니다.');
+      } else if (error.response?.status === 404) {
+        alert('게시글을 찾을 수 없습니다.');
+      } else {
+        alert('삭제 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   // 삭제 취소
@@ -262,11 +372,70 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 댓글 등록
-  const handleCommentSubmit = () => {
-    if (commentText.trim()) {
-      const newComment = {
-        id: comments.length + 1,
-        username: currentUser,
+  const handleCommentSubmit = async () => {
+    if (!commentText.trim()) {
+      return;
+    }
+
+    if (!postData) {
+      alert('게시글 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      console.log('댓글 작성 시도:', {
+        postId: postData.postId,
+        content: commentText.trim(),
+        hasToken: !!accessToken
+      });
+
+      const response = await postComment(postData.postId, commentText.trim(), accessToken);
+      
+      if (response.code === 201) {
+        // API 응답으로 새 댓글 생성
+        const newComment = {
+          id: response.data.commentId,
+          username: response.data.author,
+          date: new Date(response.data.createdAt).toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+          content: response.data.content,
+          likes: 0,
+          isLiked: false,
+          isEditing: false,
+          editText: ""
+        };
+        
+        setComments([...comments, newComment]);
+        setCommentText("");
+        
+        console.log('댓글이 성공적으로 작성되었습니다.');
+      }
+    } catch (error: any) {
+      console.error('댓글 작성 오류 상세:', {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // 백엔드 연동 전까지 임시 성공 처리
+      console.log('백엔드 연동 전 임시 성공 처리');
+      
+      const tempComment = {
+        id: Date.now(), // 임시 ID
+        username: '김눈송',
         date: new Date().toLocaleString('ko-KR', {
           year: 'numeric',
           month: '2-digit',
@@ -280,8 +449,11 @@ const YouthTalkDetailPage: React.FC = () => {
         isEditing: false,
         editText: ""
       };
-      setComments([...comments, newComment]);
+      
+      setComments([...comments, tempComment]);
       setCommentText("");
+      console.log('임시 댓글 추가 완료');
+      return;
     }
   };
 
@@ -294,12 +466,68 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 댓글 좋아요 토글
-  const handleCommentLike = (commentId: number) => {
-    setComments(comments.map(comment => 
-      comment.id === commentId 
-        ? { ...comment, isLiked: !comment.isLiked, likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1 }
-        : comment
-    ));
+  const handleCommentLike = async (commentId: number) => {
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      console.log('댓글 좋아요 시도:', {
+        commentId: commentId,
+        hasToken: !!accessToken
+      });
+
+      const response = await likeComment(commentId, accessToken);
+      
+      if (response.code === 200) {
+        // API 응답으로 댓글 좋아요 상태 업데이트
+        setComments(comments.map(comment => 
+          comment.id === commentId 
+            ? { 
+                ...comment, 
+                isLiked: response.data.isLiked, 
+                likes: response.data.likeCount 
+              }
+            : comment
+        ));
+        
+        console.log('댓글 좋아요 성공:', response.message);
+      }
+    } catch (error: any) {
+      console.error('댓글 좋아요 오류 상세:', {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // 백엔드 연동 전까지 임시 성공 처리
+      console.log('백엔드 연동 전 임시 성공 처리 (댓글 좋아요)');
+      setComments(comments.map(comment => 
+        comment.id === commentId 
+          ? { 
+              ...comment, 
+              isLiked: !comment.isLiked, 
+              likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1 
+            }
+          : comment
+      ));
+      console.log('임시 댓글 좋아요 처리 완료');
+      return;
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 400) {
+        alert('요청 값이 올바르지 않습니다.');
+      } else if (error.response?.status === 404) {
+        alert('해당 댓글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 좋아요 처리 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   // 댓글 수정 모드 시작
@@ -321,17 +549,127 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 댓글 수정 완료
-  const handleCommentEditSubmit = (commentId: number) => {
-    setComments(comments.map(comment => 
-      comment.id === commentId 
-        ? { ...comment, content: comment.editText, isEditing: false, editText: "" }
-        : comment
-    ));
+  const handleCommentEditSubmit = async (commentId: number) => {
+    if (!postData) {
+      alert('게시글 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    const updatedContent = comments.find(comment => comment.id === commentId)?.editText || "";
+
+    if (!updatedContent.trim()) {
+      alert('수정할 내용이 없습니다.');
+      return;
+    }
+
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      console.log('댓글 수정 시도:', {
+        postId: postData.postId,
+        commentId: commentId,
+        content: updatedContent,
+        hasToken: !!accessToken
+      });
+
+      const response = await updateComment(commentId, updatedContent, accessToken);
+
+      if (response.code === 200) {
+        setComments(comments.map(comment => 
+          comment.id === commentId 
+            ? { ...comment, content: updatedContent, isEditing: false, editText: "" }
+            : comment
+        ));
+        console.log('댓글이 성공적으로 수정되었습니다.');
+      }
+    } catch (error: any) {
+      console.error('댓글 수정 오류 상세:', {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // 백엔드 연동 전까지 임시 성공 처리
+      console.log('백엔드 연동 전 임시 성공 처리 (수정)');
+      setComments(comments.map(comment => 
+        comment.id === commentId 
+          ? { ...comment, content: updatedContent, isEditing: false, editText: "" }
+          : comment
+      ));
+      console.log('임시 댓글 수정 완료');
+      return;
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 403) {
+        alert('수정 권한이 없습니다.');
+      } else if (error.response?.status === 404) {
+        alert('댓글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 수정 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   // 댓글 삭제
-  const handleCommentDelete = (commentId: number) => {
-    setComments(comments.filter(comment => comment.id !== commentId));
+  const handleCommentDelete = async (commentId: number) => {
+    if (!postData) {
+      alert('게시글 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      console.log('댓글 삭제 시도:', {
+        postId: postData.postId,
+        commentId: commentId,
+        hasToken: !!accessToken
+      });
+
+      const response = await deleteComment(commentId, accessToken); // deleteComment API를 사용하여 댓글 삭제
+
+      if (response.code === 200) {
+        setComments(comments.filter(comment => comment.id !== commentId));
+        console.log('댓글이 성공적으로 삭제되었습니다.');
+      } else {
+        alert('댓글 삭제에 실패했습니다.');
+      }
+    } catch (error: any) {
+      console.error('댓글 삭제 오류 상세:', {
+        error,
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // 백엔드 연동 전까지 임시 성공 처리
+      console.log('백엔드 연동 전 임시 성공 처리 (삭제)');
+      setComments(comments.filter(comment => comment.id !== commentId));
+      console.log('임시 댓글 삭제 완료');
+      return;
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 403) {
+        alert('삭제 권한이 없습니다.');
+      } else if (error.response?.status === 404) {
+        alert('댓글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 삭제 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   // 댓글 수정 텍스트 변경
@@ -342,28 +680,6 @@ const YouthTalkDetailPage: React.FC = () => {
         : comment
     ));
   };
-
-  // 드롭다운 메뉴 외부 클릭 시 닫기
-  const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target as Element;
-    if (!target.closest('.ytd-more-btn') && !target.closest('.ytd-more-menu')) {
-      setShowMoreMenu(false);
-    }
-  };
-
-  React.useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // 페이지 로드 시 댓글 입력창에 포커스
-  React.useEffect(() => {
-    setTimeout(() => {
-      commentInputRef.current?.focus();
-    }, 100);
-  }, []);
 
   return (
     <div className="ytd-bg">
@@ -384,7 +700,18 @@ const YouthTalkDetailPage: React.FC = () => {
         .ytd-interaction-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; color: #333; font-size: 20px; font-weight: 700; padding: 8px; transition: all 0.2s; font-family: inherit; }
         .ytd-interaction-btn.active { color: #0b0b61; }
         .ytd-interaction-btn.active .ytd-interaction-count { color: #0b0b61; }
-        .ytd-more-btn { background: none; border: none; cursor: pointer; color: #666; font-size: 18px; padding: 8px; border-radius: 8px; transition: background 0.2s; font-family: inherit; }
+        .ytd-more-btn { 
+          background: none; 
+          border: none; 
+          cursor: pointer; 
+          color: #666; 
+          font-size: 18px; 
+          padding: 8px; 
+          border-radius: 8px; 
+          transition: background 0.2s; 
+          font-family: inherit;
+          position: relative;
+        }
         .ytd-post-image { width: 1000px; height: 600px; object-fit: cover; margin-top: 100px; margin-left: 100px; }
         .ytd-post-image-with-location { margin-left: 0; }
         .ytd-image-location-container { display: flex; gap: 0px; align-items: flex-start; margin-top: 100px; margin-left: 100px; }
@@ -393,6 +720,13 @@ const YouthTalkDetailPage: React.FC = () => {
         .ytd-location-address { font-size: 14px; color: #666; line-height: 1.4; }
         .ytd-post-content { padding: 80px 100px 80px 100px; }
         .ytd-content-text { color: #black; font-size: 18px; line-height: 1.5; white-space: pre-line; margin-bottom: 20px; font-family: inherit; }
+        .ytd-content-text img { 
+          width: 1000px; 
+          height: 600px; 
+          object-fit: cover; 
+          margin: 20px 0; 
+          display: block;
+        }
         .ytd-tags-container { display: flex; gap: 10px; margin-top: 40px; }
         .ytd-tag { border-radius: 20px; padding: 6px 18px; font-size: 14px; font-weight: 500; font-family: inherit; }
         .ytd-tag-main { background: #0b0b61; color: #fff; position: relative; }
@@ -406,8 +740,7 @@ const YouthTalkDetailPage: React.FC = () => {
           border-radius: 10px;
           z-index: 10;
           min-width: 120px;
-          padding: 8px 0;,
-          background: "#fff",
+          padding: 8px 0;
         }
         .ytd-more-menu-item {
           padding: 8px 16px;
@@ -417,6 +750,7 @@ const YouthTalkDetailPage: React.FC = () => {
           cursor: pointer;
           transition: background 0.2s;
           font-family: inherit;
+          text-align: center;
         }
         .ytd-more-menu-item:hover {
           background: #f5f5f5;
@@ -715,100 +1049,116 @@ const YouthTalkDetailPage: React.FC = () => {
         <div className="ytd-post-card">
           {/* 게시글 헤더 */}
           <div className="ytd-post-header">
-            <div className="ytd-public-badge">
-              {post.isPublic ? "공개" : "비공개"}
-            </div>
-            <h1 className="ytd-post-title">{post.title}</h1>
+            <h1 className="ytd-post-title">{postData.title}</h1>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div className="ytd-user-info">
-                {post.profileUrl ? (
-                  <img src={post.profileUrl} alt="프로필" className="ytd-profile" />
-                ) : (
-                  <div className="ytd-profile ytd-profile-default" />
-                )}
+                <div className="ytd-profile ytd-profile-default" />
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div className="ytd-username">{post.username}</div>
+                  <div className="ytd-username">{postData.nickname}</div>
                   <div className="yt-info-divider" />
-                  <div className="ytd-date">{post.date}</div>
-
+                  <div className="ytd-date">{new Date(postData.createdAt).toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</div>
                 </div>
               </div>
               <div className="ytd-interactions">
-                <button 
-                  className={`ytd-interaction-btn ${isRated ? 'active' : ''}`}
-                  onClick={handleRating}
-                >
-                  <img src={starRatingIcon} alt="별점" style={{ width: 35, height: 35 }} />
-                  <span className="ytd-interaction-count">{post.rating || 0}</span>
-                </button>
                 <button 
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
                   onClick={handleLike}
                 >
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
-                  <span className="ytd-interaction-count">{post.likeCount + (isLiked ? 1 : 0)}</span>
+                  <span className="ytd-interaction-count">{postData.likes + (isLiked ? 1 : 0)}</span>
                 </button>
                 <button 
-                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
+                  className="ytd-interaction-btn"
                   onClick={handleStar}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
-                  <span className="ytd-interaction-count">{post.starCount + (isStarred ? 1 : 0)}</span>
+                  <span className="ytd-interaction-count">{postData.bookmarkCount}</span>
+                </button>
+                <button 
+                  className="ytd-interaction-btn"
+                  onClick={handleRating}
+                >
+                  <img src={starRatingIcon} alt="별점" style={{ width: 30, height: 30 }} />
+                  <span className="ytd-interaction-count">{postData.rating}</span>
                 </button>
                 <div style={{ position: 'relative' }}>
                   <button 
                     className="ytd-more-btn"
                     onClick={() => setShowMoreMenu(!showMoreMenu)}
                   >
-                    <img src={moreIcon} alt="더보기" style={{ width: 30, height: 30 }} />
+                    <img src={moreIcon} alt="더보기" style={{ width: 20, height: 20 }} />
                   </button>
-                                      {showMoreMenu && (
-                      <div className="ytd-more-menu">
-                        <div style={{ borderTop: '1px solid #bbb', marginBottom: 0 }} />
-                        {currentUser === post.username && (
-                          <div className="ytd-more-menu-item" onClick={handleEditClick}>수정하기</div>
-                        )}
-                        <div className="ytd-more-menu-item" onClick={handleCopyUrl}>URL 복사</div>
-                        {currentUser === post.username && (
-                          <div className="ytd-more-menu-item danger" onClick={handleDeleteClick}>삭제하기</div>
-                        )}
+                  {showMoreMenu && (
+                    <div className="ytd-more-menu">
+                      <div className="ytd-more-menu-item" onClick={handleCopyUrl} style={{ borderTop: '1px solid #bbb' }}>
+                        URL 복사
                       </div>
-                    )}
+                      <div className="ytd-more-menu-item" onClick={handleEditClick}>
+                        수정
+                      </div>
+                      <div className="ytd-more-menu-item danger" onClick={handleDeleteClick}>
+                        삭제
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 게시글 이미지 */}
-          {post.imageUrl && (
-            <img src={post.imageUrl} alt="게시글 이미지" className="ytd-post-image" />
-          )}
-          
-          {/* 장소 정보 */}
-          {post.imageUrl && post.location && (
-            <div className="ytd-location-info">
-              <div className="ytd-location-name">
-                {post.location.name}
-              </div>
-              <div className="ytd-location-address">
-                {post.location.address}
-              </div>
-            </div>
-          )}
-
           {/* 게시글 내용 */}
           <div className="ytd-post-content">
-            <div className="ytd-content-text">{post.content}</div>
+            {/* 장소정보가 있을 때 표시 (내용 위에 배치) */}
+            {postData.placeName && (
+              <div style={{ 
+                marginBottom: '30px',
+                textAlign: 'right'
+              }}>
+                <div style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  color: '#333'
+                }}>
+                  <img 
+                    src={locationIcon} 
+                    alt="위치" 
+                    style={{ 
+                      width: '16px', 
+                      height: '16px', 
+                      marginRight: '8px',
+                      verticalAlign: 'middle'
+                    }} 
+                  />
+                  {postData.placeName}
+                </div>
+                {postData.address && (
+                  <div style={{ 
+                    fontSize: '14px',
+                    color: '#666',
+                    marginTop: '4px'
+                  }}>
+                    {postData.address}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <div className="ytd-content-text" dangerouslySetInnerHTML={{ __html: postData.content }}></div>
+            
             {/* 태그들 */}
             <div className="ytd-tags-container">
-              {post.tags.map((tag, idx) => (
-                <span
-                  key={tag}
-                  className={idx === 0 ? "ytd-tag ytd-tag-main" : "ytd-tag ytd-tag-sub"}
-                >
-                  {tag}
-                </span>
-              ))}
+              {/* 카테고리 태그 */}
+              <span className="ytd-tag ytd-tag-main">
+                #{postData.categoryName}
+              </span>
             </div>
           </div>
 
@@ -991,6 +1341,9 @@ const YouthTalkDetailPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 별점 선택 모달 */}
+      {/* showRatingModal 제거 */}
     </div>
   );
 };
