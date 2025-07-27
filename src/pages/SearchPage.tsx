@@ -9,7 +9,8 @@
   import Pagination from "../components/Pagination";
 
   import { getPlaceByRegion } from "../api/getPlaceByRegion";
-  import { getReviewByKeyword } from "../api/getReviewByKeyword"; // 상단에 추가
+  import { searchReviews } from "../api/search/searchReviews";
+
 
 
 
@@ -129,7 +130,7 @@
       const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태
       const [selectedRegion, setSelectedRegion] = useState<string | null>(null); // 라디오 전체 지역 선택 상태
 
-      const [sortOption, setSortOption] = useState("최신순"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
+      const [sortOption, setSortOption] = useState("인기순"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
 
       const [regionReviews, setRegionReviews] = useState<any[]>([]);
       const [isRegionFiltered, setIsRegionFiltered] = useState(false);
@@ -137,7 +138,8 @@
       const [searchResults, setSearchResults] = useState<any[]>([]);
       const [isSearchActive, setIsSearchActive] = useState(false);
 
-      //reviewsToShow - regionReviews에서 정렬 후 사용
+      {/*정렬*/}
+      //regionReviews에서 정렬 후 사용(지역 필터 결과 정렬)
       const reviewsToShow = [...regionReviews].sort((a, b) => {
         switch (sortOption) {
           case "스크랩순":
@@ -145,8 +147,26 @@
           case "공감순":
             return b.likeCount - a.likeCount;
           case "최신순":
+            return b.postId - a.postId;
+          case "인기순":
+            return b.rating - a.rating;
           default:
             return 0; // 기본 순서 유지
+        }
+      });
+      //검색 결과(searchResults)에도 정렬 적용
+      const sortedSearchResults = [...searchResults].sort((a, b) => {
+        switch (sortOption) {
+          case "스크랩순":
+            return b.bookmarkCount - a.bookmarkCount;
+          case "공감순":
+            return b.likedCount - a.likedCount;
+          case "최신순":
+            return b.postId - a.postId;
+          case "인기순":
+            return b.rating - a.rating;
+          default:
+            return 0;
         }
       });
 
@@ -186,24 +206,52 @@
             return;
           }
           try {
-            // 지역 필터 초기화 (검색어 검색 우선 적용)
             setIsRegionFiltered(false);
             setRegionReviews([]);
-            
-            const response = await getReviewByKeyword(searchQuery, token);
+
+            const response = await searchReviews(searchQuery, token, "popular"); // 공통 함수로 변경
+
             if (response.code === 200 && Array.isArray(response.results)) {
               setSearchResults(response.results);
-              setIsSearchActive(true);
             } else {
               setSearchResults([]);
-              setIsSearchActive(true);
             }
+
+            setIsSearchActive(true);
           } catch (error: any) {
             console.error("검색 오류:", error);
             alert(error?.response?.data?.message || "검색에 실패했습니다.");
           }
         }
       };
+
+      // 예: 인기 키워드 클릭 시
+      const handleKeywordClick = async (keyword: string) => {
+        try {
+          const token = localStorage.getItem("accessToken");
+          if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+          }
+
+          setIsRegionFiltered(false);
+          setRegionReviews([]);
+          setSearchQuery(keyword);
+
+          const response = await searchReviews(keyword, token, "popular"); // 공통 함수로 변경
+
+          if (response.code === 200 && Array.isArray(response.results || response.data)) {
+            setSearchResults(response.results || response.data); // 응답 포맷 둘 다 처리
+          } else {
+            setSearchResults([]);
+          }
+
+          setIsSearchActive(true);
+        } catch (err: any) {
+          alert(err.message || "검색 중 오류 발생");
+        }
+      };
+
 
       {/*검색어 필터링 - 삭제(주석처리)
       const filteredReviews = dummyReviews.filter((review) =>
@@ -345,7 +393,17 @@
                   <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>🔥 인기 검색어</h4>
                   <ul style={{ paddingLeft: 12, listStyle: "none" }}>
                     {popularKeywords.map((word, idx) => (
-                      <li key={idx} style={{ marginBottom: 6, fontSize: 16, color: "#000000", fontWeight: 500, }}>
+                      <li
+                        key={idx}
+                        onClick={() => handleKeywordClick(word)}
+                        style={{
+                          marginBottom: 6,
+                          fontSize: 16,
+                          color: "#000",
+                          fontWeight: 500,
+                          cursor: "pointer", // 마우스 커서 변경
+                        }}
+                      >
                         {idx + 1}. {word}
                       </li>
                     ))}
@@ -364,7 +422,7 @@
                   관련된 {reviewsToShow.length}개의 리뷰
                 </h3>
 
-                <SortDropdown value={sortOption} onChange={setSortOption} /> {/*정렬 드롭다운 - 최신순 인기순 공감순 스크랩순 */}                        
+                <SortDropdown value={sortOption} onChange={setSortOption} /> {/*정렬 드롭다운 - 인기순 최신순 공감순 스크랩순 */}                        
               </div>
               
               
@@ -445,7 +503,7 @@
                 </div>
               ) : (
                 <Pagination
-                  items={searchResults}
+                  items={sortedSearchResults} //정렬된 배열
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
