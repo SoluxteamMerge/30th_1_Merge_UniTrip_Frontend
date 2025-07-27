@@ -11,6 +11,15 @@ import AlertModal from "../../components/AlertModal/AlertModal.tsx";
 import "../../components/AlertModal/AlertModal.css";
 import MyPageSidebar from "../../components/MyPageSidebar";
 
+import { createSchedule } from "../../api/schedule/scheduleApi";
+import { patchSchedule } from '../../api/schedule/patchSchedule';
+import { deleteSchedule } from "../../api/schedule/deleteSchedule";
+import { getScheduleList } from "../../api/schedule/getScheduleList";
+import { getScheduleDetail } from "../../api/schedule/getScheduleDetail";
+
+
+
+
 
 const YouthCalendar: React.FC = () => {
   const navigate = useNavigate(); 
@@ -41,10 +50,13 @@ const YouthCalendar: React.FC = () => {
   const [memo, setMemo] = useState("");
   const [selectedColor, setSelectedColor] = useState("#8bcece"); // 기본색
   const [savedSchedules, setSavedSchedules] = useState<{
-    [key: string]: { title: string; color: string; memo?: string }[];
+    [key: string]: { scheduleId: number; title: string; color: string; memo?: string }[];
   }>({});
   const [showAlert, setShowAlert] = useState(false); //모달창띄우기 
   const [alertMessage, setAlertMessage] = useState("");
+
+  const [editingScheduleId, setEditingScheduleId] = useState<number | null>(null); //수정 모드 
+
 
   //const [editingIndex, setEditingIndex] = useState<number>(0); // 0 또는 1
   const [editingEntry, setEditingEntry] = useState<{
@@ -62,10 +74,52 @@ const YouthCalendar: React.FC = () => {
     if (stored) {
       setSavedSchedules(JSON.parse(stored));
     }
+  }, []); 
+
+  // 서버에서 일정 목록 불러오는 useEffect 추가
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const response = await getScheduleList(0, 100); // page, size
+        const fetched = response.data.content;
+
+        const parsed: {
+          [key: string]: { scheduleId: number; title: string; color: string; memo?: string }[];
+        } = {};
+
+        fetched.forEach((item: any) => {
+          const { scheduleId, title, startDate, endDate } = item;
+
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+
+          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+            if (!parsed[key]) parsed[key] = [];
+
+            if (parsed[key].length < 2) {// 최대 2개 제한 여기서도 적용
+
+              parsed[key].push({
+                scheduleId,
+                title,
+                color: "#8bcece", // 기본 색상
+              });
+            }
+          }
+        });
+
+        setSavedSchedules(parsed);
+        localStorage.setItem("youthCalendarSchedules", JSON.stringify(parsed));
+      } catch (error) {
+        console.error("일정 목록 불러오기 실패:", error);
+      }
+    };
+
+    fetchSchedules();
   }, []);
 
   {/*메모 local storage 에 저장-2개까지만 추가*/}
-  const handleSave = () => {
+  const handleSave = async () => {
       if (!selectedDate || !scheduleTitle) return;
 
       const start = new Date(currentYear, currentMonth, selectedDate); //시작일
@@ -75,85 +129,153 @@ const YouthCalendar: React.FC = () => {
         endDate || selectedDate
       );
 
-      const updated = { ...savedSchedules };
-      let current = new Date(start);
-      
-     while (current <= end) {
-        const y = current.getFullYear();
-        //const m = current.getMonth() + 1; // 0-indexed → 1부터 시작
-        //const d = current.getDate();
-        const m = String(current.getMonth() + 1).padStart(2, "0");
-        const d = String(current.getDate()).padStart(2, "0");
-        const key = `${y}-${m}-${d}`; //// "YYYY-MM-DD" 형식의 키
+      const startDate = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
+      const endDateStr = `${endYear || currentYear}-${String((endMonth || currentMonth + 1)).padStart(2, "0")}-${String(endDate || selectedDate).padStart(2, "0")}`;
 
-        const existing = updated[key] || [];
-
-        //3개째 일정 입력 시 
-        if (!editingEntry && existing.length >= 2) {
-          setAlertMessage("일정은 날짜당 최대 2개까지 추가할 수 있습니다.");
-          setShowAlert(true);
-          return;
-        }
-        current.setDate(current.getDate() + 1);
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setAlertMessage("로그인이 필요합니다.");
+        setShowAlert(true);
+        return;
       }
 
-         //실제 저장 로직
-      current = new Date(start);
-      while (current <= end) {
-        const y = current.getFullYear();
-        const m = String(current.getMonth() + 1).padStart(2, "0");
-        const d = String(current.getDate()).padStart(2, "0");
-        const key = `${y}-${m}-${d}`;
-        const existing = updated[key] || [];
+      
+      try {
+        if (editingScheduleId) {
+          // 일정 수정
+          const response = await patchSchedule(editingScheduleId, {
+            title: scheduleTitle,
+            description: memo,
+            startDate: startDate,
+            endDate: endDateStr,
+            travelType: "기타",
+            companions: "",
+            isPublic: true,
+          }, token);
 
-        if (editingEntry) {
-          updated[key] = existing.map((e) =>
-            e.title === editingEntry.title && e.color === editingEntry.color
-              ? { title: scheduleTitle, memo, color: selectedColor }
-              : e
+          console.log("일정 수정 성공:", response);
+
+          const key = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
+          const updatedEntry = {
+            scheduleId: editingScheduleId,
+            title: scheduleTitle,
+            color: selectedColor,
+            memo,
+          };
+
+          const updatedSchedules = { ...savedSchedules };
+          updatedSchedules[key] = (savedSchedules[key] || []).map((entry) =>
+            entry.scheduleId === editingScheduleId ? updatedEntry : entry
           );
+          setSavedSchedules(updatedSchedules);
+          localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
         } else {
-          updated[key] = [...existing, { title: scheduleTitle, color: selectedColor, memo }];
+          //일정 생성
+          const response = await createSchedule({
+            title: scheduleTitle,
+            description: memo,
+            travelType: "기타", // 추후 선택 항목으로
+            startDate: startDate,
+            endDate: endDateStr,
+            companions: "", // 추후 확장
+            isPublic: true,
+          }, token);
+
+          // 서버에서 받은 일정 정보를 프론트 상태에 반영
+          const y = currentYear;
+          const m = String(currentMonth + 1).padStart(2, "0");
+          const d = String(selectedDate).padStart(2, "0");
+          const key = `${y}-${m}-${d}`;
+
+          const newEntry = {
+            scheduleId: response.data.scheduleId, //응답에서 받은 ID
+            title: scheduleTitle,
+            color: selectedColor,
+            memo
+          };
+
+          const existing = savedSchedules[key] || [];
+          if (existing.length >= 2) {
+            setAlertMessage("일정은 날짜당 최대 2개까지 추가할 수 있습니다.");
+            setShowAlert(true);
+            return;
+          }
+
+          const updated = {
+            ...savedSchedules,
+            [key]: [...existing, newEntry]
+          };
+          setSavedSchedules(updated);
+          localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
+
+        console.log("일정 생성 성공:", response);
         }
 
-        current.setDate(current.getDate() + 1);
+        //모달창 닫고 입력 필드 초기화
+        setIsModalOpen(false);
+        setScheduleTitle("");
+        setMemo("");
+        setEditingEntry(null);
+        setEndMonth(null);
+        setEndYear(null);
+        setEditingScheduleId(null);
+
+        // TODO 목록 새로고침 등 후처리 필요 시 추가
+      } catch (error: any) {
+        console.error("일정 생성 실패:", error);
+        setAlertMessage(error?.response?.data?.message || "일정 생성에 실패했습니다.");
+        setShowAlert(true);
+      }
+
+
+      
+    };
+
+
+    {/*메모 삭제*/}
+   const handleDelete = async() => {
+    if (!editingEntry || !editingScheduleId) return;
+
+   const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setAlertMessage("로그인이 필요합니다.");
+      setShowAlert(true);
+      return;
+    }
+
+    try {
+      // 1. 서버에서 삭제 요청
+      await deleteSchedule(editingScheduleId, token);
+      console.log("일정 삭제 성공");
+
+      // 2. 로컬 상태에서도 삭제
+      const updated = { ...savedSchedules };
+      for (const key in updated) {
+        updated[key] = updated[key].filter(
+          (entry) => entry.scheduleId !== editingScheduleId
+        );
+        if (updated[key].length === 0) {
+          delete updated[key];
+        }
       }
 
       setSavedSchedules(updated);
       localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
 
-      // 모달찯 닫고 입력 필드 초기화
+      // 3. UI 상태 초기화
       setIsModalOpen(false);
       setScheduleTitle("");
       setMemo("");
       setEditingEntry(null);
-      setEndMonth(null); 
-      setEndYear(null);  
-    };
+      setEditingScheduleId(null);
+      setIsMemoSelected(false);
+    } catch (error: any) {
+      console.error("일정 삭제 실패:", error);
+      setAlertMessage(error?.response?.data?.message || "일정 삭제에 실패했습니다.");
+      setShowAlert(true);
+    }
+  };
 
-
-    {/*메모 삭제*/}
-   const handleDelete = () => {
-    if (!editingEntry) return;
-
-    const updated = { ...savedSchedules };
-    for (const key in updated) {
-      updated[key] = updated[key].filter(
-        (entry) =>
-          entry.title !== editingEntry.title || entry.color !== editingEntry.color
-      );
-      if (updated[key].length === 0) {
-        delete updated[key];
-      }
-  }
-
-  setSavedSchedules(updated);
-  localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
-  setIsModalOpen(false);
-  setScheduleTitle("");
-  setMemo("");
-  setEditingEntry(null);
-};
 
 
 
@@ -234,15 +356,32 @@ const YouthCalendar: React.FC = () => {
           {entryList.slice(0, 2).map((entry, i) => (
             <div
               key={i}
-              onClick={(e) => {
-                e.stopPropagation(); // 날짜 클릭 방지, 여기 클릭 시 기존 메모 편집
+              onClick={async (e) => {
+                e.stopPropagation();
                 setSelectedDate(day);
-                setScheduleTitle(entry.title);
-                setMemo(entry.memo || "");
-                setSelectedColor(entry.color);
-                setEditingEntry(entry);
-                setIsMemoSelected(true);
-                setIsModalOpen(true);
+
+                try {
+                  const response = await getScheduleDetail(entry.scheduleId);
+                  const detail = response.data;
+
+                  setScheduleTitle(detail.title);
+                  setMemo(detail.description || "");
+                  setSelectedColor(entry.color); // 일정 박스에 저장된 색
+                  setEditingEntry(entry);
+                  setEditingScheduleId(entry.scheduleId);
+                  setIsMemoSelected(true);
+                  setIsModalOpen(true);
+                  setEndDate(new Date(detail.endDate).getDate());
+                  setEndMonth(new Date(detail.endDate).getMonth() + 1);
+                  setEndYear(new Date(detail.endDate).getFullYear());
+
+                } catch (error: any) {
+                  console.error("일정 상세 조회 실패:", error);
+                  setAlertMessage(
+                    error?.response?.data?.message || "일정 상세 조회에 실패했습니다."
+                  );
+                  setShowAlert(true);
+                }
               }}
               style={{
                 marginTop: 6,
