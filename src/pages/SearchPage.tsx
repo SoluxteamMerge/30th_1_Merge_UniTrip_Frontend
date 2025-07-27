@@ -1,4 +1,4 @@
-  import React, { useState, useRef, useEffect } from "react";
+  import React, { useState} from "react";
   import Header from "../components/Header/Header";
   import searchIcon from '../assets/search_icon.svg';
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용

@@ -3,7 +3,6 @@ import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import writeIcon from "../../assets/write-icon.svg";
-import grayThumbnail from "../../assets/gray-thumbnail.svg";
 import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css'; 
 import MyPageSidebar from "../../components/MyPageSidebar";
