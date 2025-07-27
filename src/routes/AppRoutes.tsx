@@ -15,6 +15,7 @@ import YouthDrawerEdit from '../pages/editprofile/YouthDrawerEdit';
 import SearchPage from "../pages/SearchPage";
 import OauthSuccessPage from "../pages/loginpage/OauthSucessPage";
 
+
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<MainPage />} />
