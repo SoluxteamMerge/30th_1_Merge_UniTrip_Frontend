@@ -2,10 +2,11 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 import fs from "fs";
+import path from "path";
 
 const httpsConfig = {
-  key: fs.readFileSync("/etc/letsencrypt/live/unitrip.duckdns.org/privkey.pem"),
-  cert: fs.readFileSync("/etc/letsencrypt/live/unitrip.duckdns.org/fullchain.pem")
+  key: fs.readFileSync(path.resolve(__dirname, "localhost-key.pem")),
+  cert: fs.readFileSync(path.resolve(__dirname, "localhost-cert.pem")),
 };
 
 console.log("HTTPS 설정 적용됨");
@@ -20,4 +21,3 @@ export default defineConfig({
     port: 5173,
   },
 });
-
