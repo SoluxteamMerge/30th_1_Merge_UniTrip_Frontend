@@ -234,7 +234,7 @@ const ScrappedYouthPage: React.FC = () => {
                       likes={post.likeCount}
                       scrapCount={post.scrapCount}
                       rating={post.rating}
-                      isLiked={post.isLiked}
+                      isLiked={post.isLiked} // 필요
                       isScraped={true} //스크랩한 페이지이므로 항상 true
                     />
                   </div>
