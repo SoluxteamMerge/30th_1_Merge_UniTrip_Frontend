@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react"; // 여기 useEffect, useState 포함
+
 import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -7,18 +8,12 @@ import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css'; 
 import MyPageSidebar from "../../components/MyPageSidebar";
 import Pagination from "../../components/Pagination";
-
-
-//import  {useMyReviews} from "../../api/hooks/useMyReviews"; // 커스텀 훅 import 넷
+import { fetchMyReviews,  MyReview} from "../../api/mypage/myReview"; 
 
 const RecordedYouthPage: React.FC = () => {
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요
 
-  //const { reviews, loading, error } = useMyReviews(); 
-  //loading에 따라 서버에서 정보 가져옴, 오류 발생 시 error에 에러메시지, reviews 서버에서 받아온 라뷰 데이터 배열
-
-
-  const hasPosts = true; // 작성한 글이 있다고 가정
+  //const hasPosts = true; // 작성한 글이 있다고 가정
 
   // 스타일
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
@@ -33,103 +28,122 @@ const RecordedYouthPage: React.FC = () => {
   };
   const titleIconStyle = { fontSize: 20, marginRight: 8 };
 
-  const postData = [
-    {
-      postId: 1,
-      title: "서울 근교 나들이 후기",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "여행러1",
-      createdAt: "2025-07-15T10:00:00",
-      likes: 5,
-      scrapCount: 1,
-      rating:1,
-      isLiked: false,
-      isScraped: false,    
-    },
-    {
-      postId: 2,
-      title: "두 번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "여행러1",
-      createdAt: "2025-07-15T10:00:00",
-      likes: 1,
-      scrapCount: 5,
-      rating:1,
-      isLiked: false,
-      isScraped: false,  
-    },
-     {
-      postId: 3,
-      title: "세번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "여행러1",
-      createdAt: "2025-07-15T10:00:00",
-      likes: 6,
-      scrapCount: 5,
-      rating:1,
-      isLiked: false,
-      isScraped: false,  
-    },
+  // const postData = [
+  //   {
+  //     postId: 1,
+  //     title: "서울 근교 나들이 후기",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "여행러1",
+  //     createdAt: "2025-07-15T10:00:00",
+  //     likes: 5,
+  //     scrapCount: 1,
+  //     rating:1,
+  //     isLiked: false,
+  //     isScraped: false,    
+  //   },
+  //   {
+  //     postId: 2,
+  //     title: "두 번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "여행러1",
+  //     createdAt: "2025-07-15T10:00:00",
+  //     likes: 1,
+  //     scrapCount: 5,
+  //     rating:1,
+  //     isLiked: false,
+  //     isScraped: false,  
+  //   },
+  //    {
+  //     postId: 3,
+  //     title: "세번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "여행러1",
+  //     createdAt: "2025-07-15T10:00:00",
+  //     likes: 6,
+  //     scrapCount: 5,
+  //     rating:1,
+  //     isLiked: false,
+  //     isScraped: false,  
+  //   },
   
-     {
-      postId: 4,
-      title: "네번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "여행러1",
-      createdAt: "2025-07-15T10:00:00",
-      likes: 3,
-      scrapCount: 1,
-      rating:1,
-      isLiked: false,
-      isScraped: false,  
-    },
+  //    {
+  //     postId: 4,
+  //     title: "네번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "여행러1",
+  //     createdAt: "2025-07-15T10:00:00",
+  //     likes: 3,
+  //     scrapCount: 1,
+  //     rating:1,
+  //     isLiked: false,
+  //     isScraped: false,  
+  //   },
   
-     {
-      postId: 5,
-      title: "다섯번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "여행러1",
-      createdAt: "2025-07-15T10:00:00",
-      likes: 5,
-      scrapCount: 1,
-      rating:1,
-      isLiked: false,
-      isScraped: false,  
-    },
+  //    {
+  //     postId: 5,
+  //     title: "다섯번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "여행러1",
+  //     createdAt: "2025-07-15T10:00:00",
+  //     likes: 5,
+  //     scrapCount: 1,
+  //     rating:1,
+  //     isLiked: false,
+  //     isScraped: false,  
+  //   },
   
-     {
-      postId: 6,
-      title: "여섯번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=106",
-      nickname: "여행러1",
-      createdAt: "2025-07-15T10:00:00",
-      likes: 4,
-      scrapCount:2,
-      rating:1,
-      isLiked: false,
-      isScraped: false,  
-    },
-    {
-      postId: 7,
-      title: "일곱 번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=107",
-      nickname: "여행러1",
-      createdAt: "2025-07-15T10:00:00",
-      likes: 7,
-      scrapCount: 11,
-      rating:1,
-      isLiked: false,
-      isScraped: false,  
-    },
+  //    {
+  //     postId: 6,
+  //     title: "여섯번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=106",
+  //     nickname: "여행러1",
+  //     createdAt: "2025-07-15T10:00:00",
+  //     likes: 4,
+  //     scrapCount:2,
+  //     rating:1,
+  //     isLiked: false,
+  //     isScraped: false,  
+  //   },
+  //   {
+  //     postId: 7,
+  //     title: "일곱 번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=107",
+  //     nickname: "여행러1",
+  //     createdAt: "2025-07-15T10:00:00",
+  //     likes: 7,
+  //     scrapCount: 11,
+  //     rating:1,
+  //     isLiked: false,
+  //     isScraped: false,  
+  //   },
   
-  ];
+  // ];
+  const [myReviews, setMyReviews] = useState<MyReview[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        const data = await fetchMyReviews();
+        setMyReviews(data);
+      } catch (err) {
+        setError("리뷰를 불러오는 데 실패했습니다.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadReviews();
+  }, []);
 
 
   const navigate = useNavigate(); 
@@ -169,24 +183,28 @@ const RecordedYouthPage: React.FC = () => {
               
               
                 {/* 아래 내용도 실제 사용자가 작성한 게시글과 연동 필요*/}
-                {hasPosts ? (
+                {loading ? (
+                   <p>로딩 중...</p>
+                  ) : error ? ( 
+                    <p style={{ color: "red" }}>{error}</p>
+                  ) : myReviews.length > 0 ? (// 정상적으로 데이터가 있을 때 처리
                   <Pagination
-                      items={postData} //두울 원래는 reviews
+                      items={myReviews}
                       itemsPerPage={6}
                       renderItem={(review) => (
                       <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
                         <ReviewCard
                           postId={review.postId}
-                          title={review.title}
+                          title={review.postTitle}
                           categoryName={review.categoryName}
-                          thumbnailUrl={review.thumbnailUrl}
+                          thumbnailUrl={review.imageUrl}
                           nickname={review.nickname}
-                          createdAt={review.createdAt}
-                          likes={review.likes}
+                          //createdAt={"작성일 없음"}
+                          likes={review.likeCount}
                           scrapCount={review.scrapCount}
                           rating={review.rating}
-                          isLiked={review.isLiked}
-                          isScraped={review.isScraped}
+                          isLiked={false}
+                          isScraped={false}
                         />
                       </div>
                     )}
@@ -213,8 +231,7 @@ const RecordedYouthPage: React.FC = () => {
                         </Link>
                       </p>
                     </div>          
-                )
-                }  
+                )}  
             </div>
           </div>
         </div>
