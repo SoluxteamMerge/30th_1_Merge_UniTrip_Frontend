@@ -9,6 +9,8 @@
   import Pagination from "../components/Pagination";
 
   import { getPlaceByRegion } from "../api/getPlaceByRegion";
+  import { getReviewByKeyword } from "../api/getReviewByKeyword"; // 상단에 추가
+
 
 
 
@@ -132,6 +134,9 @@
       const [regionReviews, setRegionReviews] = useState<any[]>([]);
       const [isRegionFiltered, setIsRegionFiltered] = useState(false);
 
+      const [searchResults, setSearchResults] = useState<any[]>([]);
+      const [isSearchActive, setIsSearchActive] = useState(false);
+
       //reviewsToShow - regionReviews에서 정렬 후 사용
       const reviewsToShow = [...regionReviews].sort((a, b) => {
         switch (sortOption) {
@@ -173,8 +178,30 @@
 
 
 
-      const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
+          const token = localStorage.getItem("accessToken");
+          if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+          }
+          try {
+            // 지역 필터 초기화 (검색어 검색 우선 적용)
+            setIsRegionFiltered(false);
+            setRegionReviews([]);
+            
+            const response = await getReviewByKeyword(searchQuery, token);
+            if (response.code === 200 && Array.isArray(response.results)) {
+              setSearchResults(response.results);
+              setIsSearchActive(true);
+            } else {
+              setSearchResults([]);
+              setIsSearchActive(true);
+            }
+          } catch (error: any) {
+            console.error("검색 오류:", error);
+            alert(error?.response?.data?.message || "검색에 실패했습니다.");
+          }
         }
       };
 
@@ -219,7 +246,7 @@
                 className="mainpage-search-input"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                //onKeyDown={handleKeyDown} // 엔터 입력 감지
+                onKeyDown={handleKeyDown} // 엔터 입력 감지
               />
             </div>
           </section>
@@ -386,6 +413,53 @@
                         rating={review.rating}
                         isLiked={review.isLiked}
                         isScraped={review.isScraped}
+                      />
+                    </div>
+                  )}
+                />
+              )}
+            </section>
+          )}
+
+          {isSearchActive && (
+            <section style={{ padding: "48px 160px 120px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "calc(100vw - 400px)",margin: "0 auto 30px" }}>
+                <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600 }}>
+                  "{searchQuery}" 검색 결과 ({searchResults.length}개)
+                </h3>
+                <SortDropdown value={sortOption} onChange={setSortOption} />
+              </div>
+
+              {searchResults.length === 0 ? (
+                <div style={{
+                  width: "calc(100vw - 400px)",
+                  margin: "0 auto",
+                  border: "1px solid #ccc",
+                  backgroundColor: "#fff",
+                  padding: "80px 32px",
+                  textAlign: "center",
+                  borderRadius: 24,
+                }}>
+                  <p style={{ fontSize: 18, fontWeight: 600, color: "#333" }}>검색 결과 없음</p>
+                  <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>청춘시는 결과가 없어요! 직접 후기를 남겨볼까요?</p>
+                </div>
+              ) : (
+                <Pagination
+                  items={searchResults}
+                  itemsPerPage={6}
+                  renderItem={(review) => (
+                    <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
+                      <ReviewCard
+                        postId={review.postId}
+                        title={review.title}
+                        categoryName={review.hashtag.join(", ")} // 문자열로 연결
+                        thumbnailUrl={"https://picsum.photos/200/100?random=" + review.postId}
+                        nickname={review.author}
+                        likes={review.likedCount}
+                        scrapCount={review.bookmarkCount}
+                        rating={0} // 서버에서 rating 없으면 0 또는 제거
+                        isLiked={review.liked}
+                        isScraped={review.bookmarked}
                       />
                     </div>
                   )}
