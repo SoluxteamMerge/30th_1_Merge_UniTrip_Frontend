@@ -8,138 +8,183 @@
   import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
   import Pagination from "../components/Pagination";
 
+  import { getPlaceByRegion } from "../api/getPlaceByRegion";
 
 
-  const dummyReviews = [
-    {
-    postId: 1, 
-    thumbnailUrl:  "https://picsum.photos/200/100?random=101", 
-    title: "제주도 3박 4일 여행",
-    categoryName: "#제주도, #4인여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 0,
-    scrapCount: 1,
-    rating: 1,
-    isLiked: false,
-    isScraped: false,
-  },
-    {
-    postId: 2, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-    title: "설악산 단풍 구경 2박 3일",
-    categoryName: "#설악산, #가을여행",
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 2,
-    scrapCount: 1,
-    rating: 1,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 3, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=103", 
-    title: "설악산 3",
-    categoryName: "#설악산", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 0,
-    scrapCount: 3,
-    rating: 1,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 4, 
-    thumbnailUrl:  "https://picsum.photos/200/100?random=104", 
-    title: "설악산 4",
-    categoryName: "#여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 5,
-    scrapCount: 1,
-    rating: 1,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 5, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-    title: "설악산 5",
-    categoryName: "#여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 2,
-    scrapCount: 2,
-    rating: 3,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 6, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-    title: "설악산 6",
-    categoryName: "#여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 2,
-    scrapCount: 2,
-    rating: 3,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 7, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-    title: "설악산 7",
-    categoryName: "#여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 2,
-    scrapCount: 2,
-    rating: 3,
-    isLiked: false,
-    isScraped: false,
-  },
-  {
-    postId: 8, 
-    thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-    title: "설악산 8",
-    categoryName: "#여행", 
-    nickname: "김눈송", 
-    createdAt: "2025-07-23", 
-    likes: 2,
-    scrapCount: 2,
-    rating: 3,
-    isLiked: false,
-    isScraped: false,
-  },
 
-  ];
+  // const dummyReviews = [
+  //   {
+  //   postId: 1, 
+  //   thumbnailUrl:  "https://picsum.photos/200/100?random=101", 
+  //   title: "제주도 3박 4일 여행",
+  //   categoryName: "#제주도, #4인여행", 
+  //   nickname: "김눈송", 
+  //   createdAt: "2025-07-23", 
+  //   likes: 0,
+  //   scrapCount: 1,
+  //   rating: 1,
+  //   isLiked: false,
+  //   isScraped: false,
+  // },
+  //   {
+  //   postId: 2, 
+  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+  //   title: "설악산 단풍 구경 2박 3일",
+  //   categoryName: "#설악산, #가을여행",
+  //   nickname: "김눈송", 
+  //   createdAt: "2025-07-23", 
+  //   likes: 2,
+  //   scrapCount: 1,
+  //   rating: 1,
+  //   isLiked: false,
+  //   isScraped: false,
+  // },
+  // {
+  //   postId: 3, 
+  //   thumbnailUrl: "https://picsum.photos/200/100?random=103", 
+  //   title: "설악산 3",
+  //   categoryName: "#설악산", 
+  //   nickname: "김눈송", 
+  //   createdAt: "2025-07-23", 
+  //   likes: 0,
+  //   scrapCount: 3,
+  //   rating: 1,
+  //   isLiked: false,
+  //   isScraped: false,
+  // },
+  // {
+  //   postId: 4, 
+  //   thumbnailUrl:  "https://picsum.photos/200/100?random=104", 
+  //   title: "설악산 4",
+  //   categoryName: "#여행", 
+  //   nickname: "김눈송", 
+  //   createdAt: "2025-07-23", 
+  //   likes: 5,
+  //   scrapCount: 1,
+  //   rating: 1,
+  //   isLiked: false,
+  //   isScraped: false,
+  // },
+  // {
+  //   postId: 5, 
+  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+  //   title: "설악산 5",
+  //   categoryName: "#여행", 
+  //   nickname: "김눈송", 
+  //   createdAt: "2025-07-23", 
+  //   likes: 2,
+  //   scrapCount: 2,
+  //   rating: 3,
+  //   isLiked: false,
+  //   isScraped: false,
+  // },
+  // {
+  //   postId: 6, 
+  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+  //   title: "설악산 6",
+  //   categoryName: "#여행", 
+  //   nickname: "김눈송", 
+  //   createdAt: "2025-07-23", 
+  //   likes: 2,
+  //   scrapCount: 2,
+  //   rating: 3,
+  //   isLiked: false,
+  //   isScraped: false,
+  // },
+  // {
+  //   postId: 7, 
+  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+  //   title: "설악산 7",
+  //   categoryName: "#여행", 
+  //   nickname: "김눈송", 
+  //   createdAt: "2025-07-23", 
+  //   likes: 2,
+  //   scrapCount: 2,
+  //   rating: 3,
+  //   isLiked: false,
+  //   isScraped: false,
+  // },
+  // {
+  //   postId: 8, 
+  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
+  //   title: "설악산 8",
+  //   categoryName: "#여행", 
+  //   nickname: "김눈송", 
+  //   createdAt: "2025-07-23", 
+  //   likes: 2,
+  //   scrapCount: 2,
+  //   rating: 3,
+  //   isLiked: false,
+  //   isScraped: false,
+  // },
+
+  // ];
 
   const popularKeywords = ["부산", "제주", "바다", "광안리", "속초", "강릉", "MT", "대구", "전주", "힐링"];
 
   const SearchPage: React.FC = () => {
       const navigate = useNavigate(); 
       const [searchQuery, setSearchQuery] = useState(""); // 검색어 상태
-      const [submitted, setSubmitted] = useState(false);   //엔터 입력 여부 상태
       const [selectedRegion, setSelectedRegion] = useState<string | null>(null); // 라디오 전체 지역 선택 상태
 
       const [sortOption, setSortOption] = useState("최신순"); //정렬(최신순, 인기순, 즐겨찾기순, 공감순)
 
-      const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          setSubmitted(true);
+      const [regionReviews, setRegionReviews] = useState<any[]>([]);
+      const [isRegionFiltered, setIsRegionFiltered] = useState(false);
+
+      //reviewsToShow - regionReviews에서 정렬 후 사용
+      const reviewsToShow = [...regionReviews].sort((a, b) => {
+        switch (sortOption) {
+          case "스크랩순":
+            return b.scrapCount - a.scrapCount;
+          case "공감순":
+            return b.likeCount - a.likeCount;
+          case "최신순":
+          default:
+            return 0; // 기본 순서 유지
+        }
+      });
+
+      {/*지역 필터 -> 함수로 만듦*/}
+      const handleRegionChange = async (region: string) => {
+        setSelectedRegion(region);
+
+        if (region === "전체보기") {
+          setIsRegionFiltered(false);
+          setRegionReviews([]);
+          return;
+        }
+
+        try {
+          const token = localStorage.getItem("accessToken");
+          if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+          }
+
+          const response = await getPlaceByRegion(region, token);
+          setRegionReviews(response.data); // ✔ 데이터 적용
+          setIsRegionFiltered(true);
+        } catch (error: any) {
+          console.error("지역 필터링 실패:", error);
+          alert(error?.response?.data?.message || "지역 필터링에 실패했습니다.");
         }
       };
 
-      {/*검색어 필터링*/}
+
+
+      const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+        }
+      };
+
+      {/*검색어 필터링 - 삭제(주석처리)
       const filteredReviews = dummyReviews.filter((review) =>
         review.title.includes(searchQuery)
       );
+      */}
 
-      {/*리뷰 정렬(최신순, 인기순, 스크랩순, 공감순)*/}
+      {/*리뷰 정렬(최신순, 인기순, 스크랩순, 공감순) - 삭제(주석처리)
       const sortedReviews = [...filteredReviews].sort((a, b) => {
       switch (sortOption) {
         //case "인기순": 
@@ -154,6 +199,7 @@
 
       }
     })//.slice(0, 6); // 6개만 잘라서 보여주기
+    */}
 
     return (
       <>
@@ -173,7 +219,7 @@
                 className="mainpage-search-input"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown} // 엔터 입력 감지
+                //onKeyDown={handleKeyDown} // 엔터 입력 감지
               />
             </div>
           </section>
@@ -227,7 +273,8 @@
                             name="region"
                             value={region}
                             checked={selectedRegion === region}
-                            onChange={() => setSelectedRegion(region)}
+                            onChange={() => handleRegionChange(region)}
+
                             style={{ accentColor: "#0B0B61", width: 16, height: 16 }}
                           />
                           <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>{region}</span>
@@ -244,7 +291,8 @@
                             name="region"
                             value={region}
                             checked={selectedRegion === region}
-                            onChange={() => setSelectedRegion(region)}
+                            onChange={() => handleRegionChange(region)}
+                            
                             style={{ accentColor: "#0B0B61", width: 16, height: 16 }}
                           />
                           <span style={{ color: selectedRegion === region ? "#0B0B61" : "#333", fontWeight: selectedRegion === region ? 600 : 400 }}>{region}</span>
@@ -281,19 +329,19 @@
 
 
           {/* 관련 리뷰 섹션 - 검색어 입력 후 엔터 눌렀을 때 조건부 렌더링  */}
-          {submitted && (
+          {isRegionFiltered && (// 필터링된 regionReviews를 reviewsToShow로 보여줌
             <section style={{ padding: "48px 160px 120px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "calc(100vw - 400px)",margin: "0 auto 30px" }}>
                 
                 <h3 style={{ color: "#0B0B61", fontSize: 20, fontWeight: 600, }}>
-                  관련된 {filteredReviews.length}개의 리뷰
+                  관련된 {reviewsToShow.length}개의 리뷰
                 </h3>
 
                 <SortDropdown value={sortOption} onChange={setSortOption} /> {/*정렬 드롭다운 - 최신순 인기순 공감순 스크랩순 */}                        
               </div>
               
-
-              {filteredReviews.length === 0 ? (
+              
+              {reviewsToShow.length === 0 ? (
               <div style={{
                 width: "calc(100vw - 400px)",
                 margin: "0 auto",
@@ -322,18 +370,18 @@
               ) : 
               (
                 <Pagination
-                  items={sortedReviews}
+                  items={reviewsToShow}
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
                       <ReviewCard
                         postId={review.postId}
-                        title={review.title}
+                        title={review.postTitle}
                         categoryName={review.categoryName}
-                        thumbnailUrl={review.thumbnailUrl}
+                        thumbnailUrl={review.imageUrl}
                         nickname={review.nickname}
                         //createdAt={review.createdAt}
-                        likes={review.likes}
+                        likes={review.likeCount}
                         scrapCount={review.scrapCount}
                         rating={review.rating}
                         isLiked={review.isLiked}
