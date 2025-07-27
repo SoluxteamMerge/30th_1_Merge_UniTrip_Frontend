@@ -1,8 +1,17 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import fs from 'fs';
 
-console.log("🛠️ HTTPS 설정 적용됨");
+console.log("HTTPS 설정 적용됨");
+
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    https: {
+      key: fs.readFileSync('localhost-key.pem'),
+      cert: fs.readFileSync('localhost-cert.pem'),
+    },
+    port: 5173, // 기본 포트 (필요 시 변경 가능)
+  },
 });

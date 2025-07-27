@@ -6,16 +6,25 @@ import api from '../api'; // 공통 axios 인스턴스
 import { AxiosResponse } from 'axios';
 
 export interface UserInfoResponse {
-  username: string;
+  code: number;
+  message: string;
+  data: UserInfoData;
+}
+
+export interface UserInfoData {
+  nickname: string;
   profileImageUrl?: string;
 }
 
-export const fetchUserInfo = async (): Promise<UserInfoResponse> => {
+
+export const fetchUserInfo = async (): Promise<UserInfoData> => {
+
   const token = localStorage.getItem('accessToken');
-  const response: AxiosResponse<UserInfoResponse> = await api.get('/user/profile', { // 백엔드에서 사용자 정보 가져오는 API endpoint에 맞게 수정
+
+  const response: AxiosResponse<UserInfoResponse> = await api.get('/api/user', { // API endpoint
     headers: {
       Authorization: token,
     },
   });
-  return response.data;
+  return response.data.data; //.data 안의 data를 반환
 };

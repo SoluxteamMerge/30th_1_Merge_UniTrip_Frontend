@@ -13,7 +13,8 @@ const MyPageSidebar: React.FC = () => {
     const getUserInfo = async () => {
       try {
         const data = await fetchUserInfo(); 
-        setUsername(data.username);
+        console.log("👤 유저 정보 불러옴:", data); // 확인용
+        setUsername(data.nickname);
         setProfileUrl(data.profileImageUrl || defaultProfile);
       } catch (error) {
         console.error("유저 정보 불러오기 실패:", error);
