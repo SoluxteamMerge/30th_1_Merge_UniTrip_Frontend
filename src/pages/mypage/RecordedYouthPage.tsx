@@ -203,8 +203,8 @@ const RecordedYouthPage: React.FC = () => {
                           likes={review.likeCount}
                           scrapCount={review.scrapCount}
                           rating={review.rating}
-                          isLiked={false}
-                          isScraped={false}
+                          isLiked={false} //내가 쓴 글 좋아요 false 
+                          isScraped={false} //내가 쓴 글 스크랩 false 
                         />
                       </div>
                     )}
