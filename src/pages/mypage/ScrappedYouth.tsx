@@ -1,4 +1,4 @@
-import React from "react";
+import React , { useState, useEffect } from 'react';
 import Header from "../../components/Header/Header";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -8,145 +8,147 @@ import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
 import '../mainpage/MainPage.css';
 import MyPageSidebar from "../../components/MyPageSidebar";
 import Pagination from "../../components/Pagination"; 
+import { fetchMyScraps, MyScrap } from '../../api/mypage/myScrap';
+
 
 
 const ScrappedYouthPage: React.FC = () => {
   const navigate = useNavigate();
   const username = "김눈송"; // 실제 로그인 사용자 정보와 연동 필요
-  const hasScraps = true; // 스크랩한 게시글이 있다고 가정
+  //const hasScraps = true; // 스크랩한 게시글이 있다고 가정
 
-  const scrappedData = [
-    {
-      postId: 1,
-      title: "스크랩 게시글 1",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 0,
-      scrapCount: 3,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 2,
-      title: "스크랩 게시글 2",
-      categoryName: "여행",
-      thumbnailUrl: grayThumbnail,
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 2,
-      scrapCount: 3,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 3,
-      title: "세번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=103",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 1,
-      scrapCount: 3,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 4,
-      title: "네 번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 4,
-      scrapCount: 3,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 5,
-      title: "다섯번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 5,
-      scrapCount: 3,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 6,
-      title: "여섯번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=101",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 6,
-      scrapCount: 2,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 7,
-      title: "일곱번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=107",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 6,
-      scrapCount: 2,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 8,
-      title: "여닯번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=108",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 6,
-      scrapCount: 2,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 9,
-      title: "아홉번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=109",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 6,
-      scrapCount: 2,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-    {
-      postId: 10,
-      title: "10번째",
-      categoryName: "여행",
-      thumbnailUrl: "https://picsum.photos/200/100?random=110",
-      nickname: "김눈송",
-      createdAt: "2025-07-20T10:00:00",
-      likes: 6,
-      scrapCount: 2,
-      rating: 1,
-      isLiked: false,
-      isScraped: true,
-    },
-  ];
+  // const scrappedData = [
+  //   {
+  //     postId: 1,
+  //     title: "스크랩 게시글 1",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 0,
+  //     scrapCount: 3,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 2,
+  //     title: "스크랩 게시글 2",
+  //     categoryName: "여행",
+  //     thumbnailUrl: grayThumbnail,
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 2,
+  //     scrapCount: 3,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 3,
+  //     title: "세번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=103",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 1,
+  //     scrapCount: 3,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 4,
+  //     title: "네 번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 4,
+  //     scrapCount: 3,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 5,
+  //     title: "다섯번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 5,
+  //     scrapCount: 3,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 6,
+  //     title: "여섯번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=101",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 6,
+  //     scrapCount: 2,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 7,
+  //     title: "일곱번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=107",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 6,
+  //     scrapCount: 2,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 8,
+  //     title: "여닯번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=108",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 6,
+  //     scrapCount: 2,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 9,
+  //     title: "아홉번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=109",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 6,
+  //     scrapCount: 2,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  //   {
+  //     postId: 10,
+  //     title: "10번째",
+  //     categoryName: "여행",
+  //     thumbnailUrl: "https://picsum.photos/200/100?random=110",
+  //     nickname: "김눈송",
+  //     createdAt: "2025-07-20T10:00:00",
+  //     likes: 6,
+  //     scrapCount: 2,
+  //     rating: 1,
+  //     isLiked: false,
+  //     isScraped: true,
+  //   },
+  // ];
 
   //스타일
   const pageBgStyle = { background: "#e8f0f2", minHeight: "100vh" };
@@ -160,6 +162,25 @@ const ScrappedYouthPage: React.FC = () => {
     marginBottom: 16
   };
   const titleIconStyle = { fontSize: 20, marginRight: 8 };
+  const [myScraps, setMyScraps] = useState<MyScrap[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+  const loadScraps = async () => {
+    try {
+      const data = await fetchMyScraps();
+      setMyScraps(data);
+    } catch (err) {
+      setError("스크랩한 리뷰를 불러오는 데 실패했습니다.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadScraps();
+}, []);
+
 
   return (
     <div style={pageBgStyle}>
@@ -192,26 +213,29 @@ const ScrappedYouthPage: React.FC = () => {
               <h2 style={{ marginBottom: 8, fontSize: 18, color: "#0B0B61"}}>스크랩한 청춘</h2>
               <p style={{ marginBottom: 30, fontSize: 14, color: "#0B0B61" }}>스크랩한 게시글</p>
               
-              {hasScraps ? (
+              {loading ? (
+                <p>로딩 중...</p>
+              ) : error ? (
+                <p style={{ color: "red" }}>{error}</p>
+              ) : myScraps.length > 0 ? (
               //스크랩한 게시글이 있을 때 보여줄 카드 리스트
-
               <Pagination
-                items={scrappedData}
+                items={myScraps}
                 itemsPerPage={6}
                 renderItem={(post) => (
                   <div key={post.postId} onClick={() => navigate(`/youth-talk/${post.postId}`)}>
                     <ReviewCard
                       postId={post.postId}
-                      title={post.title}
+                      title={post.postTitle}
                       categoryName={post.categoryName}
-                      thumbnailUrl={post.thumbnailUrl}
+                      thumbnailUrl={post.imageUrl}
                       nickname={post.nickname}
-                      createdAt={post.createdAt}
-                      likes={post.likes}
+                      //createdAt={post.createdAt}
+                      likes={post.likeCount}
                       scrapCount={post.scrapCount}
                       rating={post.rating}
-                      isLiked={post.isLiked}
-                      isScraped={post.isScraped}
+                      isLiked={post.isLiked} // 필요
+                      isScraped={true} //스크랩한 페이지이므로 항상 true
                     />
                   </div>
                 )}

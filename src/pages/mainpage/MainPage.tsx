@@ -451,7 +451,7 @@ function MainPage() {
                     categoryName={review.categoryName}
                     thumbnailUrl={review.thumbnailUrl}
                     nickname={review.nickname}
-                    createdAt={review.createdAt}
+                    //createdAt={review.createdAt}
                     likes={review.likes}
                     scrapCount={review.scrapCount}
                     rating={review.rating}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import closeIcon from '../assets/module/close.svg';
+import { searchPlace } from '../api/Place/searchPlaceApi';
 
 // Kakao Maps API 타입 선언
 declare global {
@@ -195,24 +196,33 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
   };
 
   // 장소 검색
-  const searchPlaces = () => {
-    if (!searchKeyword.trim() || !window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
-      console.warn('장소 검색 조건이 충족되지 않음');
+  const searchPlaces = async () => {
+    if (!searchKeyword.trim()) {
+      console.warn('검색어가 없습니다');
+      return;
+    }
+
+    // 백엔드 연동 전까지 카카오맵 API 직접 사용
+    if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
+      console.warn('Kakao Maps API가 로드되지 않았습니다');
       return;
     }
 
     try {
+      console.log('카카오맵 API로 장소 검색:', searchKeyword);
       const places = new window.kakao.maps.services.Places();
       places.keywordSearch(searchKeyword, (results: any[], status: any) => {
         if (status === window.kakao.maps.services.Status.OK) {
           setSearchResults(results);
+          console.log('장소 검색 성공:', results);
         } else {
           setSearchResults([]);
           console.warn('장소 검색 결과 없음:', status);
         }
       });
-    } catch (error) {
-      console.error('장소 검색 실패:', error);
+    } catch (error: any) {
+      console.error('장소 검색 오류:', error);
+      setSearchResults([]);
     }
   };
 
