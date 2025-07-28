@@ -15,6 +15,7 @@ export interface ReviewItem {
     scrapCount: number;
     isScraped: boolean;
     thumbnailUrl: string;
+    rating: number;
 }
 
 interface GetReviewsResponse {
