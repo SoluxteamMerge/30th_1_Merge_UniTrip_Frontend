@@ -3,7 +3,7 @@
   import searchIcon from '../assets/search_icon.svg';
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
   import { useNavigate } from "react-router-dom"; 
-  import { ReviewCard } from "../pages/reviewcard/ReviewCard";
+  import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
 
   import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
   import Pagination from "../components/Pagination";
@@ -221,7 +221,13 @@
           }
 
           const response = await getPlaceByRegion(region, token);
-          setRegionReviews(response.data); // ✔ 데이터 적용
+
+          if (response.code === 200) {
+            setRegionReviews(response.data); // ✔ 성공 시만 데이터 적용
+          }else{
+            setRegionReviews([]); // 실패 시 빈 배열
+          }
+
           setIsRegionFiltered(true);
         } catch (error: any) {
           console.error("지역 필터링 실패:", error);
@@ -244,8 +250,8 @@
 
             const response = await searchReviews(searchQuery, token, "popular"); // 공통 함수로 변경
 
-            if (response.code === 200 && Array.isArray(response.results)) {
-              setSearchResults(response.results);
+            if (response.code === 200 && Array.isArray(response.data)) {
+              setSearchResults(response.data);
             } else {
               setSearchResults([]);
             }
@@ -271,10 +277,10 @@
           setRegionReviews([]);
           setSearchQuery(keyword);
 
-          const response = await searchReviews(keyword, token, "popular"); // 공통 함수로 변경
+          const response = await searchReviews(keyword, token, "popular"); 
 
-          if (response.code === 200 && Array.isArray(response.results || response.data)) {
-            setSearchResults(response.results || response.data); // 응답 포맷 둘 다 처리
+          if (response.code === 200 && Array.isArray(response.data)) {
+            setSearchResults(response.data); // 응답 포맷 둘 다 처리
           } else {
             setSearchResults([]);
           }
@@ -493,7 +499,7 @@
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCard
+                      <ReviewCardTwo
                         postId={review.postId}
                         title={review.postTitle}
                         categoryName={review.categoryName}
@@ -541,17 +547,17 @@
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCard
+                      <ReviewCardTwo
                         postId={review.postId}
-                        title={review.title}
-                        categoryName={review.hashtag.join(", ")}
-                        thumbnailUrl={"https://picsum.photos/200/100?random=" + review.postId} //필요
-                        nickname={review.author}
-                        likes={review.likedCount}
-                        scrapCount={review.bookmarkCount}
-                        rating={0} //필요2 서버에서 rating 없으면 0 또는 제거 
-                        isLiked={review.liked}
-                        isScraped={review.bookmarked}
+                        title={review.postTitle}
+                        categoryName={review.categoryName}
+                        thumbnailUrl={review.imageUrl} 
+                        nickname={review.nickname}
+                        likes={review.likeCount}
+                        scrapCount={review.scrapCount}
+                        rating={review.rating} 
+                        isLiked={false}
+                        isScraped={false}
                       />
                     </div>
                   )}
