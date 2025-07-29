@@ -10,7 +10,7 @@ interface ReviewCardProps {
   categoryName: string;
   thumbnailUrl: string;
   nickname: string;
-  //createdAt: string;
+  createdAt: string;
   likes: number;
   scrapCount: number;
   rating: number; //백엔드 구현 중
@@ -24,7 +24,7 @@ export const ReviewCard = ({
   categoryName,
   thumbnailUrl,
   nickname,
-  //createdAt,
+  createdAt,
   likes,
   scrapCount,
   rating,
