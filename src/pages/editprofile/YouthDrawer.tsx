@@ -8,7 +8,6 @@ import AlertModal from '../../components/AlertModal/AlertModal';
 import api from '../../api/api';
 import { AxiosError } from 'axios';
 
-
 function YouthDrawer() {
     const navigate = useNavigate();
 
@@ -23,9 +22,14 @@ function YouthDrawer() {
     const [isResultModalOpen, setIsResultModalOpen] = useState(false);
     const [resultMessage, setResultMessage] = useState('');
 
-
-    
     useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            setResultMessage('로그인이 필요합니다.');
+            setIsResultModalOpen(true);
+            return;
+        }
+
         const fetchUserProfile = async () => {
             try {
                 const data = await fetchMyUserInfo();
@@ -37,38 +41,40 @@ function YouthDrawer() {
                 setUserType(data.userType);
             } catch (error) {
                 console.error('회원정보 불러오기 실패', error);
+                setResultMessage('회원정보를 불러오지 못했습니다.');
+                setIsResultModalOpen(true);
             }
         };
         fetchUserProfile();
     }, []);
 
     const handleWithdraw = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-        setResultMessage('로그인이 필요합니다.');
-        setIsResultModalOpen(true);
-        return;
-    }
-
-    try {
-        const res = await api.delete('/user/signout', {
-            headers: { Authorization: token },
-        });
-
-        if (res.data.code === 200) {
-            setResultMessage(res.data.message);
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            setResultMessage('로그인이 필요합니다.');
             setIsResultModalOpen(true);
-            localStorage.clear();
-            navigate('/');
-        } else {
-            setResultMessage(res.data.message);
-            setIsResultModalOpen(true);
+            return;
         }
-    } catch (error) {
-        const axiosError = error as AxiosError<{ message: string }>;
-        setResultMessage(axiosError.response?.data?.message || '회원탈퇴 실패');
-    }
-};
+
+        try {
+            const res = await api.delete('/user/signout', {
+                headers: { Authorization: token },
+            });
+
+            if (res.data.code === 200) {
+                setResultMessage(res.data.message);
+                setIsResultModalOpen(true);
+                localStorage.clear();
+                navigate('/');
+            } else {
+                setResultMessage(res.data.message);
+                setIsResultModalOpen(true);
+            }
+        } catch (error) {
+            const axiosError = error as AxiosError<{ message: string }>;
+            setResultMessage(axiosError.response?.data?.message || '회원탈퇴 실패');
+        }
+    };
 
     return (
         <div>
@@ -106,16 +112,9 @@ function YouthDrawer() {
                             <div className="input-row-left">
                                 <label className="Drawer-label">유저 유형</label>
                             </div>
-                            <input
-                                type="text"
-                                className="Drawerinput"
-                                value={userType}
-                                readOnly
-                                placeholder="유저 유형"
-                            />
+                            <input type="text" className="Drawerinput" value={userType} readOnly placeholder="유저 유형" />
                             <div className="Drawer-underline"></div>
                         </div>
-
 
                         <div className="input-row">
                             <div className="input-row-left">
@@ -125,11 +124,8 @@ function YouthDrawer() {
                                 {profileImageUrl ? (
                                     <>
                                         <span className="Drawer-file-name">{profileImageUrl}</span>
-                                        <button onClick={() => setIsImageModalOpen(true)} className="Drawer-check-btn">
-                                        미리보기
-                                    </button>
+                                        <button onClick={() => setIsImageModalOpen(true)} className="Drawer-check-btn">미리보기</button>
                                     </>
-                        
                                 ) : (
                                     <span style={{ color: '#999999' }}>등록된 사진이 없습니다.</span>
                                 )}
@@ -154,16 +150,25 @@ function YouthDrawer() {
                             <div className="Drawer-underline"></div>
                         </div>
 
-
                         <div className="YouthDrawerButton">
-                            <button className="Drawer-edit-btn" onClick={() => navigate('/youth-drawer-edit')}>
-                                수정하기
-                            </button>
-                            <button className="Drawer-save-btn">
-                                저장하기
-                            </button>
+                            <button className="Drawer-edit-btn" onClick={() => navigate('/youth-drawer-edit')}>수정하기</button>
+                            <button className="Drawer-save-btn">저장하기</button>
                         </div>
-                        {isResultModalOpen && <AlertModal message={resultMessage} onClose={() => setIsResultModalOpen(false)} />}
+
+                        {isResultModalOpen && (
+                            <AlertModal
+                                message={resultMessage}
+                                onClose={() => {
+                                    setIsResultModalOpen(false);
+                                    if (resultMessage === '로그인이 필요합니다.') navigate('/');
+                                }}
+                                onConfirm={() => {
+                                    setIsResultModalOpen(false);
+                                    if (resultMessage === '로그인이 필요합니다.') navigate('/');
+                                }}
+                            />
+                        )}
+
                         {isWithdrawModalOpen && (
                             <AlertModal
                                 message="정말 탈퇴하시겠습니까?"
@@ -172,8 +177,6 @@ function YouthDrawer() {
                                     handleWithdraw();
                                     setIsWithdrawModalOpen(false);
                                 }}
-                            
-
                             />
                         )}
 
@@ -183,13 +186,13 @@ function YouthDrawer() {
                                     <div style={{ textAlign: 'center' }}>
                                         <img src={profileImageUrl} alt="프로필 이미지" style={{ maxWidth: '100%', maxHeight: '300px' }} />
                                     </div>
-        
                                 }
                                 onClose={() => setIsImageModalOpen(false)}
                             />
                         )}
                     </div>
                 </div>
+
                 <div style={{ textAlign: 'center', marginBottom: '30px' }}>
                     <a href="https://docs.google.com/forms/d/e/1FAIpQLScc04yLaBsTFIQN3jp7MJJoCSvAWcx2vorbfpZbor4kFeAe1w/viewform?usp=header" style={{ color: '#BBBBBB', textDecoration: 'underline', fontWeight: '400', fontSize: '24px', marginRight: '24px' }}>
                         고객센터
@@ -198,7 +201,6 @@ function YouthDrawer() {
                         회원 탈퇴
                     </a>
                 </div>
-
             </div>
         </div>
     );
