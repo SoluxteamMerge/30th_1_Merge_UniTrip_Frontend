@@ -16,7 +16,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
 
-    https: httpsConfig,
+    //https: httpsConfig,
     host: true, // 외부에서 접근 가능하게
     port: 5173,
   },
