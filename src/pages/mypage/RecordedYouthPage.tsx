@@ -4,7 +4,7 @@ import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import writeIcon from "../../assets/write-icon.svg";
-import { ReviewCard } from "../../pages/reviewcard/ReviewCard";
+import { ReviewCardTwo } from "../../pages/reviewcard/ReviewCardTwo";
 import '../mainpage/MainPage.css'; 
 import MyPageSidebar from "../../components/MyPageSidebar";
 import Pagination from "../../components/Pagination";
@@ -193,7 +193,7 @@ const RecordedYouthPage: React.FC = () => {
                       itemsPerPage={6}
                       renderItem={(review) => (
                       <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                        <ReviewCard
+                        <ReviewCardTwo
                           postId={review.postId}
                           title={review.postTitle}
                           categoryName={review.categoryName}

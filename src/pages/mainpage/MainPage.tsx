@@ -7,9 +7,9 @@ import './MainPage.css';
 import searchIcon from '../../assets/search_icon.svg';
 import { useNavigate } from "react-router-dom";
 import type { ReviewItem } from '../../api/mainpage/getReviews';
-//import { fetchRecommendedReview } from '../../api/mainpage/getRecommendedReview';
-//import { fetchReviews } from '../../api/mainpage/getReviews';
-
+import { fetchRecommendedReview } from '../../api/mainpage/getRecommendedReview';
+import { fetchReviews } from '../../api/mainpage/getReviews';
+import AlertModal from '../../components/AlertModal/AlertModal';
 
 interface RecommendItem {
   postId: number;
@@ -24,329 +24,31 @@ function MainPage() {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [randomRecommend, setRandomRecommend] = useState<RecommendItem | null>(null);
   const token = localStorage.getItem('accessToken');
-  const [clickCount, setClickCount] = useState(0);
-
+  const [alertMessage, setAlertMessage] = useState('');
   const navigate = useNavigate();
 
   const handleMoreClick = () => {
-    if (clickCount < 4) {
-      setVisibleCount((prev) => prev + 3);
-      setClickCount((prev) => prev + 1);
-    }
+    setVisibleCount((prev) => prev + 3);
   };
 
-  useEffect(() => {
-    const dummyData: ReviewItem[] = [
-       {
-        postId: 1,
-        boardType: "졸업/휴학여행",
-        categoryName: "여행",
-        title: "서울 근교 나들이 후기",
-        userId: 101,
-        nickname: "여행러1",
-        createdAt: "2025-07-15T10:00:00",
-        commentCount: 2,
-        likes: 5,
-        isLiked: true,
-        scrapCount: 1,
-        isScraped: false,
-        thumbnailUrl: "https://picsum.photos/200/100?random=101"
-      },
-      {
-        postId: 2,
-        boardType: "MT여정지도",
-        categoryName: "일상",
-        title: "청춘 엠티 첫날 후기",
-        userId: 102,
-        nickname: "유저2",
-        createdAt: "2025-07-14T09:30:00",
-        commentCount: 0,
-        likes: 2,
-        isLiked: false,
-        scrapCount: 0,
-        isScraped: false,
-        thumbnailUrl: "https://picsum.photos/200/100?random=102"
-      },
-      {
-        postId: 3,
-        boardType: "국내학점교류",
-        categoryName: "맛집탐방",
-        title: "홍대 핫플 탐방기",
-        userId: 103,
-        nickname: "맛집헌터",
-        createdAt: "2025-07-13T12:45:00",
-        commentCount: 4,
-        likes: 10,
-        isLiked: true,
-        scrapCount: 3,
-        isScraped: true,
-        thumbnailUrl: "https://picsum.photos/200/100?random=103"
-      },
-    {
-    postId: 4,
-    boardType: "해외교환학생",
-    categoryName: "일상",
-    title: "주말 캠핑 다녀왔어요",
-    userId: 104,
-    nickname: "캠핑러",
-    createdAt: "2025-07-12T15:20:00",
-    commentCount: 3,
-    likes: 8,
-    isLiked: false,
-    scrapCount: 2,
-    isScraped: false,
-    thumbnailUrl: "https://picsum.photos/200/100?random=104"
-  },
-  {
-    postId: 5,
-    boardType: "MT여정지도",
-    categoryName: "스포츠",
-    title: "풋살 멤버 모집합니다",
-    userId: 105,
-    nickname: "풋살조아",
-    createdAt: "2025-07-12T09:00:00",
-    commentCount: 1,
-    likes: 4,
-    isLiked: true,
-    scrapCount: 0,
-    isScraped: false,
-    thumbnailUrl: "https://picsum.photos/200/100?random=105"
-  },
-  {
-    postId: 6,
-    boardType: "MT여정지도",
-    categoryName: "단합대회",
-    title: "MT에서 있었던 웃긴 일화",
-    userId: 106,
-    nickname: "MT참가자",
-    createdAt: "2025-07-11T14:30:00",
-    commentCount: 2,
-    likes: 6,
-    isLiked: true,
-    scrapCount: 1,
-    isScraped: true,
-    thumbnailUrl: "https://picsum.photos/200/100?random=106"
-  },
-  {
-    postId: 7,
-    boardType: "해외교환학생",
-    categoryName: "맛집탐방",
-    title: "강남 맛집 추천",
-    userId: 107,
-    nickname: "미식가",
-    createdAt: "2025-07-11T11:15:00",
-    commentCount: 0,
-    likes: 9,
-    isLiked: false,
-    scrapCount: 3,
-    isScraped: true,
-    thumbnailUrl: "https://picsum.photos/200/100?random=107"
-  },
-  {
-    postId: 8,
-    boardType: "국내학점교류",
-    categoryName: "생각나눔",
-    title: "요즘 느낀 점 공유",
-    userId: 108,
-    nickname: "생각많은사람",
-    createdAt: "2025-07-10T18:40:00",
-    commentCount: 5,
-    likes: 3,
-    isLiked: true,
-    scrapCount: 0,
-    isScraped: false,
-    thumbnailUrl: "https://picsum.photos/200/100?random=108"
-  },
-  {
-    postId: 9,
-    boardType: "모임구인",
-    categoryName: "문화생활",
-    title: "연극 같이 보실 분?",
-    userId: 109,
-    nickname: "문화러버",
-    createdAt: "2025-07-10T08:00:00",
-    commentCount: 0,
-    likes: 7,
-    isLiked: false,
-    scrapCount: 2,
-    isScraped: false,
-    thumbnailUrl: "https://picsum.photos/200/100?random=109"
-  },
-  {
-    postId: 10,
-    boardType: "식도락",
-    categoryName: "카페추천",
-    title: "숨은 카페 소개",
-    userId: 110,
-    nickname: "카페투어",
-    createdAt: "2025-07-09T16:50:00",
-    commentCount: 2,
-    likes: 5,
-    isLiked: true,
-    scrapCount: 1,
-    isScraped: true,
-    thumbnailUrl: "https://picsum.photos/200/100?random=110"
-  },
-  {
-    postId: 11,
-    boardType: "MT/LT",
-    categoryName: "엠티후기",
-    title: "다같이 불멍한 날",
-    userId: 111,
-    nickname: "불멍러",
-    createdAt: "2025-07-09T13:10:00",
-    commentCount: 1,
-    likes: 2,
-    isLiked: false,
-    scrapCount: 0,
-    isScraped: true,
-    thumbnailUrl: "https://picsum.photos/200/100?random=111"
-  },
-  {
-    postId: 12,
-    boardType: "모임구인",
-    categoryName: "야외활동",
-    title: "이번 주말 등산 갈 사람!",
-    userId: 112,
-    nickname: "산이좋아",
-    createdAt: "2025-07-08T19:00:00",
-    commentCount: 4,
-    likes: 11,
-    isLiked: true,
-    scrapCount: 4,
-    isScraped: true,
-    thumbnailUrl: "https://picsum.photos/200/100?random=112"
-  },
-  {
-  postId: 13,
-  boardType: "모임구인",
-  categoryName: "문화생활",
-  title: "뮤지컬 관람하실 분 구해요",
-  userId: 113,
-  nickname: "뮤덕",
-  createdAt: "2025-07-07T17:00:00",
-  commentCount: 1,
-  likes: 4,
-  isLiked: true,
-  scrapCount: 1,
-  isScraped: true,
-  thumbnailUrl: "https://picsum.photos/200/100?random=113"
-},
-{
-  postId: 14,
-  boardType: "자유게시판",
-  categoryName: "잡담",
-  title: "오늘 날씨 너무 좋다!",
-  userId: 114,
-  nickname: "햇살좋아",
-  createdAt: "2025-07-07T09:30:00",
-  commentCount: 0,
-  likes: 5,
-  isLiked: false,
-  scrapCount: 0,
-  isScraped: false,
-  thumbnailUrl: "https://picsum.photos/200/100?random=114"
-},
-{
-  postId: 15,
-  boardType: "식도락",
-  categoryName: "야식추천",
-  title: "야식으로 추천하는 메뉴?",
-  userId: 115,
-  nickname: "야식러버",
-  createdAt: "2025-07-06T23:45:00",
-  commentCount: 3,
-  likes: 8,
-  isLiked: true,
-  scrapCount: 2,
-  isScraped: false,
-  thumbnailUrl: "https://picsum.photos/200/100?random=115"
-},
-{
-  postId: 16,
-  boardType: "MT/LT",
-  categoryName: "단합대회",
-  title: "단합대회 때 이런 게임 어때요?",
-  userId: 116,
-  nickname: "아이디어뱅크",
-  createdAt: "2025-07-06T15:00:00",
-  commentCount: 2,
-  likes: 6,
-  isLiked: false,
-  scrapCount: 1,
-  isScraped: false,
-  thumbnailUrl: "https://picsum.photos/200/100?random=116"
-},
-{
-  postId: 17,
-  boardType: "모임구인",
-  categoryName: "운동",
-  title: "배드민턴 모임 인원 모집합니다",
-  userId: 117,
-  nickname: "스매싱",
-  createdAt: "2025-07-05T10:00:00",
-  commentCount: 0,
-  likes: 3,
-  isLiked: true,
-  scrapCount: 0,
-  isScraped: false,
-  thumbnailUrl: "https://picsum.photos/200/100?random=117"
-},
-{
-  postId: 18,
-  boardType: "자유게시판",
-  categoryName: "잡담",
-  title: "요즘 듣는 노래 추천해줘요",
-  userId: 118,
-  nickname: "노래쟁이",
-  createdAt: "2025-07-04T21:30:00",
-  commentCount: 5,
-  likes: 9,
-  isLiked: true,
-  scrapCount: 3,
-  isScraped: true,
-  thumbnailUrl: "https://picsum.photos/200/100?random=118"
-}
-
-    ];
-
-    const sorted = dummyData.sort((a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-
-    setReviews(sorted);
-
-    setRandomRecommend({
-      postId: 999,
-      title: "테스트 추천글",
-      thumbnailUrl: "https://picsum.photos/200/100?random=999",
-      content: "<p>추천 테스트용입니다! 길이가 언제까지 갈까요 시험해봅시다 언제까지 가나요? 언제까지언제까지 언제까지</p>"
-    });
-  }, []);
-
   // 추천 Api
-/*
- useEffect(() => {
+  useEffect(() => {
     const fetchRecommended = async () => {
       try {
         const data = await fetchRecommendedReview();
-
         setRandomRecommend({
           postId: data.postId,
           title: data.title,
           thumbnailUrl: data.thumbnailUrl || '/default-thumbnail.png',
           content: data.content,
         });
-      } catch (err) {
-        if (err instanceof Error) {
-        console.error('추천 리뷰 불러오기 실패:', err.message);
-      } else {
-        console.error('추천 리뷰 불러오기 실패:',err);
-      }
-      setRandomRecommend(null);
+      } catch (err: any) {
+        const message = err.response?.data?.message || '추천 리뷰 불러오기 실패';
+        console.error(message);
+        setAlertMessage(message);
+        setRandomRecommend(null);
       }
     };
-
     fetchRecommended();
   }, []);
 
@@ -360,18 +62,15 @@ function MainPage() {
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
         setReviews(sorted);
-      } catch (err) {
-        if (err instanceof Error) {
-          console.error('리뷰 불러오기 실패:', err.message);
-        } else {
-          console.error('리뷰 불러오기 실패:',err);
-      } 
-      setReviews([]);
+      } catch (err: any) {
+        const message = err.response?.data?.message || '리뷰 불러오기 실패';
+        console.error(message);
+        setAlertMessage(message);
+        setReviews([]);
       }
     };
     loadReviews();
   }, []);
-  */
 
   return (
     <>
@@ -426,7 +125,7 @@ function MainPage() {
             </div>
             <div className="review-grid">
               {reviews.slice(0, visibleCount).map((review) => (
-                <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}> {/*카드 누르면 해당 글로 넘어감*/}
+                <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
                   <ReviewCard
                     postId={review.postId}
                     title={review.title}
@@ -436,7 +135,7 @@ function MainPage() {
                     createdAt={review.createdAt}
                     likes={review.likes}
                     scrapCount={review.scrapCount}
-                    rating={4}
+                    rating={review.rating}
                     isLiked={token ? review.isLiked : false}
                     isScraped={token ? review.isScraped : false}
                   />
@@ -444,7 +143,8 @@ function MainPage() {
               ))}
             </div>
           </div>
-          {clickCount < 4 ? (
+
+          {visibleCount < reviews.length ? (
             <button className="more-button" onClick={handleMoreClick}>
               <span style={{ textDecoration: 'underline' }}>더보기</span> +
             </button>
@@ -464,8 +164,17 @@ function MainPage() {
           </div>
         </>
       )}
+
+      {alertMessage && (
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setAlertMessage('')}
+        />
+      )}
     </>
   );
 }
 
 export default MainPage;
+
+

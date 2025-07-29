@@ -10,7 +10,7 @@ interface ReviewCardProps {
   categoryName: string;
   thumbnailUrl: string;
   nickname: string;
-  createdAt: string;
+  //createdAt: string;
   likes: number;
   scrapCount: number;
   rating: number; //백엔드 구현 중
@@ -18,13 +18,13 @@ interface ReviewCardProps {
   isScraped: boolean;
 }
 
-export const ReviewCard = ({
+export const ReviewCardTwo = ({
   postId,
   title,
   categoryName,
   thumbnailUrl,
   nickname,
-  createdAt,
+  //createdAt,
   likes,
   scrapCount,
   rating,
