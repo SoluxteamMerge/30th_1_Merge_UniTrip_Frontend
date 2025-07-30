@@ -108,11 +108,14 @@ const SignupPage: React.FC = () => {
     if (!userEmail || !emailVerified) return showModal('학교 이메일 인증은 필수입니다.');
 
     try {
-      let uploadedUrl = '';
       const token = localStorage.getItem('accessToken') || '';
+      if (!token) {
+        showModal('로그인 상태가 아닙니다. 다시 로그인 해주세요.');
+        return;
+      }
 
       if (selectedFile) {
-        uploadedUrl = await uploadUserProfileImage(selectedFile, token);
+        await uploadUserProfileImage(selectedFile, token);
       }
 
       const response = await postUserProfile({
@@ -120,7 +123,6 @@ const SignupPage: React.FC = () => {
         phoneNumber,
         userType,
         emailVerified,
-        profileImageUrl: uploadedUrl || null,
       });
 
       showModal(response.message);
