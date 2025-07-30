@@ -434,7 +434,7 @@ const YouthTalkDetailPage: React.FC = () => {
           editText: ""
         };
         
-        setComments([...comments, newComment]);
+        setComments([newComment, ...comments]);
         setCommentText("");
         resetCommentPage(); // 댓글 작성 후 첫 페이지로 이동
         
