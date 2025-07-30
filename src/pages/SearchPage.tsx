@@ -159,14 +159,15 @@
 
       //인기 검색어 하루 단위로 갱신
       useEffect(() => {
-        const today = new Date().toISOString().split("T")[0]; // 오늘 날짜
-        const lastUpdate = localStorage.getItem("lastKeywordUpdateDate");
+        const now = Date.now(); // 현재 시간(ms)
+        const lastUpdateTime = parseInt(localStorage.getItem("lastKeywordUpdateTime") || "0", 10);
+        const fiveMinutes = 5 * 60 * 1000; // 5분 in ms
 
-        if (lastUpdate !== today) {
+        if (now - lastUpdateTime > fiveMinutes) {
           updateKeywordRank()
             .then(() => {
-              console.log("인기 키워드 랭킹 갱신 완료");
-              localStorage.setItem("lastKeywordUpdateDate", today); // 성공 시에만 저장
+              console.log("🔥 인기 키워드 랭킹 5분 단위로 갱신 완료");
+              localStorage.setItem("lastKeywordUpdateDate", now.toString()); // 성공 시에만 저장
             })
             .catch((err) => {
               console.error("인기 키워드 랭킹 갱신 안됨:", err.message);
