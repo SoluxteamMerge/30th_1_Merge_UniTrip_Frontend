@@ -27,7 +27,7 @@ export const searchReviews = async (
   token: string,
   sort: string = "popular" // 기본 정렬: 인기순
 ): Promise<SearchReviewResponse> => {
-  const response = await axios.get(`${BASE_URL}/api/posts/search`, {
+  const response = await axios.get(`${BASE_URL}/api/reviews/search`, {
     //params: { keyword, sort },
     params: { keyword: encodeURIComponent(keyword), sort },
     headers: { Authorization: token },
