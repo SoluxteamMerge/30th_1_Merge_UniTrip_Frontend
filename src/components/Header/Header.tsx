@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import AlertModal from "../AlertModal/AlertModal";
 import defaultProfile from "../../assets/header/default-profile.svg";
+import { getUserInfo } from "../../api/getUserInfo";
 
 interface HeaderProps {
   isLoggedIn?: boolean; //todo
   username?: string; //todo
   profileUrl?: string; //todo
+}
+
+interface UserInfo {
+  nickname: string;
+  profileImageUrl: string;
 }
 
 function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderProps): React.JSX.Element {
@@ -16,6 +22,8 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLogoutSuccessModal, setShowLogoutSuccessModal] = useState(false);
   const [showLoginRequiredModal, setShowLoginRequiredModal] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [loading, setLoading] = useState(false);
   
   // 실제 로그인 상태 확인
   const actualIsLoggedIn = !!localStorage.getItem('accessToken');
@@ -29,6 +37,34 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
     { to: "/youth-drawer", label: "청춘서랍", last: true, requiresLogin: true }
   ];
 
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (!finalIsLoggedIn) {
+        setUserInfo(null);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await getUserInfo();
+        if (response.code === 200) {
+          setUserInfo({
+            nickname: response.nickname,
+            profileImageUrl: response.profileImageUrl
+          });
+        }
+      } catch (error) {
+        console.error('사용자 정보 조회 실패:', error);
+        setUserInfo(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, [finalIsLoggedIn]);
+
   // 현재 카테고리 확인
   const currentCategory = searchParams.get('category');
 
@@ -40,6 +76,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
     // 로그아웃 로직 (실제로는 API 호출 등)
     localStorage.removeItem('accessToken');
     localStorage.removeItem('isEmailVerified');
+    setUserInfo(null);
     setShowLogoutModal(false);
     setShowLogoutSuccessModal(true);
   };
@@ -205,7 +242,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
               >
                 로그아웃
               </button>
-              <span className="header-username">
+                              <span className="header-username">
                 <Link 
                   to="/recorded-youth" 
                   className={
@@ -216,10 +253,10 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
                   기록한 청춘
                 </Link>
                 <span className="header-username-gap" />
-                <b>{username}</b>님
+                <b>{loading ? "로딩 중..." : (userInfo?.nickname || username)}</b>님
               </span>
               <img
-                src={profileUrl ? profileUrl : defaultProfile}
+                src={userInfo?.profileImageUrl || profileUrl || defaultProfile}
                 alt="프로필"
                 className="header-profile-img"
               />
