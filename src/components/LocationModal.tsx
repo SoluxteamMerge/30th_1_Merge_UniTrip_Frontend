@@ -240,12 +240,12 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
     
     // 장소를 선택하면 바로 저장 (모달은 닫지 않음)
     onLocationSelect({
-      name: place.placeName,
-      address: place.address,
-      lat: parseFloat(place.lat),
-      lng: parseFloat(place.lng),
+      name: place.place_name,
+      address: place.address_name,
+      lat: parseFloat(place.y),
+      lng: parseFloat(place.x),
       kakaoId: place.id,
-      categoryGroupName: place.categoryGroupName,
+      categoryGroupName: place.category_group_name,
       region: place.region
     });
     
@@ -278,12 +278,12 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
   const confirmLocation = () => {
     if (selectedLocation) {
       onLocationSelect({
-        name: selectedLocation.placeName,
-        address: selectedLocation.address,
-        lat: parseFloat(selectedLocation.lat),
-        lng: parseFloat(selectedLocation.lng),
+        name: selectedLocation.place_name,
+        address: selectedLocation.address_name,
+        lat: parseFloat(selectedLocation.y),
+        lng: parseFloat(selectedLocation.x),
         kakaoId: selectedLocation.id,
-        categoryGroupName: selectedLocation.categoryGroupName,
+        categoryGroupName: selectedLocation.category_group_name,
         region: selectedLocation.region
       });
       onClose();

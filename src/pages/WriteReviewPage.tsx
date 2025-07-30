@@ -447,7 +447,6 @@ const WriteReviewPage: React.FC = () => {
     categoryGroupName?: string;
     region?: string;
   }) => {
-    console.log('장소 선택됨:', location);
     setSelectedLocation(location);
   };
 
