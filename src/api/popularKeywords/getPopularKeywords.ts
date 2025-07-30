@@ -5,11 +5,12 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const getPopularKeywords = async (limit: number = 10) => {
-  //console.log("!!호출 주소:", `${BASE_URL}/api/keywords/popular?limit=${limit}`);
+  const url = `${BASE_URL}/api/keywords/popular?limit=${limit}`;
+  console.log("✅ [GET] 호출 주소:", url);
   try {
-    const response = await axios.get(`${BASE_URL}/api/keywords/popular`, {
-      params: { limit },
-    });
+    const response = await axios.get(url, {params: { limit },});
+
+    console.log("✅ [GET] 응답 결과:", response.data);
 
     if (response.data.code === 200) {
       return response.data.data; // keyword, rank, searchCount 포함된 배열
