@@ -4,7 +4,7 @@ import api from '../api';
 import { AxiosError } from 'axios';
 
 interface UpdateUserInfoParams {
-  userName: string;
+  name: string;
   nickname: string;
   phoneNumber: string;
   userType: string;

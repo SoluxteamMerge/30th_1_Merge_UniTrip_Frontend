@@ -33,7 +33,7 @@ function YouthDrawer() {
         const fetchUserProfile = async () => {
             try {
                 const data = await fetchMyUserInfo();
-                setUserName(data.userName);
+                setUserName(data.name);
                 setNickname(data.nickname);
                 setPhoneNumber(data.phoneNumber);
                 setEmailVerified(data.emailVerified);
@@ -58,14 +58,13 @@ function YouthDrawer() {
 
         try {
             const res = await api.delete('/user/signout', {
-                headers: { Authorization: token },
+                headers: { Authorization: `Bearer ${token}` },
             });
 
             if (res.data.code === 200) {
                 setResultMessage(res.data.message);
                 setIsResultModalOpen(true);
-                localStorage.clear();
-                navigate('/');
+                // localStorage 클리어 및 navigate는 모달 닫힐 때 처리
             } else {
                 setResultMessage(res.data.message);
                 setIsResultModalOpen(true);
@@ -73,6 +72,7 @@ function YouthDrawer() {
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
             setResultMessage(axiosError.response?.data?.message || '회원탈퇴 실패');
+            setIsResultModalOpen(true);
         }
     };
 
@@ -160,11 +160,23 @@ function YouthDrawer() {
                                 message={resultMessage}
                                 onClose={() => {
                                     setIsResultModalOpen(false);
-                                    if (resultMessage === '로그인이 필요합니다.') navigate('/');
+                                    if (
+                                        resultMessage === '로그인이 필요합니다.' ||
+                                        resultMessage === '회원탈퇴가 완료되었습니다.'
+                                    ) {
+                                        localStorage.clear();
+                                        navigate('/');
+                                    }
                                 }}
                                 onConfirm={() => {
                                     setIsResultModalOpen(false);
-                                    if (resultMessage === '로그인이 필요합니다.') navigate('/');
+                                    if (
+                                        resultMessage === '로그인이 필요합니다.' ||
+                                        resultMessage === '회원탈퇴가 완료되었습니다.'
+                                    ) {
+                                        localStorage.clear();
+                                        navigate('/');
+                                    }
                                 }}
                             />
                         )}

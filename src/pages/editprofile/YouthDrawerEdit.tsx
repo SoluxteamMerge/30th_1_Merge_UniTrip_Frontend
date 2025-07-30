@@ -43,7 +43,7 @@ function YouthDrawerEdit() {
     const fetchUserProfile = async () => {
         try {
             const data = await fetchMyUserInfo();
-            setName(data.userName);
+            setName(data.name);
             setNickname(data.nickname);
             setPhoneNumber(data.phoneNumber);
             setEmailVerified(data.emailVerified);
@@ -201,7 +201,7 @@ function YouthDrawerEdit() {
                 await deleteUserProfileImage(token);
             }
             await updateMyUserInfo({
-                userName: name,
+                name: name,
                 nickname,
                 phoneNumber,
                 userType,
