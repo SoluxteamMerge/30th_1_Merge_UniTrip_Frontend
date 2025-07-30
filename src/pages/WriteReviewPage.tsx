@@ -376,9 +376,21 @@ const WriteReviewPage: React.FC = () => {
         alert('게시글 등록에 실패했습니다.');
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('게시글 처리 오류:', error);
-      alert(isEditMode ? '리뷰 수정 중 오류가 발생했습니다.' : '게시글 등록 중 오류가 발생했습니다.');
+      
+      // 백엔드에서 보내는 에러 메시지 확인
+      if (error.response) {
+        console.error('에러 응답:', error.response.data);
+        console.error('에러 상태:', error.response.status);
+        alert(`게시글 등록 실패: ${error.response.data?.message || '알 수 없는 오류가 발생했습니다.'}`);
+      } else if (error.request) {
+        console.error('에러 요청:', error.request);
+        alert('서버에 연결할 수 없습니다.');
+      } else {
+        console.error('에러 설정:', error.message);
+        alert(isEditMode ? '리뷰 수정 중 오류가 발생했습니다.' : '게시글 등록 중 오류가 발생했습니다.');
+      }
     }
     setShowPublishModal(false);
   };
