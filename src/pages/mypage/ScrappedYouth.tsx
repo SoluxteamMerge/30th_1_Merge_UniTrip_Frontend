@@ -254,7 +254,7 @@ const ScrappedYouthPage: React.FC = () => {
                 아직 스크랩한 청춘이 없어요
               </p>
                 
-              <p style={{fontSize: 16, color: "#888", fontWeight: 700, marginTop: 10}}>
+              <p style={{fontSize: 16, color: "#888", marginTop: 10}}>
                 <Link to="/mt-journey" style={{ color: "#888", textDecoration: "underline" }}>
                   청춘을 스크랩하러 가볼까요? &gt;
                 </Link>
