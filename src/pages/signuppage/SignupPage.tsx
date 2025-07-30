@@ -129,7 +129,7 @@ const SignupPage: React.FC = () => {
   
     if (selectedFile) {
       try {
-        await uploadUserProfileImage(selectedFile);
+        await uploadUserProfileImage(selectedFile, token);
         // 선택사항: showModal('프로필 이미지 업로드 성공');
       } catch (error) {
         if (error instanceof Error) {
