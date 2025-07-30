@@ -92,6 +92,9 @@ const WriteReviewPage: React.FC = () => {
     address: string;
     lat: number;
     lng: number;
+    kakaoId?: string;
+    categoryGroupName?: string;
+    region?: string;
   } | null>(null);
 
   // textarea ref
@@ -350,9 +353,9 @@ const WriteReviewPage: React.FC = () => {
           content: content,
           placeName: selectedLocation?.name || '',
           address: selectedLocation?.address || '',
-          kakaoId: selectedLocation ? String(selectedLocation.lat) : '',
-          categoryGroupName: '',
-          region: '',
+          kakaoId: selectedLocation?.kakaoId || '',
+          categoryGroupName: selectedLocation?.categoryGroupName || '',
+          region: selectedLocation?.region || '',
       };
 
         const images: File[] = [];
@@ -427,7 +430,15 @@ const WriteReviewPage: React.FC = () => {
     setShowLocationModal(true);
   };
 
-  const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
+  const handleLocationSelect = (location: { 
+    name: string; 
+    address: string; 
+    lat: number; 
+    lng: number;
+    kakaoId?: string;
+    categoryGroupName?: string;
+    region?: string;
+  }) => {
     console.log('장소 선택됨:', location);
     setSelectedLocation(location);
   };
