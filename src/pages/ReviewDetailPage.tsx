@@ -18,6 +18,7 @@ import { updateComment } from '../api/Comment/updateCommentApi';
 import { deleteComment } from '../api/Comment/deleteCommentApi';
 import { getComments } from '../api/Comment/getCommentsApi';
 import { likeComment } from '../api/Comment/likeCommentApi';
+import { fetchUserInfo } from '../api/mypage/userApi';
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,8 +28,8 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isStarred, setIsStarred] = useState(false);
   const [isRated, setIsRated] = useState(false);
   
-  // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
-  const currentUser = ""; // TODO: API에서 실제 사용자 정보 가져오기
+  // 현재 로그인한 사용자 정보
+  const [currentUser, setCurrentUser] = useState("");
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
@@ -48,9 +49,56 @@ const YouthTalkDetailPage: React.FC = () => {
   }>>([]);
   const commentInputRef = React.useRef<HTMLTextAreaElement>(null);
 
+  // 댓글 페이징 관련 state
+  const [currentCommentPage, setCurrentCommentPage] = useState(1);
+  const commentsPerPage = 10;
+
   // API에서 게시글 데이터 가져오기
   const [postData, setPostData] = useState<ReviewDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          console.log('로그인되지 않음');
+          return;
+        }
+
+        const userData = await fetchUserInfo();
+        console.log('사용자 정보 로드 완료:', userData.nickname);
+        setCurrentUser(userData.nickname);
+      } catch (error) {
+        console.error('사용자 정보 조회 실패:', error);
+        setCurrentUser("");
+      }
+    };
+
+    getUserInfo();
+  }, []);
+
+  // 댓글 페이징 계산
+  const totalCommentPages = Math.ceil(comments.length / commentsPerPage);
+  const startCommentIndex = (currentCommentPage - 1) * commentsPerPage;
+  const endCommentIndex = startCommentIndex + commentsPerPage;
+  const currentComments = comments.slice(startCommentIndex, endCommentIndex);
+
+  // 댓글 페이지 변경 핸들러
+  const handleCommentPageChange = (page: number) => {
+    setCurrentCommentPage(page);
+    // 댓글 섹션으로 스크롤
+    const commentSection = document.querySelector('.ytd-comments-section');
+    if (commentSection) {
+      commentSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // 댓글 작성 후 첫 페이지로 이동
+  const resetCommentPage = () => {
+    setCurrentCommentPage(1);
+  };
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -386,8 +434,9 @@ const YouthTalkDetailPage: React.FC = () => {
           editText: ""
         };
         
-        setComments([...comments, newComment]);
+        setComments([newComment, ...comments]);
         setCommentText("");
+        resetCommentPage(); // 댓글 작성 후 첫 페이지로 이동
         
         console.log('댓글이 성공적으로 작성되었습니다.');
       } else {
@@ -1092,72 +1141,106 @@ const YouthTalkDetailPage: React.FC = () => {
 
             {/* 댓글 목록 */}
             {comments.length > 0 ? (
-              comments.map(comment => (
-                <div key={comment.id} className="ytd-comment-item">
-                  <div className="ytd-comment-header">
-                    <span className="ytd-comment-username">{comment.username}</span>
-                    <div className="ytd-comment-divider" />
-                    <span className="ytd-comment-date">{comment.date}</span>
-                  </div>
-                  
-                  {comment.isEditing ? (
-                    <div>
-                      <textarea
-                        className="ytd-comment-edit-input"
-                        value={comment.editText}
-                        onChange={(e) => handleCommentEditChange(comment.id, e.target.value)}
-                        rows={3}
-                      />
-                      <div className="ytd-comment-edit-buttons">
-                        <button 
-                          className="ytd-comment-edit-btn" 
-                          onClick={() => handleCommentEditSubmit(comment.id)}
-                        >
-                          완료
-                        </button>
-                        <button 
-                          className="ytd-comment-edit-btn cancel" 
-                          onClick={() => handleCommentEditCancel(comment.id)}
-                        >
-                          취소
-                        </button>
-                      </div>
+              <div>
+                {currentComments.map(comment => (
+                  <div key={comment.id} className="ytd-comment-item">
+                    <div className="ytd-comment-header">
+                      <span className="ytd-comment-username">{comment.username}</span>
+                      <div className="ytd-comment-divider" />
+                      <span className="ytd-comment-date">{comment.date}</span>
                     </div>
-                  ) : (
-                    <div className="ytd-comment-content">{comment.content}</div>
-                  )}
-                  
-                  <div className="ytd-comment-actions">
-                    <button 
-                      className={`ytd-comment-action-btn ${comment.isLiked ? 'liked' : ''}`}
-                      onClick={() => handleCommentLike(comment.id)}
-                    >
-                      <img 
-                        src={comment.isLiked ? heartFillIcon : heartIcon} 
-                        alt="좋아요" 
-                        style={{ width: 16, height: 16, marginRight: 4, marginTop: 3 }} 
-                      />
-                      <span style={{ display: 'inline-block', verticalAlign: 'top', marginTop: 3 }}>{comment.likes}</span>
-                    </button>
-                    {currentUser === comment.username && (
-                      <>
-                        <button 
-                          className="ytd-comment-action-btn"
-                          onClick={() => handleCommentEdit(comment.id)}
-                        >
-                          수정
-                        </button>
-                        <button 
-                          className="ytd-comment-action-btn"
-                          onClick={() => handleCommentDelete(comment.id)}
-                        >
-                          삭제
-                        </button>
-                      </>
+                    
+                    {comment.isEditing ? (
+                      <div>
+                        <textarea
+                          className="ytd-comment-edit-input"
+                          value={comment.editText}
+                          onChange={(e) => handleCommentEditChange(comment.id, e.target.value)}
+                          rows={3}
+                        />
+                        <div className="ytd-comment-edit-buttons">
+                          <button 
+                            className="ytd-comment-edit-btn" 
+                            onClick={() => handleCommentEditSubmit(comment.id)}
+                          >
+                            완료
+                          </button>
+                          <button 
+                            className="ytd-comment-edit-btn cancel" 
+                            onClick={() => handleCommentEditCancel(comment.id)}
+                          >
+                            취소
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="ytd-comment-content">{comment.content}</div>
                     )}
+                    
+                    <div className="ytd-comment-actions">
+                      <button 
+                        className={`ytd-comment-action-btn ${comment.isLiked ? 'liked' : ''}`}
+                        onClick={() => handleCommentLike(comment.id)}
+                      >
+                        <img 
+                          src={comment.isLiked ? heartFillIcon : heartIcon} 
+                          alt="좋아요" 
+                          style={{ width: 16, height: 16, marginRight: 4, marginTop: 3 }} 
+                        />
+                        <span style={{ display: 'inline-block', verticalAlign: 'top', marginTop: 3 }}>{comment.likes}</span>
+                      </button>
+                      {currentUser === comment.username && (
+                        <>
+                          <button 
+                            className="ytd-comment-action-btn"
+                            onClick={() => handleCommentEdit(comment.id)}
+                          >
+                            수정
+                          </button>
+                          <button 
+                            className="ytd-comment-action-btn"
+                            onClick={() => handleCommentDelete(comment.id)}
+                          >
+                            삭제
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
+                ))}
+              
+              {/* 댓글 페이징 버튼 */}
+              {totalCommentPages > 1 && (
+                <div style={{ 
+                  textAlign: 'center', 
+                  marginTop: '20px',
+                  padding: '20px 0',
+                  borderTop: '1px solid #e0e0e0'
+                }}>
+                  {Array.from({ length: totalCommentPages }, (_, idx) => idx + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handleCommentPageChange(page)}
+                      style={{
+                        margin: '0 4px',
+                        padding: '8px 12px',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontWeight: currentCommentPage === page ? 700 : 400,
+                        backgroundColor: currentCommentPage === page ? '#0b0b61' : '#f5f5f5',
+                        color: currentCommentPage === page ? 'white' : '#333',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        minWidth: '32px',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {page}
+                    </button>
+                  ))}
                 </div>
-              ))
+              )}
+            </div>
             ) : (
               <div style={{ 
                 textAlign: 'center', 
