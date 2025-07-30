@@ -18,6 +18,7 @@ import { updateComment } from '../api/Comment/updateCommentApi';
 import { deleteComment } from '../api/Comment/deleteCommentApi';
 import { getComments } from '../api/Comment/getCommentsApi';
 import { likeComment } from '../api/Comment/likeCommentApi';
+import { fetchUserInfo } from '../api/mypage/userApi';
 
 const YouthTalkDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,8 +28,8 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isStarred, setIsStarred] = useState(false);
   const [isRated, setIsRated] = useState(false);
   
-  // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
-  const currentUser = ""; // TODO: API에서 실제 사용자 정보 가져오기
+  // 현재 로그인한 사용자 정보
+  const [currentUser, setCurrentUser] = useState("");
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
@@ -51,6 +52,28 @@ const YouthTalkDetailPage: React.FC = () => {
   // API에서 게시글 데이터 가져오기
   const [postData, setPostData] = useState<ReviewDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          console.log('로그인되지 않음');
+          return;
+        }
+
+        const userData = await fetchUserInfo();
+        console.log('사용자 정보 로드 완료:', userData.nickname);
+        setCurrentUser(userData.nickname);
+      } catch (error) {
+        console.error('사용자 정보 조회 실패:', error);
+        setCurrentUser("");
+      }
+    };
+
+    getUserInfo();
+  }, []);
 
   useEffect(() => {
     const fetchPostData = async () => {
