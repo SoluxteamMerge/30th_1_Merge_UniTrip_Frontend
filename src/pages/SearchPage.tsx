@@ -254,7 +254,7 @@
 
             const response = await searchReviews(searchQuery, token, "popular"); // 공통 함수로 변경
 
-            console.log("🔍 검색 결과:", response.data);
+            console.log("🔍 검색 결과:", response);
 
             if (response.code === 200 && Array.isArray(response.data)) {
               setSearchResults(response.data);
