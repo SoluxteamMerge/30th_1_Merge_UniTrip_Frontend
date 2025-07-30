@@ -421,7 +421,7 @@
                 {/* 오른쪽: 인기 검색어 박스 */}
                 <div
                   style={{
-                    width: 160,
+                    width: 200,
                     backgroundColor: "#fff",
                     border: "1px solid #ccc",
                     borderRadius: 16,
@@ -539,8 +539,8 @@
                   textAlign: "center",
                   borderRadius: 24,
                 }}>
-                  <p style={{ fontSize: 18, fontWeight: 600, color: "#333" }}>검색 결과 없음</p>
-                  <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>청춘시는 결과가 없어요! 직접 후기를 남겨볼까요?</p>
+                  <p style={{ fontSize: 18, fontWeight: 600, color: "#333" }}>해당 옵션 검색 결과 없음</p>
+                  <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>찾으시는 결과가 없어요! 직접 후기를 남겨볼까요?</p>
                 </div>
               ) : (
                 <Pagination
