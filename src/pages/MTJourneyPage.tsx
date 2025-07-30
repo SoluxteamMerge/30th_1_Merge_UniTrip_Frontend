@@ -110,8 +110,9 @@ const MTJourneyPage: React.FC = () => {
         .mt-white-container { background: #fff; border-radius: 15px; box-shadow: 0 1px 6px #0001; padding: 24px 40px 24px 40px; margin-top: 10px; }
         .mt-post-list { display: flex; flex-direction: column; gap: 24px; }
         .mt-post-card { display: flex; flex-direction: column; gap: 0; background: #fff; border-radius: 15px; border: 2px solid #bbb; padding: 24px; margin-bottom: 8px; }
-        .mt-post-top-row { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #bbb; padding-bottom: 12px; margin-bottom: 18px; }
-        .mt-post-info-row { display: flex; align-items: center; }
+        .mt-post-top-row { display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; border-bottom: 1px solid #bbb; padding-bottom: 18px; margin-bottom: 18px; }
+        .mt-post-info-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .mt-post-info-left { display: flex; align-items: center; }
         .mt-profile { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; background: #eee; }
         .mt-profile-default { background: #bbb; }
         .mt-username { color: #838383; font-size: 15px; }
@@ -131,7 +132,7 @@ const MTJourneyPage: React.FC = () => {
         .mt-post-title { font-weight: 700; font-size: 22px; color: #0b0b61; padding: 0 0 0 10px; margin-bottom: 2px; margin-top: 0; }
         .mt-post-content { color: #black; padding: 10px 0 0 10px; font-size: 15px; font-weight:600; white-space: pre-line; }
         .mt-thumbnail { width: 220px; height: 130px; border-radius: 0px; object-fit: cover; margin-left: 24px; }
-        .mt-rating-container { display: flex; align-items: center; margin-left: 600px; }
+        .mt-rating-container { display: flex; align-items: center; }
         .mt-floating-write-btn {
           position: fixed;
           right: 60px;
@@ -168,6 +169,7 @@ const MTJourneyPage: React.FC = () => {
                   {/* 상단: 프로필/닉네임/날짜 */}
                   <div className="mt-post-top-row">
                     <div className="mt-post-info-row">
+                      <div className="mt-post-info-left">
                       <div className="mt-profile mt-profile-default" />
                       <span className="mt-username">{review.nickname} 님</span>
                       <div className="mt-info-divider" />
@@ -178,6 +180,7 @@ const MTJourneyPage: React.FC = () => {
                         hour: '2-digit',
                         minute: '2-digit'
                       })}</span>
+                      </div>
                       <div className="mt-rating-container">
                         {renderStars(review.rating)}
                       </div>

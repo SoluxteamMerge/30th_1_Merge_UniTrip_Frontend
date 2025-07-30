@@ -173,7 +173,7 @@ const RecordedYouthPage: React.FC = () => {
                 background: "#FBFBFB",
                 borderRadius: 15,
                 padding: "24px 40px 24px 40px",
-                boxShadow: "0 1px 6px #0001;",
+                boxShadow: "0 1px 6px #0001",
                 minHeight: "580px",
                 position: "relative",
                 width: "100%",
@@ -189,7 +189,7 @@ const RecordedYouthPage: React.FC = () => {
                    <p>로딩 중...</p>
                   ) : error ? ( 
                     <p style={{ color: "red" }}>{error}</p>
-                  ) :Array.isArray(myReviews) && myReviews.length > 0 ? (// 정상적으로 데이터가 있을 때 처리
+                  ) :Array.isArray(myReviews) && myReviews && myReviews.length > 0 ? (// 정상적으로 데이터가 있을 때 처리
                   <Pagination
                       items={myReviews}
                       itemsPerPage={6}

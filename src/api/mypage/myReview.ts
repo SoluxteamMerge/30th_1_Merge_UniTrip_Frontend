@@ -29,5 +29,5 @@ export const fetchMyReviews = async (): Promise<MyReview[]> => {
     },
   });
 
-  return response.data.data; // 배열 형태 반환
+  return response.data?.data ?? []; // 배열 형태 반환
 };
