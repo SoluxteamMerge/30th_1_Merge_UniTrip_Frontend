@@ -12,7 +12,7 @@ export const bookmarkReview = async (
   accessToken: string
 ): Promise<BookmarkReviewResponse> => {
   const headers: Record<string, string> = {
-    Authorization: accessToken
+          Authorization: `Bearer ${accessToken}`
   };
   
   const response = await api.post(`/api/reviews/${postId}/bookmark`, {}, { headers });
