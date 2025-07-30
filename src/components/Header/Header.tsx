@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import AlertModal from "../AlertModal/AlertModal";
 import defaultProfile from "../../assets/header/default-profile.svg";
-import { getUserInfo } from "../../api/getUserInfo";
+import { fetchUserInfo } from "../../api/mypage/userApi";
 
 interface HeaderProps {
   isLoggedIn?: boolean; //todo
@@ -12,7 +12,7 @@ interface HeaderProps {
 
 interface UserInfo {
   nickname: string;
-  profileImageUrl: string;
+  profileImageUrl?: string;
 }
 
 function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderProps): React.JSX.Element {
@@ -39,30 +39,41 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
 
   // 사용자 정보 가져오기
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const getUserInfo = async () => {
+      console.log('Header: getUserInfo 호출됨, finalIsLoggedIn:', finalIsLoggedIn);
+      console.log('Header: localStorage accessToken:', localStorage.getItem('accessToken'));
+      
       if (!finalIsLoggedIn) {
+        console.log('Header: 로그인되지 않음, userInfo 초기화');
         setUserInfo(null);
         return;
       }
 
       setLoading(true);
       try {
-        const response = await getUserInfo();
-        if (response.code === 200) {
-          setUserInfo({
-            nickname: response.nickname,
-            profileImageUrl: response.profileImageUrl
-          });
-        }
+        console.log('Header: API 호출 시작');
+        const userData = await fetchUserInfo();
+        console.log('Header: API 응답 성공:', userData);
+        
+        console.log('Header: 사용자 정보 설정:', userData.nickname, userData.profileImageUrl);
+        setUserInfo({
+          nickname: userData.nickname,
+          profileImageUrl: userData.profileImageUrl
+        });
       } catch (error) {
-        console.error('사용자 정보 조회 실패:', error);
-        setUserInfo(null);
+        console.error('Header: 사용자 정보 조회 실패:', error);
+        // 임시 테스트용 데이터 (API가 실패할 경우)
+        setUserInfo({
+          nickname: "테스트사용자",
+          profileImageUrl: defaultProfile
+        });
       } finally {
         setLoading(false);
+        console.log('Header: 로딩 완료, userInfo:', userInfo);
       }
     };
 
-    fetchUserInfo();
+    getUserInfo();
   }, [finalIsLoggedIn]);
 
   // 현재 카테고리 확인
@@ -242,7 +253,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
               >
                 로그아웃
               </button>
-                              <span className="header-username">
+              <span className="header-username">
                 <Link 
                   to="/recorded-youth" 
                   className={
@@ -254,11 +265,19 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
                 </Link>
                 <span className="header-username-gap" />
                 <b>{loading ? "로딩 중..." : (userInfo?.nickname || username)}</b>님
+                {/* 디버깅용 */}
+                <span style={{fontSize: '10px', color: 'red'}}>
+                  (DEBUG: {loading ? 'loading' : userInfo ? `userInfo:${userInfo.nickname}` : 'userInfo없음'})
+                </span>
               </span>
               <img
                 src={userInfo?.profileImageUrl || profileUrl || defaultProfile}
                 alt="프로필"
                 className="header-profile-img"
+                onError={(e) => {
+                  console.log('Header: 프로필 이미지 로드 실패, src:', e.currentTarget.src);
+                  e.currentTarget.src = defaultProfile;
+                }}
               />
             </>
           ) : (

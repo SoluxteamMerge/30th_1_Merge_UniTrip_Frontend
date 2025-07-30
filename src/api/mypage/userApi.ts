@@ -23,7 +23,7 @@ export const fetchUserInfo = async (): Promise<UserInfoData> => {
 
   const response: AxiosResponse<UserInfoResponse> = await api.get('/api/user', { // API endpoint
     headers: {
-      Authorization: token,
+      Authorization: `Bearer ${token}`,
     },
   });
   return response.data.data; //.data 안의 data를 반환
