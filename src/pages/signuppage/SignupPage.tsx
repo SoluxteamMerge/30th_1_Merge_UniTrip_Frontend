@@ -10,6 +10,11 @@ import logo from '../../assets/header/logo.svg';
 import checkIcon from "../../assets/체크아이콘.svg";
 import AlertModal from '../../components/AlertModal/AlertModal';
 
+const userTypeMapping: Record<string, string> = {
+  개인: "PERSONAL",
+  조직: "ORGANIZATION",
+};
+
 const SignupPage: React.FC = () => {
   const [nickname, setNickname] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -101,13 +106,6 @@ const SignupPage: React.FC = () => {
     }
   };
 
-  // 백엔드가 요구하는 Enum 값에 맞춰 userType 매핑
-  const mapUserType = (type: string) => {
-    if (type === '개인') return 'PERSONAL';
-    if (type === '조직') return 'ORGANIZATION';
-    return type.toUpperCase(); // 혹시 모를 기본 처리
-  };
-
   const handleRegister = async () => {
     if (!nickname) return showModal('닉네임 입력은 필수입니다.');
     if (!isNicknameChecked) return showModal('닉네임 중복 확인을 해주세요.');
@@ -121,15 +119,14 @@ const SignupPage: React.FC = () => {
     }
 
     try {
-      // 1. 회원 정보 등록 (유저 DB에 저장)
+      // userType 변환해서 보내기
       const profileResponse = await postUserProfile({
         nickname,
         phoneNumber,
-        userType: mapUserType(userType),
+        userType: userTypeMapping[userType] || userType,
         emailVerified,
       });
 
-      // 2. 회원가입 성공 후 프로필 이미지 업로드 (선택)
       if (selectedFile) {
         await uploadUserProfileImage(selectedFile, token);
       }
