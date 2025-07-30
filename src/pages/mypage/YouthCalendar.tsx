@@ -17,10 +17,6 @@ import { deleteSchedule } from "../../api/schedule/deleteSchedule";
 import { getScheduleList } from "../../api/schedule/getScheduleList";
 import { getScheduleDetail } from "../../api/schedule/getScheduleDetail";
 
-
-
-
-
 const YouthCalendar: React.FC = () => {
   const navigate = useNavigate(); 
   const username = "김눈송";
@@ -170,6 +166,17 @@ const YouthCalendar: React.FC = () => {
           setSavedSchedules(updatedSchedules);
           localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
         } else {
+
+          console.log("✅ 전송할 일정 생성 데이터:", {
+            title: scheduleTitle,
+            description: memo,
+            travelType: "기타",
+            startDate: startDate,
+            endDate: endDateStr,
+            companions: "",
+            isPublic: true,
+          });
+          
           //일정 생성
           const response = await createSchedule({
             title: scheduleTitle,
