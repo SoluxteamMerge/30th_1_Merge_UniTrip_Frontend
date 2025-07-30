@@ -82,7 +82,8 @@ const YouthTalkDetailPage: React.FC = () => {
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZone: 'Asia/Seoul'
               }),
               content: comment.content,
               likes: comment.likeCount,
@@ -363,7 +364,9 @@ const YouthTalkDetailPage: React.FC = () => {
 
       const response = await postComment(postData.postId, commentText.trim(), accessToken);
       
-      if (response.code === 201) {
+      console.log('댓글 작성 응답:', response);
+      
+      if (response.code === 200 || response.code === 201) {
         // API 응답으로 새 댓글 생성
         const newComment = {
           id: response.data.commentId,
@@ -373,7 +376,8 @@ const YouthTalkDetailPage: React.FC = () => {
             month: '2-digit',
             day: '2-digit',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            timeZone: 'Asia/Seoul'
           }),
           content: response.data.content,
           likes: 0,
@@ -387,6 +391,7 @@ const YouthTalkDetailPage: React.FC = () => {
         
         console.log('댓글이 성공적으로 작성되었습니다.');
       } else {
+        console.error('댓글 작성 실패:', response);
         alert('댓글 작성에 실패했습니다.');
       }
     } catch (error: any) {
