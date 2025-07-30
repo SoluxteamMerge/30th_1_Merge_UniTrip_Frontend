@@ -153,7 +153,7 @@ const TogetherPage: React.FC = () => {
     <div className="together-bg">
       <style>{`
         .together-bg { background: #e8f0f2; min-height: 100vh; }
-        .together-container { max-width: 1500px; margin: 0 auto; padding: 60px 0px 0px 300px; }
+        .together-container { max-width: 1500px; margin: 0 auto; padding: 60px 0px 60px 300px; }
         .together-sidebar {
           position: fixed;
           left: 80px;
