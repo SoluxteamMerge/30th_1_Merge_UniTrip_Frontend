@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import AlertModal from "../AlertModal/AlertModal";
 import defaultProfile from "../../assets/header/default-profile.svg";
 
 interface HeaderProps {
@@ -10,15 +11,18 @@ interface HeaderProps {
 
 function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderProps): React.JSX.Element {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLogoutSuccessModal, setShowLogoutSuccessModal] = useState(false);
+  const [showLoginRequiredModal, setShowLoginRequiredModal] = useState(false);
+  
   const menuLinks = [
     { to: "/", label: "청춘 발자국" },
     { to: "/mt-journey", label: "MT여정지도" },
-    { to: "/together", label: "함께해요" },
+    { to: "/together", label: "함께해요", requiresLogin: true },
     { to: "/youth-talk", label: "청춘톡" },
-    { to: "/youth-drawer", label: "청춘서랍", last: true }
+    { to: "/youth-drawer", label: "청춘서랍", last: true, requiresLogin: true }
   ];
 
   // 현재 카테고리 확인
@@ -42,6 +46,18 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
   const handleLogoutSuccessConfirm = () => {
     setShowLogoutSuccessModal(false);
     window.location.href = '/login';
+  };
+
+  const handleLoginRequiredModalClose = () => {
+    setShowLoginRequiredModal(false);
+    navigate('/login');
+  };
+
+  const handleMenuClick = (link: any, e: React.MouseEvent) => {
+    if (link.requiresLogin && !isLoggedIn) {
+      e.preventDefault();
+      setShowLoginRequiredModal(true);
+    }
   };
 
   return (
@@ -139,7 +155,8 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
             <img src="/src/assets/header/logo.svg" alt="로고" className="header-logo" />
           </span>
           <nav>
-            {menuLinks.map(({ to, label, last }) => {
+            {menuLinks.map((link) => {
+              const { to, label, last } = link;
               // 링크 활성화 조건 확인
               let isActive = false;
               
@@ -166,6 +183,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
                     (last ? " last" : "") +
                     (isActive ? " active" : "")
                   }
+                  onClick={(e) => handleMenuClick({ to, label, last, requiresLogin: link.requiresLogin }, e)}
                 >
                   {label}
                 </Link>
@@ -243,6 +261,14 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
             </div>
           </div>
         </div>
+      )}
+
+      {/* 로그인 필요 모달 */}
+      {showLoginRequiredModal && (
+        <AlertModal 
+          message="로그인이 필요한 서비스입니다. 로그인 후 이용해주세요." 
+          onClose={handleLoginRequiredModalClose} 
+        />
       )}
     </>
   );
