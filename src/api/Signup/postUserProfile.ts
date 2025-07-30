@@ -6,7 +6,7 @@ interface UserProfileData {
   phoneNumber: string;
   userType: string;
   emailVerified: boolean;
-  profileImageUrl: string;
+  profileImageUrl: string | null;
 }
 
 interface ErrorResponseData {

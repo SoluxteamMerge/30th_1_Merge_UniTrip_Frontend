@@ -120,7 +120,7 @@ const SignupPage: React.FC = () => {
         phoneNumber,
         userType,
         emailVerified,
-        profileImageUrl: uploadedUrl,
+        profileImageUrl: uploadedUrl || null,
       });
 
       showModal(response.message);
