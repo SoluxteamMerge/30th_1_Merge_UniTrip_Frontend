@@ -133,8 +133,10 @@ const RecordedYouthPage: React.FC = () => {
     const loadReviews = async () => {
       try {
         const data = await fetchMyReviews();
+        console.log("📌 내가 쓴 리뷰 목록:", data); 
         setMyReviews(data);
       } catch (err) {
+        console.error("❌ 리뷰 로드 실패:", err); 
         setError("리뷰를 불러오는 데 실패했습니다.");
         console.error(err);
       } finally {
@@ -187,7 +189,7 @@ const RecordedYouthPage: React.FC = () => {
                    <p>로딩 중...</p>
                   ) : error ? ( 
                     <p style={{ color: "red" }}>{error}</p>
-                  ) : myReviews.length > 0 ? (// 정상적으로 데이터가 있을 때 처리
+                  ) :Array.isArray(myReviews) && myReviews.length > 0 ? (// 정상적으로 데이터가 있을 때 처리
                   <Pagination
                       items={myReviews}
                       itemsPerPage={6}
