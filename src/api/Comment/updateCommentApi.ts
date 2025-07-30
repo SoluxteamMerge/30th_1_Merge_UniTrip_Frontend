@@ -20,7 +20,7 @@ export const updateComment = async (
   accessToken: string
 ): Promise<UpdateCommentResponse> => {
   const headers: Record<string, string> = {
-          Authorization: accessToken
+          Authorization: `Bearer ${accessToken}`
   };
   
   const requestBody: UpdateCommentRequest = {
