@@ -223,7 +223,7 @@ const RecordedYouthPage: React.FC = () => {
                         textAlign: "center"
                       }}
                     >
-                      <p style={{ fontSize: 16, color: "#0B0B61", fontWeight: 700, margin: 0 }}>
+                      <p style={{ fontSize: 20, color: "#0B0B61", fontWeight: 700, margin: 0 }}>
                         아직 내가 만든 청춘이 없어요
                       </p>
                       
