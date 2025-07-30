@@ -2,9 +2,10 @@
 
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const getPopularKeywords = async (limit: number = 10) => {
+  //console.log("!!호출 주소:", `${BASE_URL}/api/keywords/popular?limit=${limit}`);
   try {
     const response = await axios.get(`${BASE_URL}/api/keywords/popular`, {
       params: { limit },
