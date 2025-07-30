@@ -11,7 +11,7 @@ export const deleteReview = async (
 ): Promise<DeleteReviewResponse> => {
   const response = await api.delete(`/api/reviews/${postId}`, {
     headers: {
-      Authorization: accessToken, // Bearer X
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return response.data;

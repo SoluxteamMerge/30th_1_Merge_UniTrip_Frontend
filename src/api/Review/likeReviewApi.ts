@@ -12,7 +12,7 @@ export const likeReview = async (
   accessToken: string
 ): Promise<LikeReviewResponse> => {
   const headers: Record<string, string> = {
-    Authorization: accessToken
+          Authorization: `Bearer ${accessToken}`
   };
   
   const response = await api.post(`/api/reviews/${postId}/like`, {}, { headers });

@@ -23,7 +23,7 @@ export const postComment = async (
   accessToken: string
 ): Promise<PostCommentResponse> => {
   const headers: Record<string, string> = {
-    Authorization: accessToken,
+          Authorization: `Bearer ${accessToken}`,
     'Content-Type': 'application/json'
   };
   

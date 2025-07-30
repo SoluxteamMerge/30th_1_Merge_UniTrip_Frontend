@@ -20,7 +20,7 @@ export const rateReview = async (
   accessToken: string
 ): Promise<RatingResponse> => {
   const headers: Record<string, string> = {
-    Authorization: accessToken,
+          Authorization: `Bearer ${accessToken}`,
     'Content-Type': 'application/json'
   };
   

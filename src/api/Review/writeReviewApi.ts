@@ -36,7 +36,7 @@ export const postReview = async (
   const response = await api.post('/api/reviews', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
-      Authorization: accessToken, // Bearer X
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return response.data;
