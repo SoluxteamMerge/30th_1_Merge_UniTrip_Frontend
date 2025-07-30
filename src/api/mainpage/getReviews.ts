@@ -102,4 +102,3 @@ export const fetchReviews = async (token?: string): Promise<GetReviewsResponse> 
         }
     }
 };
-

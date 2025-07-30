@@ -2,38 +2,36 @@ import './ReviewCard.css';
 import starIcon from '../../assets/mainpage/star.svg';
 import heartIcon from '../../assets/mainpage/heart.svg';
 import scrapIcon from '../../assets/mainpage/scrap.svg';
-import fillscrap from '../../assets/mainpage/fillscrap.svg';
 
 interface ReviewCardProps {
   postId: number;
-  title: string;
+  postTitle: string;
   categoryName: string;
-  thumbnailUrl: string;
+  imageUrl: string | null;
   nickname: string;
-  createdAt: string;
-  likes: number;
+  rating: number;
+  likeCount: number;
   scrapCount: number;
-  rating: number; //백엔드 구현 중
-  isLiked: boolean;
-  isScraped: boolean;
 }
 
 export const ReviewCard = ({
   postId,
-  title,
+  postTitle,
   categoryName,
-  thumbnailUrl,
+  imageUrl,
   nickname,
-  createdAt,
-  likes,
-  scrapCount,
   rating,
-  isLiked,
-  isScraped,
+  likeCount,
+  scrapCount,
 }: ReviewCardProps) => {
   return (
     <div className="review-card">
-      <img src={thumbnailUrl} alt="리뷰 이미지" className="card-img" />
+      {imageUrl ? (
+        <img src={imageUrl} alt="리뷰 이미지" className="card-img" />
+      ) : (
+        <div className="card-img-placeholder">이미지 없음</div>
+      )}
+
       <div className="card-content">
         <div className="card-author-line">
           <p className="card-author">{nickname}</p>
@@ -43,16 +41,16 @@ export const ReviewCard = ({
               <span>{rating}</span>
             </div>
             <div className="icon-button">
-              <img src={heartIcon} alt="좋아요" className={isLiked ? 'heart-colored' : ''} />
-              <span>{likes}</span>
+              <img src={heartIcon} alt="좋아요" />
+              <span>{likeCount}</span>
             </div>
             <div className="icon-button">
-              <img src={isScraped? fillscrap : scrapIcon} alt="스크랩" className={isScraped ? 'scrap-colored' : ''}/>
+              <img src={scrapIcon} alt="스크랩" />
               <span>{scrapCount}</span>
             </div>
           </div>
         </div>
-        <p className="card-title">{title}</p>
+        <p className="card-title">{postTitle}</p>
         <p className="card-category">#{categoryName}</p>
       </div>
     </div>

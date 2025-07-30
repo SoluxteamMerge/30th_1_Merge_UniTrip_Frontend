@@ -14,7 +14,7 @@ import AlertModal from '../../components/AlertModal/AlertModal';
 interface RecommendItem {
   postId: number;
   title: string;
-  thumbnailUrl: string;
+  imageUrl: string;
   content: string;
 }
 
@@ -23,7 +23,6 @@ function MainPage() {
   const [visibleCount, setVisibleCount] = useState(6);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [randomRecommend, setRandomRecommend] = useState<RecommendItem | null>(null);
-  const token = localStorage.getItem('accessToken');
   const [alertMessage, setAlertMessage] = useState('');
   const navigate = useNavigate();
 
@@ -31,7 +30,7 @@ function MainPage() {
     setVisibleCount((prev) => prev + 3);
   };
 
-  // 추천 Api
+  // 추천 리뷰 API
   useEffect(() => {
     const fetchRecommended = async () => {
       try {
@@ -39,7 +38,7 @@ function MainPage() {
         setRandomRecommend({
           postId: data.postId,
           title: data.title,
-          thumbnailUrl: data.thumbnailUrl || '/default-thumbnail.png',
+          imageUrl: data.thumbnailUrl || '/default-thumbnail.png',
           content: data.content,
         });
       } catch (err: any) {
@@ -52,16 +51,13 @@ function MainPage() {
     fetchRecommended();
   }, []);
 
-  // 리뷰 리스트 가져오기 
+  // 리뷰 목록 API
   useEffect(() => {
     const loadReviews = async () => {
       try {
         const token = localStorage.getItem('accessToken');
         const data = await fetchReviews(token || undefined);
-        const sorted = data.reviews.sort((a, b) => {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-        setReviews(sorted);
+        setReviews(data);
       } catch (err: any) {
         const message = err.response?.data?.message || '리뷰 불러오기 실패';
         console.error(message);
@@ -107,7 +103,7 @@ function MainPage() {
                   </p>
                 </div>
                 <div className="mainpage-suggest-image-wrapper">
-                  <img src={randomRecommend.thumbnailUrl} alt="추천 이미지" className="mainpage-suggest-img" />
+                  <img src={randomRecommend.imageUrl} alt="추천 이미지" className="mainpage-suggest-img" />
                 </div>
               </div>
             </div>
@@ -128,16 +124,13 @@ function MainPage() {
                 <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
                   <ReviewCard
                     postId={review.postId}
-                    title={review.title}
+                    postTitle={review.postTitle}
+                    imageUrl={review.imageUrl}
                     categoryName={review.categoryName}
-                    thumbnailUrl={review.thumbnailUrl}
                     nickname={review.nickname}
-                    createdAt={review.createdAt}
-                    likes={review.likes}
-                    scrapCount={review.scrapCount}
                     rating={review.rating}
-                    isLiked={token ? review.isLiked : false}
-                    isScraped={token ? review.isScraped : false}
+                    likeCount={review.likeCount}
+                    scrapCount={review.scrapCount}
                   />
                 </div>
               ))}
@@ -176,5 +169,3 @@ function MainPage() {
 }
 
 export default MainPage;
-
-
