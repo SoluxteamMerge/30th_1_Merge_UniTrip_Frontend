@@ -373,6 +373,17 @@ const WriteReviewPage: React.FC = () => {
         }
         const res = await postReview(reviewData, images, accessToken);
         if (res.status === 200) {
+          // 게시글 작성 성공 후 별점 등록
+          if (rating > 0) {
+            try {
+              await rateReview(res.postId, rating, accessToken);
+              console.log('별점 등록 성공:', rating);
+            } catch (ratingError) {
+              console.error('별점 등록 실패:', ratingError);
+              // 별점 등록 실패해도 게시글 작성은 성공했으므로 계속 진행
+            }
+          }
+          
           alert(res.message);
           // 성공 시 페이지 이동
         switch (selectedCategory) {

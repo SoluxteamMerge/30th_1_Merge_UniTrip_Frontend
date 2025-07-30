@@ -1114,7 +1114,7 @@ const YouthTalkDetailPage: React.FC = () => {
             <div className="ytd-tags-container">
               {/* 카테고리 태그 */}
               <span className="ytd-tag ytd-tag-main">
-                #{postData.categoryName}
+                {postData.categoryName}
               </span>
             </div>
           </div>
