@@ -240,7 +240,7 @@ const TogetherPage: React.FC = () => {
         .together-tag { border-radius: 20px; padding: 6px 18px; font-size: 15px; font-weight: 400; }
         .together-tag-main { background: #0b0b61; color: #fff; }
         .together-tag-sub { background: #fff; border: 1.5px solid #0b0b61; color: #0b0b61; }
-        .together-rating-container { display: flex; align-items: center; margin-left: 580px; }
+        .together-rating-container { display: flex; align-items: center; margin-left: auto; }
       `}</style>
       
               <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
@@ -288,13 +288,13 @@ const TogetherPage: React.FC = () => {
                         hour: '2-digit',
                         minute: '2-digit'
                       })}</span>
-                      {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
-                      {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
-                        <div className="together-rating-container">
-                          {renderStars(review.rating)}
-                        </div>
-                      )}
                     </div>
+                    {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
+                    {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
+                      <div className="together-rating-container">
+                        {renderStars(review.rating)}
+                      </div>
+                    )}
                   </div>
                   {/* 제목+내용 */}
                   <div className="together-main-row">
