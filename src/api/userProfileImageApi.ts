@@ -58,6 +58,7 @@ export const deleteUserProfileImage = async (token: string) => {
   try {
     const response = await api.delete('/api/user/profileImage', {
       headers: getAuthHeader(token),
+      data: {},
     });
 
     if (response.data.code !== 200) {
