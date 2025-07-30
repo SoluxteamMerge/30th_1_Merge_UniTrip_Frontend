@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import writeIcon from "../../assets/write-icon.svg";
 import starWishIcon from "../../assets/module/star_wish.svg";
 import starWishFillIcon from "../../assets/module/star_wish_fill.svg";
-import { getReviews, ReviewItem } from '../../api/Review/getReviewsApi';
+import { getReviewsByBoardType, ReviewItem } from '../../api/Review/getReviewsApi';
 
 const categoryToBoardType: Record<string, string> = {
   "함께해요-동행구해요": "동행모집",
@@ -79,8 +79,13 @@ const TogetherPage: React.FC = () => {
         const fullCategoryName = `함께해요-${selectedCategory}`;
         const boardType = categoryToBoardType[fullCategoryName];
         const accessToken = localStorage.getItem('accessToken') || undefined;
-        const res = await getReviews(boardType, accessToken);
-        setReviews(res.reviews);
+        // 새로운 API 응답 형식 사용
+        const res = await getReviewsByBoardType(boardType, accessToken);
+        // 최신순으로 정렬
+        const sortedReviews = res.reviews.sort((a, b) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        setReviews(sortedReviews);
       } catch (error) {
         console.error('리뷰 조회 오류:', error);
         setReviews([]);
@@ -203,8 +208,7 @@ const TogetherPage: React.FC = () => {
         .together-post-card { display: flex; flex-direction: column; gap: 0; background: #fff; border-radius: 15px; border: 2px solid #bbb; padding: 24px; margin-bottom: 8px; }
         .together-post-top-row { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #bbb; padding-bottom: 12px; margin-bottom: 18px; }
         .together-post-info-row { display: flex; align-items: center; }
-        .together-profile { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; background: #eee; }
-        .together-profile-default { background: #bbb; }
+        .together-profile { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; background: #bbb; }
         .together-username { color: #838383; font-size: 15px; }
         .together-info-divider { width: 1px; height: 18px; background: #bbb; margin: 0 12px; }
         .together-date { color: #555; font-size: 13px; }
@@ -241,6 +245,7 @@ const TogetherPage: React.FC = () => {
         .together-tag-main { background: #0b0b61; color: #fff; }
         .together-tag-sub { background: #fff; border: 1.5px solid #0b0b61; color: #0b0b61; }
         .together-rating-container { display: flex; align-items: center; margin-left: auto; }
+        .together-thumbnail { width: 220px; height: 130px; border-radius: 0px; object-fit: cover; margin-left: 24px; }
       `}</style>
       
               <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
@@ -278,7 +283,14 @@ const TogetherPage: React.FC = () => {
                   {/* 상단: 프로필/닉네임/날짜 */}
                   <div className="together-post-top-row">
                     <div className="together-post-info-row">
-                      <div className="together-profile together-profile-default" />
+                      <div 
+                        className="together-profile" 
+                        style={{
+                          backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }}
+                      />
                       <span className="together-username">{review.nickname} 님</span>
                       <div className="together-info-divider" />
                       <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
@@ -304,10 +316,21 @@ const TogetherPage: React.FC = () => {
                       </div>
                       <div className="together-post-content">{review.content}</div>
                     </div>
+                    {review.thumbnailUrl && (
+                      <img 
+                        src={review.thumbnailUrl || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"} 
+                        alt="썸네일" 
+                        className="together-thumbnail" 
+                        onError={(e) => {
+                          // 이미지 로드 실패 시 기본 이미지로 대체
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80";
+                        }}
+                      />
+                    )}
                   </div>
                   {/* 태그들 */}
                   <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                    <span className="together-tag together-tag-main">#{review.categoryName}</span>
+                    <span className="together-tag together-tag-main">{review.categoryName}</span>
                   </div>
                 </div>
               ))}

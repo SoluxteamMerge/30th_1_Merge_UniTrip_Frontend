@@ -364,7 +364,8 @@ const WriteReviewPage: React.FC = () => {
           categoryGroupName: selectedLocation?.categoryGroupName || '',
           region: selectedLocation?.region || '',
           lat: selectedLocation?.lat || 0,
-          lng: selectedLocation?.lng || 0
+          lng: selectedLocation?.lng || 0,
+          rating: rating
         };
 
         const images: File[] = [];
