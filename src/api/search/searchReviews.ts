@@ -29,7 +29,7 @@ export const searchReviews = async (
 ): Promise<SearchReviewResponse> => {
   const response = await axios.get(`${BASE_URL}/api/posts/search`, {
     params: { keyword, sort },
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: token },
   });
 
   return response.data;
