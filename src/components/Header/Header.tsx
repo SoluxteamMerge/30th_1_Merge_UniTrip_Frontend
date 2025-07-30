@@ -265,10 +265,6 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
                 </Link>
                 <span className="header-username-gap" />
                 <b>{loading ? "로딩 중..." : (userInfo?.nickname || username)}</b>님
-                {/* 디버깅용 */}
-                <span style={{fontSize: '10px', color: 'red'}}>
-                  (DEBUG: {loading ? 'loading' : userInfo ? `userInfo:${userInfo.nickname}` : 'userInfo없음'})
-                </span>
               </span>
               <img
                 src={userInfo?.profileImageUrl || profileUrl || defaultProfile}
