@@ -101,6 +101,8 @@ const SignupPage: React.FC = () => {
     }
   };
 
+  
+
   const handleRegister = async () => {
     if (!nickname) return showModal('닉네임 입력은 필수입니다.');
     if (!isNicknameChecked) return showModal('닉네임 중복 확인을 해주세요.');
@@ -108,6 +110,7 @@ const SignupPage: React.FC = () => {
     if (!userEmail || !emailVerified) return showModal('학교 이메일 인증은 필수입니다.');
 
     const token = localStorage.getItem('accessToken') || '';
+    console.log('token:', token);
     if (!token) {
       showModal('로그인 상태가 아닙니다. 다시 로그인 해주세요.');
       return;
