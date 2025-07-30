@@ -125,6 +125,13 @@ const YouthCalendar: React.FC = () => {
         endDate || selectedDate
       );
 
+      // 🔽 유효성 검사 추가
+      if (end < start) {
+        setAlertMessage("종료일은 시작일보다 같거나 이후여야 합니다.");
+        setShowAlert(true);
+        return;
+      }
+
       const startDate = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
       const endDateStr = `${endYear || currentYear}-${String((endMonth || currentMonth + 1)).padStart(2, "0")}-${String(endDate || selectedDate).padStart(2, "0")}`;
 
