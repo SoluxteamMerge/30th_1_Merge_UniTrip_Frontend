@@ -9,7 +9,6 @@ interface UpdateUserInfoParams {
   phoneNumber: string;
   userType: string;
   emailVerified: boolean;
-  profileImageUrl: string;
 }
 
 interface UpdateUserInfoResponse {

@@ -206,7 +206,6 @@ function YouthDrawerEdit() {
                 phoneNumber,
                 userType,
                 emailVerified,
-                profileImageUrl: finalProfileImageUrl,
             });
             setResultMessage('회원정보가 저장되었습니다.');
             setIsResultModalOpen(true);
