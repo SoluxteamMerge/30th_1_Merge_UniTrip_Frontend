@@ -17,6 +17,10 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
   const [showLogoutSuccessModal, setShowLogoutSuccessModal] = useState(false);
   const [showLoginRequiredModal, setShowLoginRequiredModal] = useState(false);
   
+  // 실제 로그인 상태 확인
+  const actualIsLoggedIn = !!localStorage.getItem('accessToken');
+  const finalIsLoggedIn = isLoggedIn || actualIsLoggedIn;
+  
   const menuLinks = [
     { to: "/", label: "청춘 발자국" },
     { to: "/mt-journey", label: "MT여정지도" },
@@ -34,6 +38,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
 
   const handleLogoutConfirm = () => {
     // 로그아웃 로직 (실제로는 API 호출 등)
+    localStorage.removeItem('accessToken');
     localStorage.removeItem('isEmailVerified');
     setShowLogoutModal(false);
     setShowLogoutSuccessModal(true);
@@ -54,7 +59,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
   };
 
   const handleMenuClick = (link: any, e: React.MouseEvent) => {
-    if (link.requiresLogin && !isLoggedIn) {
+    if (link.requiresLogin && !finalIsLoggedIn) {
       e.preventDefault();
       setShowLoginRequiredModal(true);
     }
@@ -192,7 +197,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
           </nav>
         </div>
         <div className="header-right">
-          {isLoggedIn ? (
+          {finalIsLoggedIn ? (
             <>
               <button 
                 className="header-logout-btn" 
@@ -266,7 +271,12 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
       {/* 로그인 필요 모달 */}
       {showLoginRequiredModal && (
         <AlertModal 
-          message="로그인이 필요한 서비스입니다. 로그인 후 이용해주세요." 
+          message={
+            <>
+              로그인이 필요한 서비스입니다.<br />
+              로그인 후 이용해주세요.
+            </>
+          }
           onClose={handleLoginRequiredModalClose} 
         />
       )}
