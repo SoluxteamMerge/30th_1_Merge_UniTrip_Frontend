@@ -205,7 +205,7 @@ const ScrappedYouthPage: React.FC = () => {
                 background: "#FBFBFB",
                 borderRadius: 15,
                 padding: "24px 40px 24px 40px",
-                boxShadow: "0 1px 6px #0001;",
+                boxShadow: "0 1px 6px #0001",
                 minHeight: "580px",
                 position: "relative",
               }}
@@ -217,7 +217,7 @@ const ScrappedYouthPage: React.FC = () => {
                 <p>로딩 중...</p>
               ) : error ? (
                 <p style={{ color: "red" }}>{error}</p>
-              ) : myScraps.length > 0 ? (
+              ) :Array.isArray(myScraps) && myScraps&&myScraps.length > 0 ? (
               //스크랩한 게시글이 있을 때 보여줄 카드 리스트
               <Pagination
                 items={myScraps}
