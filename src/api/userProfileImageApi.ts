@@ -29,9 +29,15 @@ export const uploadUserProfileImage = async (file: File, token: string) => {
     const formData = new FormData();
     formData.append('image', file);
 
+    // formData에 잘 들어갔는지 확인 로그
+    for (const pair of formData.entries()) {
+      console.log('formData key:', pair[0], 'value:', pair[1]);
+    }
+
     const response = await api.post('/api/user/profileImage', formData, {
       headers: {
-        ...getAuthHeader(token),
+        Authorization: `Bearer ${token}`, // 인증 헤더만 넣기
+        // Content-Type은 지정하지 마세요 (자동 설정)
       },
     });
 
@@ -63,3 +69,4 @@ export const deleteUserProfileImage = async (token: string) => {
     handleApiError(error, '프로필 이미지 삭제에 실패했습니다.');
   }
 };
+
