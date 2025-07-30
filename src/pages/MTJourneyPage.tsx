@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import writeIcon from "../assets/write-icon.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
-import { getReviews, ReviewItem } from '../api/Review/getReviewsApi';
+import { getReviewsByBoardType, ReviewItem } from '../api/Review/getReviewsApi';
 
 const categoryToBoardType: Record<string, string> = {
   "MT여정지도": "MT_LT",
@@ -28,9 +28,13 @@ const MTJourneyPage: React.FC = () => {
       try {
         const boardType = categoryToBoardType["MT여정지도"];
         const accessToken = localStorage.getItem('accessToken') || undefined;
-        // 임시 데이터 사용 (API 준비 전까지)
-        const res = await getReviews(boardType, accessToken);
-        setReviews(res.reviews);
+        // 새로운 API 응답 형식 사용
+        const res = await getReviewsByBoardType(boardType, accessToken);
+        // 최신순으로 정렬
+        const sortedReviews = res.reviews.sort((a, b) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        setReviews(sortedReviews);
       } catch (error) {
         console.error('리뷰 조회 오류:', error);
         setReviews([]);
@@ -113,8 +117,7 @@ const MTJourneyPage: React.FC = () => {
         .mt-post-top-row { display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; border-bottom: 1px solid #bbb; padding-bottom: 18px; margin-bottom: 18px; }
         .mt-post-info-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .mt-post-info-left { display: flex; align-items: center; }
-        .mt-profile { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; background: #eee; }
-        .mt-profile-default { background: #bbb; }
+        .mt-profile { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; background: #bbb; }
         .mt-username { color: #838383; font-size: 15px; }
         .mt-info-divider { width: 1px; height: 18px; background: #bbb; margin: 0 12px; }
         .mt-date { color: #555; font-size: 13px; }
@@ -170,7 +173,14 @@ const MTJourneyPage: React.FC = () => {
                   <div className="mt-post-top-row">
                     <div className="mt-post-info-row">
                       <div className="mt-post-info-left">
-                      <div className="mt-profile mt-profile-default" />
+                      <div 
+                        className="mt-profile" 
+                        style={{
+                          backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }}
+                      />
                       <span className="mt-username">{review.nickname} 님</span>
                       <div className="mt-info-divider" />
                       <span className="mt-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
@@ -194,11 +204,19 @@ const MTJourneyPage: React.FC = () => {
                       </div>
                       <div className="mt-post-content">{review.content}</div>
                     </div>
-                    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="썸네일" className="mt-thumbnail" />
+                    <img 
+                      src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
+                      alt="썸네일" 
+                      className="mt-thumbnail" 
+                      onError={(e) => {
+                        // 이미지 로드 실패 시 기본 이미지로 대체
+                        e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
+                      }}
+                    />
                   </div>
                   {/* 태그들 (사진 아래) */}
                   <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                    <span className="mt-tag mt-tag-main">#{review.categoryName}</span>
+                    <span className="mt-tag mt-tag-main">{review.categoryName}</span>
                   </div>
                 </div>
               ))}

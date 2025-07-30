@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import writeIcon from "../assets/write-icon.svg";
 import starIcon from "../assets/interaction/star.svg";
 import starFillIcon from "../assets/interaction/star_fill.svg";
-import { getAllReviews, ReviewItem } from '../api/Review/getReviewsApi';
+import { getReviewsByBoardType, ReviewItem } from '../api/Review/getReviewsApi';
 import { getAverageRating } from '../api/Review/getAverageRatingApi';
 
 const YouthTalkBoardPage: React.FC = () => {
@@ -129,12 +129,17 @@ const YouthTalkBoardPage: React.FC = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('accessToken') || undefined;
-        const res = await getAllReviews(token);
-        setReviews(res.reviews);
+        // 청춘톡은 전체 리뷰를 가져오므로 boardType을 빈 문자열로 전달
+        const res = await getReviewsByBoardType('', token);
+        // 최신순으로 정렬
+        const sortedReviews = res.reviews.sort((a, b) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        setReviews(sortedReviews);
         
         // 각 게시글의 키워드(장소명, 태그)에 대해 평균 별점 조회
         const keywords = new Set<string>();
-        res.reviews.forEach(review => {
+        sortedReviews.forEach(review => {
           if (review.placeName) keywords.add(review.placeName);
           if (review.categoryName) keywords.add(review.categoryName);
         });
@@ -164,8 +169,7 @@ const YouthTalkBoardPage: React.FC = () => {
         .yt-post-card { display: flex; flex-direction: column; gap: 0; background: #fff; border-radius: 15px; border: 2px solid #bbb; padding: 24px; margin-bottom: 8px; }
         .yt-post-top-row { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #bbb; padding-bottom: 12px; margin-bottom: 18px; }
         .yt-post-info-row { display: flex; align-items: center; }
-        .yt-profile { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; background: #eee; }
-        .yt-profile-default { background: #bbb; }
+        .yt-profile { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px; background: #bbb; }
         .yt-username { color: #838383; font-size: 15px; }
         .yt-info-divider { width: 1px; height: 18px; background: #bbb; margin: 0 12px; }
         .yt-date { color: #555; font-size: 13px; }
@@ -219,7 +223,14 @@ const YouthTalkBoardPage: React.FC = () => {
                   {/* 상단: 프로필/닉네임/날짜(왼쪽) + 태그(오른쪽) */}
                   <div className="yt-post-top-row">
                     <div className="yt-post-info-row">
-                      <div className="yt-profile yt-profile-default" />
+                      <div 
+                        className="yt-profile" 
+                        style={{
+                          backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }}
+                      />
                       <span className="yt-username">{review.nickname}</span>
                       <div className="yt-info-divider" />
                       <span className="yt-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
@@ -231,7 +242,7 @@ const YouthTalkBoardPage: React.FC = () => {
                       })}</span>
                     </div>
                     <div className="yt-tag-row">
-                      <span className="yt-tag yt-tag-main">#{review.categoryName}</span>
+                      <span className="yt-tag yt-tag-main">{review.categoryName}</span>
                     </div>
                   </div>
                   {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
@@ -267,7 +278,15 @@ const YouthTalkBoardPage: React.FC = () => {
                       </div>
                       <div className="yt-post-content">{review.content}</div>
                     </div>
-                    <img src={review.thumbnailUrl} alt="썸네일" className="yt-thumbnail" />
+                    <img 
+                      src={review.thumbnailUrl || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"} 
+                      alt="썸네일" 
+                      className="yt-thumbnail" 
+                      onError={(e) => {
+                        // 이미지 로드 실패 시 기본 이미지로 대체
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80";
+                      }}
+                    />
                   </div>
                 </div>
               ))}
