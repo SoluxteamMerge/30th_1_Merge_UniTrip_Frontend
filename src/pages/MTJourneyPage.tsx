@@ -34,7 +34,6 @@ const MTJourneyPage: React.FC = () => {
       } catch (error) {
         console.error('리뷰 조회 오류:', error);
         setReviews([]);
-      }
       } finally {
         setLoading(false);
       }
