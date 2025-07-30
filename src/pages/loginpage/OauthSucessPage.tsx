@@ -15,11 +15,13 @@ const OauthSuccessPage = () => {
     const token = searchParams.get('token');
     if (token) {
       localStorage.setItem('accessToken', token);
+      console.log('🧩 저장된 토큰:', token);
+      console.log('🧩 localStorage 확인:', localStorage.getItem('accessToken'));
+
 
       const checkUserProfile = async () => {
         try {
           const response = await api.get('/api/user/getProfile', {
-            headers: { Authorization: `Bearer ${token}` },
           });
           console.log('프로필 응답 확인:', response.data);
 
@@ -28,7 +30,10 @@ const OauthSuccessPage = () => {
           if (profileRegistered) {
             navigate('/');
           } else {
-            navigate('/signup'); // 프로필 등록 페이지로
+            setTimeout(() => {
+              navigate('/signup'); // 프로필 등록 페이지로
+            }, 0);
+          
           }
         } catch (error: unknown) {
           const axiosError = error as AxiosError<{ message: string }>;
