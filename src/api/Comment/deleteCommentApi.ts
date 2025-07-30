@@ -11,7 +11,7 @@ export const deleteComment = async (
   accessToken: string
 ): Promise<DeleteCommentResponse> => {
   const headers: Record<string, string> = {
-    Authorization: accessToken
+          Authorization: `Bearer ${accessToken}`
   };
   
   const response = await api.delete(`/api/comments/${commentId}`, { headers });
