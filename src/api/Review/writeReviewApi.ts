@@ -12,7 +12,6 @@ export interface ReviewRequest {
   region: string;
   lat: number;
   lng: number;
-  rating: number;
   overnightFlag?: boolean;
   recruitmentCnt?: number;
 }
