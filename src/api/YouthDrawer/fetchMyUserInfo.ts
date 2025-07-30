@@ -2,7 +2,7 @@ import api from '../api';
 import { AxiosError } from 'axios';
 
 interface MyUserInfo {
-  userName: string;          
+  name: string;          
   nickname: string;          
   phoneNumber: string;       
   userType: string;          
