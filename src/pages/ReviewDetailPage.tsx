@@ -46,6 +46,7 @@ const YouthTalkDetailPage: React.FC = () => {
     isLiked: boolean;
     isEditing: boolean;
     editText: string;
+    author: string;
   }>>([]);
   const commentInputRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -137,7 +138,8 @@ const YouthTalkDetailPage: React.FC = () => {
               likes: comment.likeCount,
               isLiked: false,
               isEditing: false,
-              editText: ""
+              editText: "",
+              author: comment.author
             }));
             setComments(commentList);
             console.log('댓글 목록 로드 완료:', commentList);
@@ -431,7 +433,8 @@ const YouthTalkDetailPage: React.FC = () => {
           likes: 0,
           isLiked: false,
           isEditing: false,
-          editText: ""
+          editText: "",
+          author: currentUser // 현재 사용자 정보 추가
         };
         
         setComments([newComment, ...comments]);
@@ -538,7 +541,19 @@ const YouthTalkDetailPage: React.FC = () => {
       return;
     }
 
-    const updatedContent = comments.find(comment => comment.id === commentId)?.editText || "";
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) {
+      alert('댓글을 찾을 수 없습니다.');
+      return;
+    }
+
+    // 권한 확인: 현재 사용자가 댓글 작성자인지 확인
+    if (comment.author !== currentUser) {
+      alert('댓글 수정 권한이 없습니다.');
+      return;
+    }
+
+    const updatedContent = comment.editText || "";
 
     if (!updatedContent.trim()) {
       alert('수정할 내용이 없습니다.');
@@ -590,6 +605,18 @@ const YouthTalkDetailPage: React.FC = () => {
   const handleCommentDelete = async (commentId: number) => {
     if (!postData) {
       alert('게시글 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) {
+      alert('댓글을 찾을 수 없습니다.');
+      return;
+    }
+
+    // 권한 확인: 현재 사용자가 댓글 작성자인지 확인
+    if (comment.author !== currentUser) {
+      alert('댓글 삭제 권한이 없습니다.');
       return;
     }
 
