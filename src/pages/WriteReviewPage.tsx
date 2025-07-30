@@ -92,6 +92,9 @@ const WriteReviewPage: React.FC = () => {
     address: string;
     lat: number;
     lng: number;
+    kakaoId?: string;
+    categoryGroupName?: string;
+    region?: string;
   } | null>(null);
 
   // textarea ref
@@ -330,16 +333,29 @@ const WriteReviewPage: React.FC = () => {
         }
       } else {
         // 새로 작성 모드
+        // 카테고리를 boardType으로 매핑 (백엔드 형식에 맞춤)
+        const categoryToBoardType: Record<string, string> = {
+          "청춘톡": "청춘톡",
+          "MT여정지도": "MT_LT",
+          "함께해요-동행구해요": "동행모집",
+          "함께해요-번개모임": "모임구인",
+          "함께해요-졸업/휴학여행": "졸업_휴학여행",
+          "함께해요-국내학점교류": "국내학점교류",
+          "함께해요-해외교환학생": "해외교환",
+        };
+
+        const boardType = categoryToBoardType[selectedCategory] || selectedCategory;
+        
         const reviewData = {
-          boardType: selectedCategory,
+          boardType: boardType,
           categoryName: selectedCategory,
           title: title.trim(),
           content: content,
           placeName: selectedLocation?.name || '',
           address: selectedLocation?.address || '',
-          kakaoId: selectedLocation ? String(selectedLocation.lat) : '',
-          categoryGroupName: '',
-          region: '',
+          kakaoId: selectedLocation?.kakaoId || '',
+          categoryGroupName: selectedLocation?.categoryGroupName || '',
+          region: selectedLocation?.region || '',
       };
 
         const images: File[] = [];
@@ -376,9 +392,21 @@ const WriteReviewPage: React.FC = () => {
         alert('게시글 등록에 실패했습니다.');
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('게시글 처리 오류:', error);
-      alert(isEditMode ? '리뷰 수정 중 오류가 발생했습니다.' : '게시글 등록 중 오류가 발생했습니다.');
+      
+      // 백엔드에서 보내는 에러 메시지 확인
+      if (error.response) {
+        console.error('에러 응답:', error.response.data);
+        console.error('에러 상태:', error.response.status);
+        alert(`게시글 등록 실패: ${error.response.data?.message || '알 수 없는 오류가 발생했습니다.'}`);
+      } else if (error.request) {
+        console.error('에러 요청:', error.request);
+        alert('서버에 연결할 수 없습니다.');
+      } else {
+        console.error('에러 설정:', error.message);
+        alert(isEditMode ? '리뷰 수정 중 오류가 발생했습니다.' : '게시글 등록 중 오류가 발생했습니다.');
+      }
     }
     setShowPublishModal(false);
   };
@@ -402,7 +430,15 @@ const WriteReviewPage: React.FC = () => {
     setShowLocationModal(true);
   };
 
-  const handleLocationSelect = (location: { name: string; address: string; lat: number; lng: number }) => {
+  const handleLocationSelect = (location: { 
+    name: string; 
+    address: string; 
+    lat: number; 
+    lng: number;
+    kakaoId?: string;
+    categoryGroupName?: string;
+    region?: string;
+  }) => {
     console.log('장소 선택됨:', location);
     setSelectedLocation(location);
   };

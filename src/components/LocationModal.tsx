@@ -12,7 +12,15 @@ declare global {
 interface LocationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLocationSelect: (location: { name: string; address: string; lat: number; lng: number }) => void;
+  onLocationSelect: (location: { 
+    name: string; 
+    address: string; 
+    lat: number; 
+    lng: number;
+    kakaoId?: string;
+    categoryGroupName?: string;
+    region?: string;
+  }) => void;
 }
 
 const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocationSelect }) => {
@@ -232,10 +240,13 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
     
     // 장소를 선택하면 바로 저장 (모달은 닫지 않음)
     onLocationSelect({
-      name: place.place_name,
-      address: place.address_name,
-      lat: parseFloat(place.y),
-      lng: parseFloat(place.x)
+      name: place.placeName,
+      address: place.address,
+      lat: parseFloat(place.lat),
+      lng: parseFloat(place.lng),
+      kakaoId: place.id,
+      categoryGroupName: place.categoryGroupName,
+      region: place.region
     });
     
     if (!window.kakao || !window.kakao.maps || !mapInstance.current) {
@@ -267,10 +278,13 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
   const confirmLocation = () => {
     if (selectedLocation) {
       onLocationSelect({
-        name: selectedLocation.place_name,
-        address: selectedLocation.address_name,
-        lat: parseFloat(selectedLocation.y),
-        lng: parseFloat(selectedLocation.x)
+        name: selectedLocation.placeName,
+        address: selectedLocation.address,
+        lat: parseFloat(selectedLocation.lat),
+        lng: parseFloat(selectedLocation.lng),
+        kakaoId: selectedLocation.id,
+        categoryGroupName: selectedLocation.categoryGroupName,
+        region: selectedLocation.region
       });
       onClose();
     }
