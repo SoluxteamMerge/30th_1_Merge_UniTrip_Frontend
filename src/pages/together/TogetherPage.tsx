@@ -11,10 +11,10 @@ import { getReviews, ReviewItem } from '../../api/Review/getReviewsApi';
 const categoryToBoardType: Record<string, string> = {
   "함께해요-동행구해요": "동행모집",
   "함께해요-번개모임": "모임구인",
-  "함께해요-졸업/휴학여행": "졸업/휴학여행",
+  "함께해요-졸업/휴학여행": "졸업_휴학여행",
   "함께해요-국내학점교류": "국내학점교류",
   "함께해요-해외교환학생": "해외교환",
-  "MT여정지도": "MT/LT",
+  "MT여정지도": "MT_LT",
 };
 
 const categories = [
