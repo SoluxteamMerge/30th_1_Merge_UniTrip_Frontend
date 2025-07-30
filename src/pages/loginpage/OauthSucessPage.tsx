@@ -21,10 +21,11 @@ const OauthSuccessPage = () => {
           const response = await api.get('/api/user/getProfile', {
             headers: { Authorization: `Bearer ${token}` },
           });
+          console.log('프로필 응답 확인:', response.data);
 
-          const { isProfileRegistered } = response.data.result;
+          const { profileRegistered } = response.data.data;
 
-          if (isProfileRegistered) {
+          if (profileRegistered) {
             navigate('/');
           } else {
             navigate('/signup'); // 프로필 등록 페이지로
