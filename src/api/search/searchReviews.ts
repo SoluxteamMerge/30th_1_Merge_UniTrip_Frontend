@@ -29,7 +29,8 @@ export const searchReviews = async (
 ): Promise<SearchReviewResponse> => {
   const response = await axios.get(`${BASE_URL}/api/reviews/search`, {
     params: { keyword, sort },
-    headers: { Authorization: token },
+    headers: { Authorization: `Bearer ${token}` }
+
   });
   console.log("📦 [searchReviews] 전체 response:", response);
   return response.data;
