@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    allowedHosts: ["unitrip.duckdns.org"],
+    allowedHosts: ["unitrip.duckdns.org"], //수정 부분
     
   },
 });
