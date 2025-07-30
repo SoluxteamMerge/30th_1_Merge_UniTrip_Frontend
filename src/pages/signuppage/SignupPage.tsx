@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import type { ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { postUserProfile } from '../../api/Signup/postUserProfile';
 import { checkNicknameDuplicate } from '../../api/Signup/checkNicknameDuplicate';
 import { sendEmailVerification } from '../../api/Signup/sendEmailVerification';
@@ -16,6 +16,8 @@ const userTypeMapping: Record<string, string> = {
 };
 
 const SignupPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const [nickname, setNickname] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [userType, setUserType] = useState('');
@@ -30,11 +32,32 @@ const SignupPage: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // 성공 상태 관리
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,20}$/;
 
+  // 모달 띄우기 함수
   const showModal = (message: string) => {
+    console.log('[showModal] 메시지:', message);
     setModalMessage(message);
     setIsModalOpen(true);
+  };
+
+  // 모달 닫기 핸들러 (성공 시 메인페이지 이동)
+  const handleModalClose = () => {
+    console.log('[handleModalClose] 호출됨');
+    console.log('[handleModalClose] modalMessage:', modalMessage);
+    setIsModalOpen(false);
+
+    if (isSuccess) {
+      console.log('[handleModalClose] 회원가입 성공 - 1.5초 후 메인페이지 이동');
+      setTimeout(() => {
+        console.log('[handleModalClose] navigate("/") 호출');
+        navigate('/');
+        setIsSuccess(false);
+      }, 1500);
+    }
   };
 
   const handleCheckNickname = async () => {
@@ -118,11 +141,9 @@ const SignupPage: React.FC = () => {
       return;
     }
 
-    // 하이픈 제거, 숫자만 서버에 전달
     const cleanPhoneNumber = phoneNumber.replace(/-/g, '');
 
     try {
-      // userType 변환해서 보내기
       const profileResponse = await postUserProfile({
         nickname,
         phoneNumber: cleanPhoneNumber,
@@ -133,16 +154,17 @@ const SignupPage: React.FC = () => {
       if (selectedFile) {
         try {
           await uploadUserProfileImage(selectedFile, token);
-          // 필요하면 성공 메시지 띄우기
         } catch (error) {
           if (error instanceof Error) {
             showModal(`이미지 업로드 실패: ${error.message}`);
-            return; // 실패시 함수 종료
+            return;
           }
         }
       }
 
-      showModal(profileResponse.message);
+      showModal('회원정보가 등록되었습니다.');
+      setIsSuccess(true); // 성공 플래그 설정
+
     } catch (error) {
       if (error instanceof Error) {
         showModal(`프로필 등록 실패: ${error.message}`);
@@ -265,10 +287,11 @@ const SignupPage: React.FC = () => {
           <button className="signup-submit-btn" onClick={handleRegister}>확인</button>
         </div>
 
-        {isModalOpen && <AlertModal message={modalMessage} onClose={() => setIsModalOpen(false)} />}
+        {isModalOpen && <AlertModal message={modalMessage} onClose={handleModalClose} />}
       </div>
     </div>
   );
 };
 
 export default SignupPage;
+
