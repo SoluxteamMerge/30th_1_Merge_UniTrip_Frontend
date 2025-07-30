@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import SortDropdown from "../../components/SortDropdown";
+import AlertModal from "../../components/AlertModal/AlertModal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import writeIcon from "../../assets/write-icon.svg";
 import starWishIcon from "../../assets/module/star_wish.svg";
@@ -31,6 +32,37 @@ const TogetherPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // 로그인 상태 확인
+  const isLoggedIn = !!localStorage.getItem('accessToken');
+
+  // 로그인하지 않은 사용자 체크
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+    }
+  }, [isLoggedIn]);
+
+  const handleLoginModalClose = () => {
+    setShowLoginModal(false);
+    navigate('/login');
+  };
+
+  // 로그인하지 않은 경우 페이지 렌더링하지 않음
+  if (!isLoggedIn) {
+    return (
+      <>
+        <Header isLoggedIn={false} username="" profileUrl="" />
+        {showLoginModal && (
+          <AlertModal 
+            message="로그인이 필요한 서비스입니다. 로그인 후 이용해주세요." 
+            onClose={handleLoginModalClose} 
+          />
+        )}
+      </>
+    );
+  }
 
   // URL 파라미터에서 카테고리 읽어오기
   useEffect(() => {
@@ -47,8 +79,7 @@ const TogetherPage: React.FC = () => {
         const fullCategoryName = `함께해요-${selectedCategory}`;
         const boardType = categoryToBoardType[fullCategoryName];
         const accessToken = localStorage.getItem('accessToken') || undefined;
-        // 임시 데이터 사용 (API 준비 전까지)
-        const res = await getReviews(boardType, accessToken, true);
+        const res = await getReviews(boardType, accessToken);
         setReviews(res.reviews);
       } catch (error) {
         console.error('리뷰 조회 오류:', error);
@@ -212,7 +243,7 @@ const TogetherPage: React.FC = () => {
         .together-rating-container { display: flex; align-items: center; margin-left: 580px; }
       `}</style>
       
-      <Header isLoggedIn={true} username="김눈송" profileUrl="" />
+              <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       
       {/* 사이드바 */}
       <div className="together-sidebar">

@@ -149,7 +149,7 @@ const MTJourneyPage: React.FC = () => {
           transition: box-shadow 0.2s;
         }
       `}</style>
-      <Header isLoggedIn={true} username="김눈송" profileUrl="" />
+              <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       <div className="mt-container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div className="mt-title-box">
