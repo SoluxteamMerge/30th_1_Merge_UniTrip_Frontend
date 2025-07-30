@@ -29,7 +29,7 @@ const MTJourneyPage: React.FC = () => {
         const boardType = categoryToBoardType["MT여정지도"];
         const accessToken = localStorage.getItem('accessToken') || undefined;
         // 임시 데이터 사용 (API 준비 전까지)
-        const res = await getReviews(boardType, accessToken, true);
+        const res = await getReviews(boardType, accessToken);
         setReviews(res.reviews);
       } catch (error) {
         console.error('리뷰 조회 오류:', error);

@@ -92,47 +92,13 @@ const YouthTalkDetailPage: React.FC = () => {
             }));
             setComments(commentList);
             console.log('댓글 목록 로드 완료:', commentList);
+          } else {
+            console.error('댓글 목록 조회 실패:', commentsResponse.message);
+            setComments([]);
           }
         } catch (commentError) {
           console.error('댓글 목록 조회 실패:', commentError);
-          // 백엔드 연동 전까지 임시 댓글 데이터 사용
-          console.log('백엔드 연동 전 임시 댓글 데이터 사용');
-          const tempComments = [
-            {
-              id: 1,
-              username: '사용자1',
-              date: new Date().toLocaleString('ko-KR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              }),
-              content: '정말 좋은 게시글이네요! 👍',
-              likes: 3,
-              isLiked: false,
-              isEditing: false,
-              editText: ""
-            },
-            {
-              id: 2,
-              username: '다른사용자',
-              date: new Date(Date.now() - 60000).toLocaleString('ko-KR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              }),
-              content: '저도 같은 생각이에요!',
-              likes: 1,
-              isLiked: false,
-              isEditing: false,
-              editText: ""
-            }
-          ];
-          setComments(tempComments);
-          console.log('임시 댓글 데이터 설정 완료');
+          setComments([]);
         }
       } catch (error) {
         console.error('게시글 조회 실패:', error);
@@ -420,40 +386,21 @@ const YouthTalkDetailPage: React.FC = () => {
         setCommentText("");
         
         console.log('댓글이 성공적으로 작성되었습니다.');
+      } else {
+        alert('댓글 작성에 실패했습니다.');
       }
     } catch (error: any) {
-      console.error('댓글 작성 오류 상세:', {
-        error,
-        message: error.message,
-        response: error.response,
-        status: error.response?.status,
-        data: error.response?.data
-      });
+      console.error('댓글 작성 오류:', error);
       
-      // 백엔드 연동 전까지 임시 성공 처리
-      console.log('백엔드 연동 전 임시 성공 처리');
-      
-      const tempComment = {
-        id: Date.now(), // 임시 ID
-        username: '사용자',
-        date: new Date().toLocaleString('ko-KR', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        content: commentText.trim(),
-        likes: 0,
-        isLiked: false,
-        isEditing: false,
-        editText: ""
-      };
-      
-      setComments([...comments, tempComment]);
-      setCommentText("");
-      console.log('임시 댓글 추가 완료');
-      return;
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 400) {
+        alert('잘못된 요청입니다. 댓글 내용을 확인해주세요.');
+      } else if (error.response?.status === 404) {
+        alert('게시글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 작성 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -494,29 +441,11 @@ const YouthTalkDetailPage: React.FC = () => {
         ));
         
         console.log('댓글 좋아요 성공:', response.message);
+      } else {
+        alert('댓글 좋아요 처리에 실패했습니다.');
       }
     } catch (error: any) {
-      console.error('댓글 좋아요 오류 상세:', {
-        error,
-        message: error.message,
-        response: error.response,
-        status: error.response?.status,
-        data: error.response?.data
-      });
-      
-      // 백엔드 연동 전까지 임시 성공 처리
-      console.log('백엔드 연동 전 임시 성공 처리 (댓글 좋아요)');
-      setComments(comments.map(comment => 
-        comment.id === commentId 
-          ? { 
-              ...comment, 
-              isLiked: !comment.isLiked, 
-              likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1 
-            }
-          : comment
-      ));
-      console.log('임시 댓글 좋아요 처리 완료');
-      return;
+      console.error('댓글 좋아요 오류:', error);
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
@@ -585,25 +514,11 @@ const YouthTalkDetailPage: React.FC = () => {
             : comment
         ));
         console.log('댓글이 성공적으로 수정되었습니다.');
+      } else {
+        alert('댓글 수정에 실패했습니다.');
       }
     } catch (error: any) {
-      console.error('댓글 수정 오류 상세:', {
-        error,
-        message: error.message,
-        response: error.response,
-        status: error.response?.status,
-        data: error.response?.data
-      });
-      
-      // 백엔드 연동 전까지 임시 성공 처리
-      console.log('백엔드 연동 전 임시 성공 처리 (수정)');
-      setComments(comments.map(comment => 
-        comment.id === commentId 
-          ? { ...comment, content: updatedContent, isEditing: false, editText: "" }
-          : comment
-      ));
-      console.log('임시 댓글 수정 완료');
-      return;
+      console.error('댓글 수정 오류:', error);
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
@@ -646,19 +561,7 @@ const YouthTalkDetailPage: React.FC = () => {
         alert('댓글 삭제에 실패했습니다.');
       }
     } catch (error: any) {
-      console.error('댓글 삭제 오류 상세:', {
-        error,
-        message: error.message,
-        response: error.response,
-        status: error.response?.status,
-        data: error.response?.data
-      });
-      
-      // 백엔드 연동 전까지 임시 성공 처리
-      console.log('백엔드 연동 전 임시 성공 처리 (삭제)');
-      setComments(comments.filter(comment => comment.id !== commentId));
-      console.log('임시 댓글 삭제 완료');
-      return;
+      console.error('댓글 삭제 오류:', error);
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
