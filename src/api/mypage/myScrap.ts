@@ -31,5 +31,5 @@ export const fetchMyScraps = async (): Promise<MyScrap[]> => {
     },
   });
 
-  return response.data.data; // 배열만 반환
+  return response.data?.data ?? []; // 배열만 반환 (null or undefined → 빈 배열 대체)
 };
