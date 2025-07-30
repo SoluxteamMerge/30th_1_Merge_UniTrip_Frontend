@@ -10,9 +10,10 @@ export interface ReviewRequest {
   kakaoId: string;
   categoryGroupName: string;
   region: string;
+  lat: number;
+  lng: number;
   overnightFlag?: boolean;
   recruitmentCnt?: number;
-  imageUrl?: Record<string, any>;
 }
 
 export interface ReviewResponse {
@@ -27,16 +28,18 @@ export const postReview = async (
   accessToken: string
 ): Promise<ReviewResponse> => {
   const formData = new FormData();
+  
   // JSON 객체를 문자열로 변환 후 Blob으로 감싸서 "request"라는 key로 추가
   const jsonBlob = new Blob([JSON.stringify(review)], { type: 'application/json' });
   formData.append('request', jsonBlob);
+  
   // 이미지 파일 추가
   images.forEach((file) => formData.append('images', file));
 
   const response = await api.post('/api/reviews', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: accessToken, // Bearer 제거
     },
   });
   return response.data;
