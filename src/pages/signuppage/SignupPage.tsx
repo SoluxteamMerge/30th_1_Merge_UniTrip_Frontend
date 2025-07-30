@@ -107,23 +107,27 @@ const SignupPage: React.FC = () => {
     if (!userType) return showModal('유저 타입 입력은 필수입니다.');
     if (!userEmail || !emailVerified) return showModal('학교 이메일 인증은 필수입니다.');
 
+    const token = localStorage.getItem('accessToken') || '';
+    if (!token) {
+      showModal('로그인 상태가 아닙니다. 다시 로그인 해주세요.');
+      return;
+    }
+
     try {
-      let uploadedUrl = '';
-      const token = localStorage.getItem('accessToken') || '';
-
-      if (selectedFile) {
-        uploadedUrl = await uploadUserProfileImage(selectedFile, token);
-      }
-
-      const response = await postUserProfile({
+      // 1. 회원 정보 등록 (유저 DB에 저장)
+      const profileResponse = await postUserProfile({
         nickname,
         phoneNumber,
         userType,
         emailVerified,
-        profileImageUrl: uploadedUrl || null,
       });
 
-      showModal(response.message);
+      // 2. 회원가입 성공 후 프로필 이미지 업로드 (선택)
+      if (selectedFile) {
+        await uploadUserProfileImage(selectedFile, token);
+      }
+
+      showModal(profileResponse.message);
     } catch (error) {
       if (error instanceof Error) {
         showModal(error.message || '회원가입 실패');
@@ -251,3 +255,4 @@ const SignupPage: React.FC = () => {
 };
 
 export default SignupPage;
+
