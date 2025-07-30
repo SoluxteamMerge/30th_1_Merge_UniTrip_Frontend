@@ -112,32 +112,44 @@ const SignupPage: React.FC = () => {
     if (!userType) return showModal('유저 타입 입력은 필수입니다.');
     if (!userEmail || !emailVerified) return showModal('학교 이메일 인증은 필수입니다.');
 
-    const token = localStorage.getItem('accessToken') || '';
-    if (!token) {
-      showModal('로그인 상태가 아닙니다. 다시 로그인 해주세요.');
-      return;
-    }
-
-    try {
-      // userType 변환해서 보내기
-      const profileResponse = await postUserProfile({
-        nickname,
-        phoneNumber,
-        userType: userTypeMapping[userType] || userType,
-        emailVerified,
-      });
-
-      if (selectedFile) {
+  const token = localStorage.getItem('accessToken') || '';
+  if (!token) {
+    showModal('로그인 상태가 아닙니다. 다시 로그인 해주세요.');
+    return;
+  }
+  
+  try {
+    // userType 변환해서 보내기
+    const profileResponse = await postUserProfile({
+      nickname,
+      phoneNumber,
+      userType: userTypeMapping[userType] || userType,
+      emailVerified,
+    });
+  
+    if (selectedFile) {
+      try {
         await uploadUserProfileImage(selectedFile);
-      }
-
-      showModal(profileResponse.message);
-    } catch (error) {
-      if (error instanceof Error) {
-        showModal(error.message || '회원가입 실패');
+        // 선택사항: showModal('프로필 이미지 업로드 성공');
+      } catch (error) {
+        if (error instanceof Error) {
+          showModal(`이미지 업로드 실패: ${error.message}`);
+          return; // 이미지 업로드 실패하면 여기서 함수 종료해도 좋음
+        }
       }
     }
-  };
+  
+    showModal(profileResponse.message);
+  
+  } catch (error) {
+    if (error instanceof Error) {
+      showModal(`프로필 등록 실패: ${error.message}`);
+    } else {
+      showModal('회원가입 실패');
+    }
+  } 
+};
+
 
   return (
     <div className="signup-page">
