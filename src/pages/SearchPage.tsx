@@ -146,9 +146,10 @@
         const fetchPopularKeywords = async () => {
           try {
             const keywords = await getPopularKeywords(10);
+            console.log("받은 인기 키워드:", keywords); // 콘솔 로그
             setPopularKeywords(keywords);// 상태 업데이트 완료
           } catch (err) {
-            console.error("인기 키워드 조회 실패:", err);
+            console.error("인기 키워드 조회 안됨:", err);
           }
         };
         fetchPopularKeywords();
@@ -166,7 +167,7 @@
               localStorage.setItem("lastKeywordUpdateDate", today); // 성공 시에만 저장
             })
             .catch((err) => {
-              console.error("인기 키워드 랭킹 갱신 실패:", err.message);
+              console.error("인기 키워드 랭킹 갱신 안됨:", err.message);
             });
         }
       }, []);
