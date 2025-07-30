@@ -349,9 +349,13 @@ const WriteReviewPage: React.FC = () => {
 
         const boardType = categoryToBoardType[selectedCategory] || selectedCategory;
         
+        // 태그들을 categoryName에 포함 (선택된 카테고리는 제외)
+        const tagString = tags.length > 0 ? tags.join(', ') : '';
+        const categoryNameWithTags = tagString || selectedCategory;
+        
         const reviewData = {
           boardType: boardType,
-          categoryName: selectedCategory,
+          categoryName: categoryNameWithTags,
           title: title.trim(),
           content: content,
           placeName: selectedLocation?.name || '',
