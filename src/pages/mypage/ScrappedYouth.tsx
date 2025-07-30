@@ -170,7 +170,7 @@ const ScrappedYouthPage: React.FC = () => {
   const loadScraps = async () => {
     try {
       const data = await fetchMyScraps();
-      console.log("✅ 가져온 스크랩 배열:", data); 
+      console.log("✅✅✅ 가져온 스크랩 배열:", data); 
       setMyScraps(data);
     } catch (err) {
       setError("스크랩한 리뷰를 불러오는 데 실패했습니다.");

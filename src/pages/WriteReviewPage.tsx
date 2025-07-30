@@ -339,19 +339,23 @@ const WriteReviewPage: React.FC = () => {
         // 카테고리를 boardType으로 매핑 (백엔드 형식에 맞춤)
         const categoryToBoardType: Record<string, string> = {
           "청춘톡": "청춘톡",
-          "MT여정지도": "MT/LT",
+          "MT여정지도": "MT_LT",
           "함께해요-동행구해요": "동행모집",
           "함께해요-번개모임": "모임구인",
-          "함께해요-졸업/휴학여행": "졸업/휴학여행",
+          "함께해요-졸업/휴학여행": "졸업_휴학여행",
           "함께해요-국내학점교류": "국내학점교류",
           "함께해요-해외교환학생": "해외교환",
         };
 
         const boardType = categoryToBoardType[selectedCategory] || selectedCategory;
         
+        // 태그들을 categoryName에 포함 (선택된 카테고리는 제외)
+        const tagString = tags.length > 0 ? tags.join(', ') : '';
+        const categoryNameWithTags = tagString || selectedCategory;
+        
         const reviewData = {
           boardType: boardType,
-          categoryName: selectedCategory,
+          categoryName: categoryNameWithTags,
           title: title.trim(),
           content: content,
           placeName: selectedLocation?.name || '',
@@ -447,7 +451,6 @@ const WriteReviewPage: React.FC = () => {
     categoryGroupName?: string;
     region?: string;
   }) => {
-    console.log('장소 선택됨:', location);
     setSelectedLocation(location);
   };
 
