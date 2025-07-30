@@ -29,7 +29,6 @@ export const uploadUserProfileImage = async (file: File, token: string) => {
     const response = await api.post('/api/user/profileImage', formData, {
       headers: {
         ...getAuthHeader(token),
-        'Content-Type': 'multipart/form-data',
       },
     });
 
