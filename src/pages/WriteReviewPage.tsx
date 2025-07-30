@@ -994,7 +994,7 @@ const WriteReviewPage: React.FC = () => {
           cursor: pointer;
         }
       `}</style>
-      <Header isLoggedIn={true} username="김눈송" profileUrl="" />
+              <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       <div className="wr-content-root" style={{ position: 'relative' }}>
         <div className={isEmailVerified ? undefined : "wr-disabled-area"}>
           <div className="wr-left">

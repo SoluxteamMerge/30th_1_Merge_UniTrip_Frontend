@@ -200,7 +200,7 @@ const YouthTalkBoardPage: React.FC = () => {
           transition: box-shadow 0.2s;
         }
       `}</style>
-      <Header isLoggedIn={true} username="김눈송" profileUrl="" />
+              <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       <div className="yt-container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div className="yt-title-box">

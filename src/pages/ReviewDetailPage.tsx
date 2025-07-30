@@ -28,7 +28,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isRated, setIsRated] = useState(false);
   
   // 현재 로그인한 사용자 (실제로는 API에서 가져올 예정)
-  const currentUser = "김눈송";
+  const currentUser = ""; // TODO: API에서 실제 사용자 정보 가져오기
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
@@ -100,7 +100,7 @@ const YouthTalkDetailPage: React.FC = () => {
           const tempComments = [
             {
               id: 1,
-              username: '김눈송',
+              username: '사용자1',
               date: new Date().toLocaleString('ko-KR', {
                 year: 'numeric',
                 month: '2-digit',
@@ -195,7 +195,7 @@ const YouthTalkDetailPage: React.FC = () => {
   if (!postData) {
     return (
       <div className="ytd-bg">
-        <Header isLoggedIn={true} username="김눈송" profileUrl="" />
+        <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
         <div style={{ textAlign: 'center', padding: '40px' }}>
           게시글을 찾을 수 없습니다.
         </div>
@@ -435,7 +435,7 @@ const YouthTalkDetailPage: React.FC = () => {
       
       const tempComment = {
         id: Date.now(), // 임시 ID
-        username: '김눈송',
+        username: '사용자',
         date: new Date().toLocaleString('ko-KR', {
           year: 'numeric',
           month: '2-digit',
@@ -1038,7 +1038,7 @@ const YouthTalkDetailPage: React.FC = () => {
           color: #666;
         }
       `}</style>
-      <Header isLoggedIn={true} username="김눈송" profileUrl="" />
+              <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       
       {/* 뒤로가기 버튼 */}
       <button className="ytd-back-btn" onClick={() => navigate(-1)}>
