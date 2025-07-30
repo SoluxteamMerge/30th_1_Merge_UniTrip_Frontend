@@ -223,11 +223,11 @@ const RecordedYouthPage: React.FC = () => {
                         textAlign: "center"
                       }}
                     >
-                      <p style={{ fontSize: 16, color: "#0B0B61", fontWeight: 600, margin: 0 }}>
+                      <p style={{ fontSize: 20, color: "#0B0B61", fontWeight: 700, margin: 0 }}>
                         아직 내가 만든 청춘이 없어요
                       </p>
                       
-                      <p style={{ fontSize: 14, color: "#888", marginTop: 8 }}>
+                      <p style={{ fontSize: 16, color: "#888", marginTop: 10 }}>
                         <Link to="/review-write" style={{ color: "#888", textDecoration: "underline" }}>
                           청춘을 만들러 가볼까요? &gt;
                         </Link>
