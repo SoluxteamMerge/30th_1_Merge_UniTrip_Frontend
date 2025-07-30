@@ -39,7 +39,7 @@ export const createSchedule = async (
     scheduleData,
     {
       headers: {
-        Authorization: token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     }
