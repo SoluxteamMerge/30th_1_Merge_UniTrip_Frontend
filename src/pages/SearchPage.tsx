@@ -141,6 +141,8 @@
 
       const [popularKeywords, setPopularKeywords] = useState<{ keyword: string, rank: number, searchCount: number }[]>([]);
 
+      console.log("🔥 SearchPage 렌더링됨");
+
       //인기 키워드 조회
       useEffect(() => {
         const fetchPopularKeywords = async () => {
@@ -421,7 +423,7 @@
                 {/* 오른쪽: 인기 검색어 박스 */}
                 <div
                   style={{
-                    width: 200,
+                    width: 210,
                     backgroundColor: "#fff",
                     border: "1px solid #ccc",
                     borderRadius: 16,
@@ -479,7 +481,7 @@
                 //fontFamily: "Pretendard, sans-serif"
               }}>
                 <p style={{ fontSize: 18, fontWeight: 600, color: "#333" }}>해당 옵션 검색 결과 없음</p>
-                <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>청춘시는 결과가 보이지 않아요! 내가 먼저 후기를 남겨볼까요?</p>
+                <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>찾으시는 결과가 보이지 않아요! 내가 먼저 후기를 남겨볼까요?</p>
                 <button 
                 onClick={() => navigate("/review-write")}
                 style={{
@@ -541,6 +543,20 @@
                 }}>
                   <p style={{ fontSize: 18, fontWeight: 600, color: "#333" }}>해당 옵션 검색 결과 없음</p>
                   <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>찾으시는 결과가 없어요! 직접 후기를 남겨볼까요?</p>
+
+                  <button 
+                    onClick={() => navigate("/review-write")}
+                    style={{
+                      marginTop: 20,
+                      backgroundColor: "#0B0B61",
+                      color: "white",
+                      fontWeight: 600,
+                      padding: "12px 24px",
+                      border: "none",
+                      borderRadius: 12,
+                      cursor: "pointer"
+                    }}>직접 후기 쓰기</button>
+
                 </div>
               ) : (
                 <Pagination
