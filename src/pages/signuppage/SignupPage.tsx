@@ -128,7 +128,7 @@ const SignupPage: React.FC = () => {
       });
 
       if (selectedFile) {
-        await uploadUserProfileImage(selectedFile, token);
+        await uploadUserProfileImage(selectedFile);
       }
 
       showModal(profileResponse.message);
