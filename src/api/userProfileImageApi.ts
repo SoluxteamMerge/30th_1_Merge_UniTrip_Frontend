@@ -21,10 +21,13 @@ const handleApiError = (error: unknown, defaultMessage: string): never => {
 /* 프로필 이미지 업로드 */
 export const uploadUserProfileImage = async (file: File, token: string) => {
   if (!token) throw new Error('토큰이 없습니다.');
+  console.log('🔍 전달된 file:', file);
+  console.log('📎 file name:', file.name);
+  console.log('📎 file type:', file.type);
 
   try {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('image', file);
 
     const response = await api.post('/api/user/profileImage', formData, {
       headers: {
