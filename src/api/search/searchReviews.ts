@@ -28,8 +28,7 @@ export const searchReviews = async (
   sort: string = "popular" // 기본 정렬: 인기순
 ): Promise<SearchReviewResponse> => {
   const response = await axios.get(`${BASE_URL}/api/reviews/search`, {
-    //params: { keyword, sort },
-    params: { keyword: encodeURIComponent(keyword), sort },
+    params: { keyword, sort },
     headers: { Authorization: token },
   });
   console.log("📦 [searchReviews] 전체 response:", response);
