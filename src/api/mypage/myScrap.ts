@@ -11,7 +11,6 @@ export interface MyScrap {
   likeCount: number;
   rating: number;
   categoryName: string;
-  isLiked: boolean;      // 추가
 }
 
 // 서버 응답 타입 정의
