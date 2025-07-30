@@ -3,9 +3,11 @@ import api from '../api';
 export interface PlaceItem {
   placeName: string;
   address: string;
-  kakaoId: string;
+  id: string;
   categoryGroupName: string;
   region: string;
+  lat: string;
+  lng: string;
 }
 
 export interface SearchPlaceResponse {

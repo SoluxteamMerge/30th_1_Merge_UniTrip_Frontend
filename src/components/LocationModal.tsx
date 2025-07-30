@@ -242,9 +242,9 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
     onLocationSelect({
       name: place.placeName,
       address: place.address,
-      lat: 0, // Backend doesn't provide, temporary value
-      lng: 0, // Backend doesn't provide, temporary value
-      kakaoId: place.kakaoId,
+      lat: parseFloat(place.lat),
+      lng: parseFloat(place.lng),
+      kakaoId: place.id,
       categoryGroupName: place.categoryGroupName,
       region: place.region
     });
@@ -280,9 +280,9 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
       onLocationSelect({
         name: selectedLocation.placeName,
         address: selectedLocation.address,
-        lat: 0, // Backend doesn't provide, temporary value
-        lng: 0, // Backend doesn't provide, temporary value
-        kakaoId: selectedLocation.kakaoId,
+        lat: parseFloat(selectedLocation.lat),
+        lng: parseFloat(selectedLocation.lng),
+        kakaoId: selectedLocation.id,
         categoryGroupName: selectedLocation.categoryGroupName,
         region: selectedLocation.region
       });
