@@ -101,7 +101,12 @@ const SignupPage: React.FC = () => {
     }
   };
 
-  
+  // 백엔드가 요구하는 Enum 값에 맞춰 userType 매핑
+  const mapUserType = (type: string) => {
+    if (type === '개인') return 'PERSONAL';
+    if (type === '조직') return 'ORGANIZATION';
+    return type.toUpperCase(); // 혹시 모를 기본 처리
+  };
 
   const handleRegister = async () => {
     if (!nickname) return showModal('닉네임 입력은 필수입니다.');
@@ -110,7 +115,6 @@ const SignupPage: React.FC = () => {
     if (!userEmail || !emailVerified) return showModal('학교 이메일 인증은 필수입니다.');
 
     const token = localStorage.getItem('accessToken') || '';
-    console.log('token:', token);
     if (!token) {
       showModal('로그인 상태가 아닙니다. 다시 로그인 해주세요.');
       return;
@@ -121,7 +125,7 @@ const SignupPage: React.FC = () => {
       const profileResponse = await postUserProfile({
         nickname,
         phoneNumber,
-        userType,
+        userType: mapUserType(userType),
         emailVerified,
       });
 
@@ -258,4 +262,3 @@ const SignupPage: React.FC = () => {
 };
 
 export default SignupPage;
-
