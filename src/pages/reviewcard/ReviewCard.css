@@ -1,6 +1,7 @@
 .review-card {
   width: 100%;
-  max-width: 320px;  /* 기존 465px → 360px */
+  max-width: 320px; 
+  min-width: 320px; /* 기존 465px → 360px */
   height: 300px;     /* 기존 480px → 400px */
   background: #fff;
   border-radius: 12px;
