@@ -80,6 +80,7 @@ const WriteReviewPage: React.FC = () => {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [rating, setRating] = useState(0);
@@ -177,6 +178,7 @@ const WriteReviewPage: React.FC = () => {
         // 파일을 URL로 변환
         const imageUrl = URL.createObjectURL(file);
         setSelectedImage(imageUrl);
+        setSelectedImageFile(file);
       }
     };
     input.click();
@@ -184,6 +186,7 @@ const WriteReviewPage: React.FC = () => {
 
   const handleImageRemove = () => {
     setSelectedImage("");
+    setSelectedImageFile(null);
   };
 
   const handleRatingButtonClick = () => {
@@ -336,10 +339,10 @@ const WriteReviewPage: React.FC = () => {
         // 카테고리를 boardType으로 매핑 (백엔드 형식에 맞춤)
         const categoryToBoardType: Record<string, string> = {
           "청춘톡": "청춘톡",
-          "MT여정지도": "MT_LT",
+          "MT여정지도": "MT/LT",
           "함께해요-동행구해요": "동행모집",
           "함께해요-번개모임": "모임구인",
-          "함께해요-졸업/휴학여행": "졸업_휴학여행",
+          "함께해요-졸업/휴학여행": "졸업/휴학여행",
           "함께해요-국내학점교류": "국내학점교류",
           "함께해요-해외교환학생": "해외교환",
         };
@@ -356,9 +359,14 @@ const WriteReviewPage: React.FC = () => {
           kakaoId: selectedLocation?.kakaoId || '',
           categoryGroupName: selectedLocation?.categoryGroupName || '',
           region: selectedLocation?.region || '',
-      };
+          lat: selectedLocation?.lat || 0,
+          lng: selectedLocation?.lng || 0
+        };
 
         const images: File[] = [];
+        if (selectedImageFile) {
+          images.push(selectedImageFile);
+        }
         const res = await postReview(reviewData, images, accessToken);
         if (res.status === 200) {
           alert(res.message);
@@ -1087,6 +1095,9 @@ const WriteReviewPage: React.FC = () => {
                   disabled={!isEmailVerified} 
                 />
               </div>
+              
+
+              
               <hr className="wr-divider" />
               <div className="wr-content-area">
                 <div className="wr-content-wrapper">
