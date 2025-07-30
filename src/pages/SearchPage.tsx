@@ -252,6 +252,7 @@
             setIsRegionFiltered(false);
             setRegionReviews([]);
 
+            console.log("💥 searchReviews 호출됨:", searchQuery);
             const response = await searchReviews(searchQuery, token, "popular"); // 공통 함수로 변경
 
             console.log("🔍 검색 결과:", response);

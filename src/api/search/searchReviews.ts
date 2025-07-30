@@ -31,6 +31,6 @@ export const searchReviews = async (
     params: { keyword, sort },
     headers: { Authorization: token },
   });
-
+  console.log("📦 [searchReviews] 전체 response:", response);
   return response.data;
 };
