@@ -25,7 +25,7 @@ export interface SearchReview {
 export const searchReviews = async (
   keyword: string,
   token: string,
-  sort: string = "popular", // 기본 정렬: 인기순
+  sort: string = "인기순", // 기본 정렬: 인기순
   isPopular: boolean = false
 ): Promise<SearchReviewResponse> => {
 
