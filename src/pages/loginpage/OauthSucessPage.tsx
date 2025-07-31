@@ -21,8 +21,7 @@ const OauthSuccessPage = () => {
 
       const checkUserProfile = async () => {
         try {
-          const response = await api.get('/api/user/getProfile', {
-          });
+          const response = await api.get('/api/user/getProfile');
           console.log('프로필 응답 확인:', response.data);
 
           const { profileRegistered } = response.data.data;
@@ -30,10 +29,8 @@ const OauthSuccessPage = () => {
           if (profileRegistered) {
             navigate('/');
           } else {
-            setTimeout(() => {
-              navigate('/signup'); // 프로필 등록 페이지로
-            }, 0);
-          
+            setModalMessage('회원정보가 없습니다. 회원가입 페이지로 이동합니다.');  
+            setIsModalOpen(true);        
           }
         } catch (error: unknown) {
           const axiosError = error as AxiosError<{ message: string }>;
@@ -55,17 +52,22 @@ const OauthSuccessPage = () => {
     }
   }, [navigate, searchParams]);
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => {
-      navigate('/signup');
-    }, 200);
-  };
-
   return (
     <>
       <div>로그인 처리 중입니다...</div>
-      {isModalOpen && <AlertModal message={modalMessage} onClose={handleCloseModal} />}
+      {isModalOpen && (
+        <AlertModal 
+          message={modalMessage} 
+          onConfirm={() => {
+            setIsModalOpen(false);
+            navigate('/signup');
+          }}
+          onClose={() => {
+            setIsModalOpen(false);
+            navigate('/');
+          }}
+        />
+      )}
     </>
   );
 };
