@@ -82,6 +82,7 @@ function MainPage() {
     const loadReviews = async () => {
       try {
         const data = await fetchReviews();
+        console.log('🔥 리뷰 응답:', data);
         setReviews(data);
       } catch (err: any) {
         const message = err.response?.data?.message || '리뷰 불러오기 실패';
