@@ -158,11 +158,11 @@ const TogetherPage: React.FC = () => {
     <div className="together-bg">
       <style>{`
         .together-bg { background: #e8f0f2; min-height: 100vh; }
-        .together-container { max-width: 1500px; margin: 0 auto; padding: 60px 0px 60px 300px; }
+        .together-container { max-width: 1500px; margin: 0 auto; padding: 60px 150px 60px 150px; position: relative; }
         .together-sidebar {
-          position: fixed;
-          left: 80px;
-          top: 202px;
+          position: absolute;
+          left: -320px;
+          top: 0;
           width: 280px;
           background: #fff;
           border-radius: 15px;
@@ -250,22 +250,21 @@ const TogetherPage: React.FC = () => {
       
               <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       
-      {/* 사이드바 */}
-      <div className="together-sidebar">
-        <ul className="together-category-list">
-          {categories.map(category => (
-            <li
-              key={category}
-              className={`together-category-item ${selectedCategory === category ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </li>
-          ))}
-        </ul>
-      </div>
-
       <div className="together-container">
+        {/* 사이드바 */}
+        <div className="together-sidebar">
+          <ul className="together-category-list">
+            {categories.map(category => (
+              <li
+                key={category}
+                className={`together-category-item ${selectedCategory === category ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </li>
+            ))}
+          </ul>
+        </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div className="together-title-box">
             <span className="together-title-icon">▶</span>함께해요
