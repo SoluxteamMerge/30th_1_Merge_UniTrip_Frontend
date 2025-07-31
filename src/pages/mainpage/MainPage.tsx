@@ -6,9 +6,9 @@ import Header from '../../components/Header/Header';
 import './MainPage.css';
 import searchIcon from '../../assets/search_icon.svg';
 import { useNavigate } from "react-router-dom";
-import type { ReviewItem } from '../../api/mainpage/getReviews';
+import type { ReviewItem } from '../../api/mainpage/fetchReviews';
 import { fetchRecommendedReview } from '../../api/mainpage/getRecommendedReview';
-import { fetchReviews } from '../../api/mainpage/getReviews';
+import { fetchReviews } from '../../api/mainpage/fetchReviews';
 import AlertModal from '../../components/AlertModal/AlertModal';
 
 interface RecommendItem {
@@ -55,8 +55,7 @@ function MainPage() {
   useEffect(() => {
     const loadReviews = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        const data = await fetchReviews(token || undefined);
+        const data = await fetchReviews();
         setReviews(data);
       } catch (err: any) {
         const message = err.response?.data?.message || '리뷰 불러오기 실패';
