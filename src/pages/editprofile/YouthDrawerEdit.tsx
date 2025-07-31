@@ -201,6 +201,14 @@ function YouthDrawerEdit() {
             } else if (!selectedFile && profileImageUrl === '') {
                 await deleteUserProfileImage(token);
             }
+
+            console.log('💾 저장 요청 데이터:', {
+            name,
+            nickname,
+            phoneNumber: phoneNumber.replace(/-/g, ''),
+            userType,
+            emailVerified,
+            });
             await updateMyUserInfo({
                 name: name,
                 nickname,
