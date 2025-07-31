@@ -14,115 +14,6 @@
   import { updateKeywordRank } from "../api/popularKeywords/updateKeywordRank"; // import 추가
 
 
-
-  // const dummyReviews = [
-  //   {
-  //   postId: 1, 
-  //   thumbnailUrl:  "https://picsum.photos/200/100?random=101", 
-  //   title: "제주도 3박 4일 여행",
-  //   categoryName: "#제주도, #4인여행", 
-  //   nickname: "김눈송", 
-  //   createdAt: "2025-07-23", 
-  //   likes: 0,
-  //   scrapCount: 1,
-  //   rating: 1,
-  //   isLiked: false,
-  //   isScraped: false,
-  // },
-  //   {
-  //   postId: 2, 
-  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-  //   title: "설악산 단풍 구경 2박 3일",
-  //   categoryName: "#설악산, #가을여행",
-  //   nickname: "김눈송", 
-  //   createdAt: "2025-07-23", 
-  //   likes: 2,
-  //   scrapCount: 1,
-  //   rating: 1,
-  //   isLiked: false,
-  //   isScraped: false,
-  // },
-  // {
-  //   postId: 3, 
-  //   thumbnailUrl: "https://picsum.photos/200/100?random=103", 
-  //   title: "설악산 3",
-  //   categoryName: "#설악산", 
-  //   nickname: "김눈송", 
-  //   createdAt: "2025-07-23", 
-  //   likes: 0,
-  //   scrapCount: 3,
-  //   rating: 1,
-  //   isLiked: false,
-  //   isScraped: false,
-  // },
-  // {
-  //   postId: 4, 
-  //   thumbnailUrl:  "https://picsum.photos/200/100?random=104", 
-  //   title: "설악산 4",
-  //   categoryName: "#여행", 
-  //   nickname: "김눈송", 
-  //   createdAt: "2025-07-23", 
-  //   likes: 5,
-  //   scrapCount: 1,
-  //   rating: 1,
-  //   isLiked: false,
-  //   isScraped: false,
-  // },
-  // {
-  //   postId: 5, 
-  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-  //   title: "설악산 5",
-  //   categoryName: "#여행", 
-  //   nickname: "김눈송", 
-  //   createdAt: "2025-07-23", 
-  //   likes: 2,
-  //   scrapCount: 2,
-  //   rating: 3,
-  //   isLiked: false,
-  //   isScraped: false,
-  // },
-  // {
-  //   postId: 6, 
-  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-  //   title: "설악산 6",
-  //   categoryName: "#여행", 
-  //   nickname: "김눈송", 
-  //   createdAt: "2025-07-23", 
-  //   likes: 2,
-  //   scrapCount: 2,
-  //   rating: 3,
-  //   isLiked: false,
-  //   isScraped: false,
-  // },
-  // {
-  //   postId: 7, 
-  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-  //   title: "설악산 7",
-  //   categoryName: "#여행", 
-  //   nickname: "김눈송", 
-  //   createdAt: "2025-07-23", 
-  //   likes: 2,
-  //   scrapCount: 2,
-  //   rating: 3,
-  //   isLiked: false,
-  //   isScraped: false,
-  // },
-  // {
-  //   postId: 8, 
-  //   thumbnailUrl: "https://picsum.photos/200/100?random=102", 
-  //   title: "설악산 8",
-  //   categoryName: "#여행", 
-  //   nickname: "김눈송", 
-  //   createdAt: "2025-07-23", 
-  //   likes: 2,
-  //   scrapCount: 2,
-  //   rating: 3,
-  //   isLiked: false,
-  //   isScraped: false,
-  // },
-
-  // ];
-
   const regionMap: { [key: string]: string } = {
     "서울": "SEOUL",
     "부산": "BUSAN",
@@ -144,7 +35,7 @@
     "전체보기": "",
   };
   
-  //const popularKeywords = ["부산", "제주", "바다", "광안리", "속초", "강릉", "MT", "대구", "전주", "힐링"];
+
 
   const SearchPage: React.FC = () => {
       const navigate = useNavigate(); 
@@ -235,6 +126,9 @@
         const token = localStorage.getItem("accessToken");
 
         const regionParam = regionCode === "" ? null : regionCode;
+
+        console.log("🌐 지역 선택됨:", region);            // ex) "전체보기", "경기"
+        console.log("📡 요청 regionParam:", regionParam);  // ex) null, "GYEONGGI"
 
         if (token && regionCode !== undefined) {
           try {
