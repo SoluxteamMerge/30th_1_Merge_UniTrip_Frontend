@@ -123,6 +123,26 @@
 
   // ];
 
+  const regionMap: { [key: string]: string } = {
+    "서울": "SEOUL",
+    "부산": "BUSAN",
+    "대구": "DAEGU",
+    "인천": "INCHEON",
+    "광주": "GWANGJU",
+    "대전": "DAEJEON",
+    "울산": "ULSAN",
+    "세종": "SEJONG",
+    "경기": "GYEONGGI",
+    "강원": "GANGWON",
+    "충북": "CHUNGBUK",
+    "충남": "CHUNGNAM",
+    "전북": "JEONBUK",
+    "전남": "JEONNAM",
+    "경북": "GYEONGBUK",
+    "경남": "GYEONGNAM",
+    "제주": "JEJU",
+    "전체보기": "ETC",
+  };
   
   //const popularKeywords = ["부산", "제주", "바다", "광안리", "속초", "강릉", "MT", "대구", "전주", "힐링"];
 
@@ -141,7 +161,7 @@
 
       const [popularKeywords, setPopularKeywords] = useState<{ keyword: string, rank: number, searchCount: number }[]>([]);
 
-      console.log("🔥 SearchPage 렌더링됨");
+      //console.log("🔥 SearchPage 렌더링됨");
 
       //인기 키워드 조회
       useEffect(() => {
@@ -211,31 +231,17 @@
       const handleRegionChange = async (region: string) => {
         setSelectedRegion(region);
 
-        if (region === "전체보기") {
-          setIsRegionFiltered(false);
-          setRegionReviews([]);
-          return;
-        }
+        const regionCode = regionMap[region];
+        const token = localStorage.getItem("accessToken");
 
-        try {
-          const token = localStorage.getItem("accessToken");
-          if (!token) {
-            alert("로그인이 필요합니다.");
-            return;
+        if (token && regionCode !== undefined) {
+          try {
+            const response = await getPlaceByRegion(regionCode, token);
+            setRegionReviews(response.data);
+            setIsRegionFiltered(true);
+          } catch (error) {
+            console.error("Error fetching region posts:", error);
           }
-
-          const response = await getPlaceByRegion(region, token);
-
-          if (response.code === 200) {
-            setRegionReviews(response.data); // ✔ 성공 시만 데이터 적용
-          }else{
-            setRegionReviews([]); // 실패 시 빈 배열
-          }
-
-          setIsRegionFiltered(true);
-        } catch (error: any) {
-          console.error("지역 필터링 실패:", error);
-          alert(error?.response?.data?.message || "지역 필터링에 실패했습니다.");
         }
       };
 
@@ -243,10 +249,17 @@
 
       const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         console.log("💡 handleKeyDown 호출됨");
+        
         if (e.key === "Enter") {
           const token = localStorage.getItem("accessToken");
           if (!token) {
             alert("로그인이 필요합니다.");
+            return;
+          }
+
+           // 공백이나 빈 문자열 감지
+          if (!searchQuery.trim()) {
+            alert("검색어를 입력해주세요.");
             return;
           }
           try {
@@ -285,7 +298,7 @@
           setRegionReviews([]);
           setSearchQuery(keyword);
 
-          const response = await searchReviews(keyword, token, "popular"); 
+          const response = await searchReviews(keyword, token,"popular", true); 
 
           if (response.code === 200 && Array.isArray(response.data)) {
             setSearchResults(response.data); // 응답 포맷 둘 다 처리

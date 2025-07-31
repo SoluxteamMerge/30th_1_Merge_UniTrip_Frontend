@@ -223,6 +223,10 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
         if (status === window.kakao.maps.services.Status.OK) {
           setSearchResults(results);
           console.log('장소 검색 성공:', results);
+          if (results.length > 0) {
+            console.log('첫 번째 결과 구조:', results[0]);
+            console.log('첫 번째 결과의 모든 키:', Object.keys(results[0]));
+          }
         } else {
           setSearchResults([]);
           console.warn('장소 검색 결과 없음:', status);
@@ -239,6 +243,34 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
     setSelectedLocation(place);
     
     // 장소를 선택하면 바로 저장 (모달은 닫지 않음)
+    // region 정보를 address에서 추출하거나 기본값 사용
+    const extractRegion = (address: string, place: any) => {
+      console.log('장소 선택 - 전체 place 객체:', place);
+      console.log('장소 선택 - address:', address);
+      
+      // 먼저 place 객체에서 region 관련 필드 확인
+      if (place.region) {
+        console.log('place.region 발견:', place.region);
+        return place.region;
+      }
+      
+      // address에서 지역명 추출
+      const regionMap: { [key: string]: string } = {
+        '서울': 'SEOUL', '부산': 'BUSAN', '대구': 'DAEGU', '인천': 'INCHEON', '광주': 'GWANGJU', '대전': 'DAEJEON', '울산': 'ULSAN', '세종': 'SEJONG',
+        '경기': 'GYEONGGI', '강원': 'GANGWON', '충북': 'CHUNGBUK', '충남': 'CHUNGNAM', '전북': 'JEONBUK', '전남': 'JEONNAM', '경북': 'GYEONGBUK', '경남': 'GYEONGNAM', '제주': 'JEJU'
+      };
+      
+      for (const [korean, english] of Object.entries(regionMap)) {
+        if (address.includes(korean)) {
+          console.log('주소에서 지역 추출:', korean, '->', english);
+          return english;
+        }
+      }
+      
+      console.log('지역 추출 실패, 기본값 SEOUL 사용');
+      return 'SEOUL'; // 기본값
+    };
+    
     onLocationSelect({
       name: place.place_name,
       address: place.address_name,
@@ -246,7 +278,7 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
       lng: parseFloat(place.x),
       kakaoId: place.id,
       categoryGroupName: place.category_group_name,
-      region: place.region
+      region: extractRegion(place.address_name, place)
     });
     
     if (!window.kakao || !window.kakao.maps || !mapInstance.current) {
@@ -277,6 +309,34 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
   // 장소 확정
   const confirmLocation = () => {
     if (selectedLocation) {
+      // region 정보를 address에서 추출하거나 기본값 사용
+      const extractRegion = (address: string, place: any) => {
+        console.log('장소 확정 - 전체 place 객체:', place);
+        console.log('장소 확정 - address:', address);
+        
+        // 먼저 place 객체에서 region 관련 필드 확인
+        if (place.region) {
+          console.log('place.region 발견:', place.region);
+          return place.region;
+        }
+        
+        // address에서 지역명 추출
+        const regionMap: { [key: string]: string } = {
+          '서울': 'SEOUL', '부산': 'BUSAN', '대구': 'DAEGU', '인천': 'INCHEON', '광주': 'GWANGJU', '대전': 'DAEJEON', '울산': 'ULSAN', '세종': 'SEJONG',
+          '경기': 'GYEONGGI', '강원': 'GANGWON', '충북': 'CHUNGBUK', '충남': 'CHUNGNAM', '전북': 'JEONBUK', '전남': 'JEONNAM', '경북': 'GYEONGBUK', '경남': 'GYEONGNAM', '제주': 'JEJU'
+        };
+        
+        for (const [korean, english] of Object.entries(regionMap)) {
+          if (address.includes(korean)) {
+            console.log('주소에서 지역 추출:', korean, '->', english);
+            return english;
+          }
+        }
+        
+        console.log('지역 추출 실패, 기본값 SEOUL 사용');
+        return 'SEOUL'; // 기본값
+      };
+      
       onLocationSelect({
         name: selectedLocation.place_name,
         address: selectedLocation.address_name,
@@ -284,7 +344,7 @@ const LocationModal: React.FC<LocationModalProps> = ({ isOpen, onClose, onLocati
         lng: parseFloat(selectedLocation.x),
         kakaoId: selectedLocation.id,
         categoryGroupName: selectedLocation.category_group_name,
-        region: selectedLocation.region
+        region: extractRegion(selectedLocation.address_name, selectedLocation)
       });
       onClose();
     }

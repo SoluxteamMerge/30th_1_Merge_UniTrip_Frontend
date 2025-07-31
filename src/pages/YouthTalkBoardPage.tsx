@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 import writeIcon from "../assets/write-icon.svg";
 import starIcon from "../assets/interaction/star.svg";
 import starFillIcon from "../assets/interaction/star_fill.svg";
-import { getReviewsByBoardType, ReviewItem } from '../api/Review/getReviewsApi';
+import { getAllReviews, getReviewsByBoardType, ReviewItem } from '../api/Review/getReviewsApi';
 import { getAverageRating } from '../api/Review/getAverageRatingApi';
+import { fetchMyUserInfo } from '../api/YouthDrawer/fetchMyUserInfo';
 
 const YouthTalkBoardPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
@@ -14,6 +15,7 @@ const YouthTalkBoardPage: React.FC = () => {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [averageRatings, setAverageRatings] = useState<Record<string, number>>({});
+  const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
 
   // 별점 표시 컴포넌트
   const renderStars = (rating: number) => {
@@ -129,17 +131,49 @@ const YouthTalkBoardPage: React.FC = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('accessToken') || undefined;
-        // 청춘톡은 전체 리뷰를 가져오므로 boardType을 빈 문자열로 전달
-        const res = await getReviewsByBoardType('', token);
-        // 최신순으로 정렬
-        const sortedReviews = res.reviews.sort((a, b) => {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-        setReviews(sortedReviews);
+        // 청춘톡은 전체 리뷰를 가져오므로 getAllReviews 사용
+        const res = await getAllReviews(token);
+        console.log('API 응답:', res);
+        console.log('게시글 개수:', res.reviews?.length || 0);
+        
+        let finalReviews: ReviewItem[] = [];
+        
+        if (!res.reviews || res.reviews.length === 0) {
+          console.log('게시글이 없습니다. 다른 방법으로 시도합니다.');
+          // getAllReviews가 실패하면 개별 카테고리별로 가져와서 합치기
+          const allReviews: ReviewItem[] = [];
+          
+          // 각 카테고리별로 게시글 가져오기
+          const categories = ['청춘톡', 'MT_LT', '동행모집', '모임구인', '졸업_휴학여행', '국내학점교류', '해외교환'];
+          
+          for (const category of categories) {
+            try {
+              const categoryRes = await getReviewsByBoardType(category, token);
+              if (categoryRes.reviews && categoryRes.reviews.length > 0) {
+                allReviews.push(...categoryRes.reviews);
+                console.log(`${category} 카테고리에서 ${categoryRes.reviews.length}개 게시글 가져옴`);
+              }
+            } catch (error) {
+              console.log(`${category} 카테고리 조회 실패:`, error);
+            }
+          }
+          
+          // 최신순으로 정렬
+          finalReviews = allReviews.sort((a: ReviewItem, b: ReviewItem) => {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        } else {
+          // 최신순으로 정렬
+          finalReviews = res.reviews.sort((a: ReviewItem, b: ReviewItem) => {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        }
+        
+        setReviews(finalReviews);
         
         // 각 게시글의 키워드(장소명, 태그)에 대해 평균 별점 조회
         const keywords = new Set<string>();
-        sortedReviews.forEach(review => {
+        finalReviews.forEach((review: ReviewItem) => {
           if (review.placeName) keywords.add(review.placeName);
           if (review.categoryName) keywords.add(review.categoryName);
         });
@@ -216,10 +250,52 @@ const YouthTalkBoardPage: React.FC = () => {
           <div className="yt-board-title">게시글 모음</div>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+          ) : reviews.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+              게시글이 없습니다.
+            </div>
           ) : (
             <div className="yt-post-list">
-              {reviews.map(review => (
-                <div key={review.postId} className="yt-post-card" onClick={() => navigate(`/review/${review.postId}?category=청춘톡`)} style={{ cursor: 'pointer' }}>
+                             {reviews.map(review => (
+                                   <div key={review.postId} className="yt-post-card" onClick={async () => {
+                    // 함께해요 카테고리 중 동행모집, 모임구인만 이메일 인증 확인
+                    const restrictedCategories = ['동행모집', '모임구인'];
+                    const isRestrictedCategory = restrictedCategories.some(cat => 
+                      review.categoryName?.includes(cat) || review.boardType?.includes(cat)
+                    );
+                   
+                    console.log('게시글 클릭:', {
+                      postId: review.postId,
+                      categoryName: review.categoryName,
+                      boardType: review.boardType,
+                      isRestrictedCategory
+                    });
+                   
+                    if (isRestrictedCategory) {
+                      console.log('제한된 카테고리입니다. 이메일 인증 확인 중...');
+                      try {
+                        const userInfo = await fetchMyUserInfo();
+                        console.log('사용자 정보:', userInfo);
+                        if (!userInfo.emailVerified) {
+                          console.log('이메일 인증이 필요합니다. 모달을 표시합니다.');
+                          setShowEmailVerificationModal(true);
+                          return;
+                        } else {
+                          console.log('이메일 인증이 완료되었습니다. 게시글로 이동합니다.');
+                        }
+                      } catch (error) {
+                        console.error('사용자 정보 조회 실패:', error);
+                        setShowEmailVerificationModal(true);
+                        return;
+                      }
+                    } else {
+                      console.log('제한되지 않은 카테고리입니다. 바로 이동합니다.');
+                    }
+                   
+                    // 이메일 인증이 완료되었거나 제한되지 않은 카테고리인 경우에만 이동
+                    console.log('게시글 상세 페이지로 이동합니다.');
+                    navigate(`/review/${review.postId}?category=청춘톡`);
+                  }} style={{ cursor: 'pointer' }}>
                   {/* 상단: 프로필/닉네임/날짜(왼쪽) + 태그(오른쪽) */}
                   <div className="yt-post-top-row">
                     <div className="yt-post-info-row">
@@ -245,49 +321,49 @@ const YouthTalkBoardPage: React.FC = () => {
                       <span className="yt-tag yt-tag-main">{review.categoryName}</span>
                     </div>
                   </div>
-                  {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
-                  <div className="yt-main-row">
-                    <div className="yt-main-texts">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div className="yt-post-title">{review.title}</div>
-                        {/* 평균 별점 표시 */}
-                        {(review.placeName && averageRatings[review.placeName]) && (
-                          <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '4px',
-                            fontSize: '14px',
-                            color: '#666',
-                            marginTop: '0px'
-                          }}>
-                            {renderStars(averageRatings[review.placeName])}
-                          </div>
-                        )}
-                        {(review.categoryName && averageRatings[review.categoryName] && !review.placeName) && (
-                          <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '4px',
-                            fontSize: '14px',
-                            color: '#666',
-                            marginTop: '0px'
-                          }}>
-                            {renderStars(averageRatings[review.categoryName])}
-                          </div>
-                        )}
-                      </div>
-                      <div className="yt-post-content">{review.content}</div>
-                    </div>
-                    <img 
-                      src={review.thumbnailUrl || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"} 
-                      alt="썸네일" 
-                      className="yt-thumbnail" 
-                      onError={(e) => {
-                        // 이미지 로드 실패 시 기본 이미지로 대체
-                        e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80";
-                      }}
-                    />
-                  </div>
+                                     {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
+                   <div className="yt-main-row">
+                     <div className="yt-main-texts">
+                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                         <div className="yt-post-title">{review.title}</div>
+                         {/* 평균 별점 표시 */}
+                         {(review.placeName && averageRatings[review.placeName]) && (
+                           <div style={{ 
+                             display: 'flex', 
+                             alignItems: 'center', 
+                             gap: '4px',
+                             fontSize: '14px',
+                             color: '#666',
+                             marginTop: '0px'
+                           }}>
+                             {renderStars(averageRatings[review.placeName])}
+                           </div>
+                         )}
+                         {(review.categoryName && averageRatings[review.categoryName] && !review.placeName) && (
+                           <div style={{ 
+                             display: 'flex', 
+                             alignItems: 'center', 
+                             gap: '4px',
+                             fontSize: '14px',
+                             color: '#666',
+                             marginTop: '0px'
+                           }}>
+                             {renderStars(averageRatings[review.categoryName])}
+                           </div>
+                         )}
+                       </div>
+                       <div className="yt-post-content">{review.content}</div>
+                     </div>
+                     <img 
+                       src={review.imageUrl || review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
+                       alt="썸네일" 
+                       className="yt-thumbnail" 
+                       onError={(e) => {
+                         // 이미지 로드 실패 시 기본 이미지로 대체
+                         e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
+                       }}
+                     />
+                   </div>
                 </div>
               ))}
             </div>
@@ -302,6 +378,64 @@ const YouthTalkBoardPage: React.FC = () => {
       >
         <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
       </button>
+
+                    {/* 이메일 인증 필요 모달 */}
+        {showEmailVerificationModal && (
+          <>
+            <div className="wr-overlay" style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.13)',
+              zIndex: 200,
+              pointerEvents: 'auto'
+            }} />
+            <div className="wr-modal" style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: '#fff',
+              borderRadius: '25px',
+              boxShadow: '0 4px 32px 0 rgba(0,0,0,0.13)',
+              padding: '80px 150px 50px 150px',
+              zIndex: 300,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}>
+              <div className="wr-modal-text" style={{
+                fontSize: '20px',
+                color: '#black',
+                fontWeight: '700',
+                textAlign: 'center',
+                marginBottom: '30px',
+                lineHeight: '1.5'
+              }}>
+                동행 구해요/번개모임 게시글을 보려면<br />
+                이메일 인증이 필요합니다.
+              </div>
+              <button
+                className="wr-modal-btn"
+                onClick={() => setShowEmailVerificationModal(false)}
+                style={{
+                  background: '#0b0b61',
+                  color: '#fff',
+                  fontSize: '20px',
+                  fontWeight: '600',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '12px 48px',
+                  cursor: 'pointer'
+                }}
+              >
+                확인
+              </button>
+            </div>
+          </>
+        )}
     </div>
   );
 };

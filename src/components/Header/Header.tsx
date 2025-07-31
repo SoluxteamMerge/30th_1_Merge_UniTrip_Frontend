@@ -204,9 +204,9 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
       </style>
       <header className="header">
         <div className="header-left">
-          <span>
+          <Link to="/" style={{ textDecoration: 'none' }}>
             <img src="/src/assets/header/logo.svg" alt="로고" className="header-logo" />
-          </span>
+          </Link>
           <nav>
             {menuLinks.map((link) => {
               const { to, label, last } = link;

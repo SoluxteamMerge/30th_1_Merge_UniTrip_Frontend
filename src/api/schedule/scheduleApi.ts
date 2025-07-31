@@ -34,6 +34,10 @@ export const createSchedule = async (
   scheduleData: CreateScheduleRequest,
   token: string
 ): Promise<CreateScheduleResponse> => {
+
+  console.log("📨 POST /api/schedules 요청 데이터:", scheduleData);
+  console.log("🔐 Authorization 헤더:", token);
+  
   const response: AxiosResponse<CreateScheduleResponse> = await api.post(
     "/api/schedules",
     scheduleData,
