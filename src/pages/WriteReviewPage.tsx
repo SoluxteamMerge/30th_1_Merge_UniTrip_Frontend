@@ -61,7 +61,7 @@ const WriteReviewPage: React.FC = () => {
       try {
         const editData = JSON.parse(dataParam);
         setIsEditMode(true);
-        setEditPostId(postIdParam ? parseInt(postIdParam) : null);
+        setEditPostId(editData.id || (postIdParam ? parseInt(postIdParam) : null));
         setTitle(editData.title || '');
         setContent(editData.content || '');
         setSelectedCategory(editData.category || categories[0]);
@@ -70,6 +70,8 @@ const WriteReviewPage: React.FC = () => {
         setTags(editData.tags || []);
         setRating(editData.rating || 0);
         setScheduleInput(editData.schedule || "");
+        
+        console.log('수정 모드 데이터 로드:', editData);
       } catch (error) {
         console.error('수정 데이터 파싱 오류:', error);
       }
@@ -330,6 +332,13 @@ const WriteReviewPage: React.FC = () => {
           title: title.trim(),
           content: content,
           scheduleDate: scheduleInput,
+          placeName: selectedLocation?.name || '',
+          address: selectedLocation?.address || '',
+          kakaoId: selectedLocation?.kakaoId || '',
+          categoryGroupName: selectedLocation?.categoryGroupName || '',
+          region: selectedLocation?.region || '',
+          lat: selectedLocation?.lat || 0,
+          lng: selectedLocation?.lng || 0
         };
 
         const res = await updateReview(editPostId, updateData, accessToken);

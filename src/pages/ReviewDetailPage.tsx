@@ -338,7 +338,18 @@ const YouthTalkDetailPage: React.FC = () => {
       title: postData.title,
       content: postData.content,
       category: postData.categoryName,
-      rating: postData.rating
+      rating: postData.rating,
+      imageUrl: postData.imageUrl || '',
+      schedule: postData.scheduleDate || '',
+      location: postData.placeName ? {
+        name: postData.placeName,
+        address: postData.address || '',
+        lat: 0, // API에서 받아오지 않으므로 기본값
+        lng: 0, // API에서 받아오지 않으므로 기본값
+        kakaoId: postData.kakaoId || '',
+        categoryGroupName: postData.categoryGroupName || '',
+        region: postData.region || ''
+      } : null
     };
     
     const queryString = new URLSearchParams({
