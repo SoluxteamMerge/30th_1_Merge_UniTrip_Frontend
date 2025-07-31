@@ -328,6 +328,11 @@ const YouthTalkDetailPage: React.FC = () => {
 
   // 수정하기
   const handleEditClick = () => {
+    if (!postData) {
+      alert('게시글 데이터를 불러올 수 없습니다.');
+      return;
+    }
+    
     const editData = {
       id: postData.postId,
       title: postData.title,
@@ -341,7 +346,7 @@ const YouthTalkDetailPage: React.FC = () => {
       data: JSON.stringify(editData)
     }).toString();
     
-    navigate(`/write-review?${queryString}`);
+    navigate(`/review-write?${queryString}`);
     setShowMoreMenu(false);
   };
 
