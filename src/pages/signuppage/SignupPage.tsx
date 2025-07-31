@@ -32,6 +32,7 @@ const SignupPage: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+
   // 성공 상태 관리
   const [isSuccess, setIsSuccess] = useState(false);
 
