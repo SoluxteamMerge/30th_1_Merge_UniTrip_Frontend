@@ -261,7 +261,7 @@
             setRegionReviews([]);
 
             console.log("💥 searchReviews 호출됨:", searchQuery);
-            const response = await searchReviews(searchQuery, token, "popular"); // 공통 함수로 변경
+            const response = await searchReviews(searchQuery, token); // 공통 함수로 변경
 
             console.log("🔍 검색 결과:", response);
 
@@ -292,7 +292,7 @@
           setRegionReviews([]);
           setSearchQuery(keyword);
 
-          const response = await searchReviews(keyword, token, "popular", true); 
+          const response = await searchReviews(keyword, token, true); 
 
           if (response.code === 200 && Array.isArray(response.data)) {
             setSearchResults(response.data); // 응답 포맷 둘 다 처리
