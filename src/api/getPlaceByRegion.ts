@@ -26,7 +26,7 @@ export const getPlaceByRegion = async (
 ) : Promise<RegionPostResponse> => {
   const response = await axios.get(`/api/place/filter?region=${region}`, {
     headers: {
-      Authorization: token,
+      Authorization: `Bearer ${token}`,
     },
   });
   return response.data;
