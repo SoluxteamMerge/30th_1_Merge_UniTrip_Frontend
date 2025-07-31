@@ -613,7 +613,7 @@ const YouthCalendar: React.FC = () => {
 
       {/* Floating 버튼 */}
       <button
-        onClick={() => navigate("/review-write")}  
+        onClick={() => navigate("/review-write?category=국내학점교류")}  
         style={{
           position: "fixed",
           right: 60,
