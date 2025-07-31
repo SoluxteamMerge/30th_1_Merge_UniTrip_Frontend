@@ -38,16 +38,16 @@ export const ReviewCard = ({
           <p className="card-author">{nickname}</p>
           <div className="card-icons">
             <div className="icon-button">
-              <img src={starIcon} alt="별점" />
-              <span>{rating}</span>
-            </div>
-            <div className="icon-button">
               <img src={heartIcon} alt="좋아요" />
               <span>{likeCount}</span>
             </div>
             <div className="icon-button">
               <img src={scrapIcon} alt="스크랩" />
               <span>{scrapCount}</span>
+            </div>
+            <div className="icon-button">
+              <img src={starIcon} alt="별점" />
+              <span>{rating}</span>
             </div>
           </div>
         </div>
