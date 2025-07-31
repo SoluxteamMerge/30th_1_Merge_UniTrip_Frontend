@@ -238,7 +238,7 @@
 
         if (token && regionCode !== undefined) {
           try {
-            const response = await getPlaceByRegion(regionCode, token);
+            const response = await getPlaceByRegion(regionParam, token);
             setRegionReviews(response.data);
             setIsRegionFiltered(regionCode !== "");
           } catch (error) {

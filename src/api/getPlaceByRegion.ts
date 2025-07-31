@@ -21,10 +21,12 @@ export interface RegionPostResponse {
 }
 
 export const getPlaceByRegion = async (
-  region: string, 
+  region: string | null | undefined, 
   token: string
 ) : Promise<RegionPostResponse> => {
-  const url = region ? `/api/reviews/filter?region=${region}` : `/api/reviews/filter`;
+  const hasRegion = region !== null && region !== undefined && region.trim() !== "";
+  const url = hasRegion ? `/api/reviews/filter?region=${region}` : `/api/reviews/filter`;
+  
   const response = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${token}`,
