@@ -253,14 +253,16 @@ function YouthDrawerEdit() {
                     <div className="edit-form">
                         <div className="input-row">
                             <div className="input-row-left"><label className="Drawer-label">이름</label></div>
-                            <input type="text" className="Drawerinput" value={name} onChange={(e) => setName(e.target.value)} placeholder="이름을 입력하세요" />
+                            <input type="text" className="Drawerinput" value={name} readOnly aria-readonly="true" onChange={(e) => setName(e.target.value)} placeholder="이름 편집 불가" />
                             <div className="Drawer-underline"></div>
                         </div>
 
                         <div className="input-row">
                             <div className="input-row-left">
                                 <label className="Drawer-label">닉네임</label>
-                                <span className="Drawer-check-duplicate" onClick={handleCheckNickname}>중복확인</span>
+                                <span className="Drawer-check-duplicate" onClick={handleCheckNickname}>
+                                    {nicknameChecked ? '인증완료' : '중복확인' }
+                                </span>
                             </div>
                             <input 
                                 type="text"
