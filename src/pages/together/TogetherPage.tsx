@@ -318,12 +318,12 @@ const TogetherPage: React.FC = () => {
                     </div>
                     {review.thumbnailUrl && (
                       <img 
-                        src={review.thumbnailUrl || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"} 
+                        src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
                         alt="썸네일" 
                         className="together-thumbnail" 
                         onError={(e) => {
                           // 이미지 로드 실패 시 기본 이미지로 대체
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80";
+                          e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
                         }}
                       />
                     )}
