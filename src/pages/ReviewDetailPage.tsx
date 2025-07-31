@@ -333,11 +333,47 @@ const YouthTalkDetailPage: React.FC = () => {
       return;
     }
     
+    // categoryName에서 카테고리와 태그를 분리
+    const categories = [
+      "청춘톡",
+      "MT여정지도", 
+      "함께해요-동행구해요",
+      "함께해요-번개모임",
+      "함께해요-졸업/휴학여행",
+      "함께해요-국내학점교류",
+      "함께해요-해외교환학생"
+    ];
+    
+    let actualCategory = postData.categoryName;
+    let tags: string[] = [];
+    
+    // categoryName에 쉼표가 있으면 카테고리와 태그가 섞여있을 수 있음
+    if (postData.categoryName && postData.categoryName.includes(',')) {
+      const parts = postData.categoryName.split(',').map(part => part.trim());
+      
+      // 첫 번째 부분이 실제 카테고리인지 확인
+      const firstPart = parts[0];
+      const isActualCategory = categories.includes(firstPart) || 
+        categories.some(cat => cat.includes(firstPart)) ||
+        firstPart.includes('함께해요-');
+      
+      if (isActualCategory) {
+        actualCategory = firstPart;
+        // 나머지 부분들을 태그로 설정
+        tags = parts.slice(1).filter(tag => tag.trim() !== '');
+      } else {
+        // 첫 번째 부분이 태그인 경우, 기본 카테고리 설정
+        actualCategory = categories[0];
+        tags = parts.filter(tag => tag.trim() !== '');
+      }
+    }
+    
     const editData = {
       id: postData.postId,
       title: postData.title,
       content: postData.content,
-      category: postData.categoryName,
+      category: actualCategory,
+      tags: tags,
       rating: postData.rating,
       imageUrl: postData.imageUrl || '',
       schedule: postData.scheduleDate || '',
