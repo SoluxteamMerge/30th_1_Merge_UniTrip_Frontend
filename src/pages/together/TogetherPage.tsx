@@ -358,17 +358,15 @@ const TogetherPage: React.FC = () => {
                       </div>
                       <div className="together-post-content">{review.content}</div>
                     </div>
-                    {review.thumbnailUrl && (
-                      <img 
-                        src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
-                        alt="썸네일" 
-                        className="together-thumbnail" 
-                        onError={(e) => {
-                          // 이미지 로드 실패 시 기본 이미지로 대체
-                          e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
-                        }}
-                      />
-                    )}
+                    <img 
+                      src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
+                      alt="썸네일" 
+                      className="together-thumbnail" 
+                      onError={(e) => {
+                        // 이미지 로드 실패 시 기본 이미지로 대체
+                        e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
+                      }}
+                    />
                   </div>
                   {/* 태그들 */}
                   <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
