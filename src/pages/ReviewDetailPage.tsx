@@ -577,9 +577,25 @@ const YouthTalkDetailPage: React.FC = () => {
       const response = await updateComment(commentId, updatedContent, accessToken);
 
       if (response.code === 200) {
+        // API 응답에서 받은 updatedAt 시간을 사용하여 시간 업데이트
+        const updatedDate = new Date(response.data.updatedAt).toLocaleString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'Asia/Seoul'
+        });
+        
         setComments(comments.map(comment => 
           comment.id === commentId 
-            ? { ...comment, content: updatedContent, isEditing: false, editText: "" }
+            ? { 
+                ...comment, 
+                content: updatedContent, 
+                date: updatedDate,
+                isEditing: false, 
+                editText: "" 
+              }
             : comment
         ));
         console.log('댓글이 성공적으로 수정되었습니다.');
