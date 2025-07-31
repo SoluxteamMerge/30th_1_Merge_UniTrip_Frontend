@@ -72,6 +72,8 @@ const WriteReviewPage: React.FC = () => {
         setScheduleInput(editData.schedule || "");
         
         console.log('수정 모드 데이터 로드:', editData);
+        console.log('설정된 카테고리:', editData.category);
+        console.log('설정된 태그:', editData.tags);
       } catch (error) {
         console.error('수정 데이터 파싱 오류:', error);
       }
@@ -326,9 +328,13 @@ const WriteReviewPage: React.FC = () => {
 
       if (isEditMode && editPostId) {
         // 수정 모드
+        // 태그들을 categoryName에 포함
+        const tagString = tags.length > 0 ? tags.join(', ') : '';
+        const categoryNameWithTags = tagString ? `${selectedCategory}, ${tagString}` : selectedCategory;
+        
         const updateData = {
           boardType: selectedCategory,
-          categoryName: selectedCategory,
+          categoryName: categoryNameWithTags,
           title: title.trim(),
           content: content,
           scheduleDate: scheduleInput,
