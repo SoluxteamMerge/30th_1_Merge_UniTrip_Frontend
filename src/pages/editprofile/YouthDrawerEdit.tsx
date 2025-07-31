@@ -224,7 +224,11 @@ function YouthDrawerEdit() {
                 const uploadedUrl = await uploadUserProfileImage(selectedFile,token);
                 finalProfileImageUrl = uploadedUrl || '';
             } else if (!selectedFile && profileImageUrl === '') {
-                await deleteUserProfileImage(token);
+                try {
+                    await deleteUserProfileImage(token);
+                } catch (error) {
+                    console.warn('이미지 삭제 중 오류 발생:', (error as Error).message);
+                }
             }
 
             console.log('💾 저장 요청 데이터:', {
