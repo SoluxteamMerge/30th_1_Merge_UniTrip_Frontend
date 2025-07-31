@@ -422,16 +422,16 @@
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
                       <ReviewCardTwo
                         postId={review.postId}
-                        title={review.postTitle}
+                        postTitle={review.postTitle}
                         categoryName={review.categoryName}
-                        thumbnailUrl={review.imageUrl}
+                        imageUrl={review.imageUrl}
                         nickname={review.nickname}
                         //createdAt={review.createdAt}
-                        likes={review.likeCount}
+                        likeCount={review.likeCount}
                         scrapCount={review.scrapCount}
                         rating={review.rating}
-                        isLiked={false} //일단 false로
-                        isScraped={false} //일단 false로
+                        //isLiked={false} //일단 false로
+                        //isScraped={false} //일단 false로
                       />
                     </div>
                   )}
@@ -484,15 +484,15 @@
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
                       <ReviewCardTwo
                         postId={review.postId}
-                        title={review.postTitle}
+                        postTitle={review.postTitle}
                         categoryName={review.categoryName}
-                        thumbnailUrl={review.imageUrl} 
+                        imageUrl={review.imageUrl} 
                         nickname={review.nickname}
-                        likes={review.likeCount}
+                        likeCount={review.likeCount}
                         scrapCount={review.scrapCount}
                         rating={review.rating} 
-                        isLiked={false}
-                        isScraped={false}
+                        //isLiked={false}
+                        //isScraped={false}
                       />
                     </div>
                   )}
