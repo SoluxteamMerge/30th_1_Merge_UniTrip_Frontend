@@ -4,7 +4,8 @@ import Header from "../../components/Header/Header";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import writeIcon from "../../assets/write-icon.svg";
-import { ReviewCardTwo } from "../../pages/reviewcard/ReviewCardTwo";
+//import { ReviewCardTwo } from "../../pages/reviewcard/ReviewCardTwo";
+import { ReviewCard } from "../reviewcard/ReviewCard";
 import '../mainpage/MainPage.css'; 
 import MyPageSidebar from "../../components/MyPageSidebar";
 import Pagination from "../../components/Pagination";
@@ -195,18 +196,18 @@ const RecordedYouthPage: React.FC = () => {
                       itemsPerPage={6}
                       renderItem={(review) => (
                       <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                        <ReviewCardTwo
+                        <ReviewCard
                           postId={review.postId}
-                          title={review.postTitle}
+                          postTitle={review.postTitle}
                           categoryName={review.categoryName}
-                          thumbnailUrl={review.imageUrl}
+                          imageUrl={review.imageUrl}
                           nickname={review.nickname}
                           //createdAt={"작성일 없음"}
-                          likes={review.likeCount}
+                          likeCount={review.likeCount}
                           scrapCount={review.scrapCount}
                           rating={review.rating}
-                          isLiked={false} //내가 쓴 글 좋아요 false 
-                          isScraped={false} //내가 쓴 글 스크랩 false 
+                          //isLiked={false} //내가 쓴 글 좋아요 false 
+                          //isScraped={false} //내가 쓴 글 스크랩 false 
                         />
                       </div>
                     )}
@@ -228,7 +229,7 @@ const RecordedYouthPage: React.FC = () => {
                       </p>
                       
                       <p style={{ fontSize: 16, color: "#888", marginTop: 10 }}>
-                        <Link to="/review-write" style={{ color: "#888", textDecoration: "underline" }}>
+                        <Link to="/review-write?category=국내학점교류" style={{ color: "#888", textDecoration: "underline" }}>
                           청춘을 만들러 가볼까요? &gt;
                         </Link>
                       </p>
@@ -241,7 +242,7 @@ const RecordedYouthPage: React.FC = () => {
 
       {/* Floating 글쓰기 버튼 */}
       <button
-        onClick={() => navigate("/review-write")}  // 이 줄 추가!
+        onClick={() => navigate("/review-write?category=국내학점교류")}  // 이 줄 추가!
         style={{
           position: "fixed",
           right: 60,
