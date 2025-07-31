@@ -8,6 +8,9 @@ import AlertModal from '../../components/AlertModal/AlertModal';
 import api from '../../api/api';
 import { AxiosError } from 'axios';
 
+const SUCCESS_MESSAGES = ['로그인이 필요합니다.', '회원탈퇴 되었습니다.'];
+
+
 function YouthDrawer() {
     const navigate = useNavigate();
 
@@ -21,6 +24,7 @@ function YouthDrawer() {
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [isResultModalOpen, setIsResultModalOpen] = useState(false);
     const [resultMessage, setResultMessage] = useState('');
+    const [shouldRedirect, setShouldRedirect] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
@@ -52,6 +56,7 @@ function YouthDrawer() {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             setResultMessage('로그인이 필요합니다.');
+            setShouldRedirect(true);
             setIsResultModalOpen(true);
             return;
         }
@@ -61,17 +66,13 @@ function YouthDrawer() {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (res.data.code === 200) {
-                setResultMessage(res.data.message);
-                setIsResultModalOpen(true);
-                // localStorage 클리어 및 navigate는 모달 닫힐 때 처리
-            } else {
-                setResultMessage(res.data.message);
-                setIsResultModalOpen(true);
-            }
+            setResultMessage(res.data.message);
+            setShouldRedirect(true);
+            setIsResultModalOpen(true);
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
             setResultMessage(axiosError.response?.data?.message || '회원탈퇴 실패');
+            setShouldRedirect(false);
             setIsResultModalOpen(true);
         }
     };
@@ -176,20 +177,14 @@ function YouthDrawer() {
                                 message={resultMessage}
                                 onClose={() => {
                                     setIsResultModalOpen(false);
-                                    if (
-                                        resultMessage === '로그인이 필요합니다.' ||
-                                        resultMessage === '회원탈퇴가 완료되었습니다.'
-                                    ) {
+                                    if (shouldRedirect) {
                                         localStorage.clear();
                                         navigate('/');
                                     }
                                 }}
                                 onConfirm={() => {
                                     setIsResultModalOpen(false);
-                                    if (
-                                        resultMessage === '로그인이 필요합니다.' ||
-                                        resultMessage === '회원탈퇴가 완료되었습니다.'
-                                    ) {
+                                    if (SUCCESS_MESSAGES.includes(resultMessage)) {
                                         localStorage.clear();
                                         navigate('/');
                                     }
@@ -235,4 +230,3 @@ function YouthDrawer() {
 }
 
 export default YouthDrawer;
-

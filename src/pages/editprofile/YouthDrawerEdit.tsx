@@ -15,6 +15,7 @@ import { verifyEmailCode } from '../../api/Signup/verifyEmailCode';
 import { deleteUserProfileImage, uploadUserProfileImage } from '../../api/userProfileImageApi';
 import { checkNicknameDuplicate } from '../../api/Signup/checkNicknameDuplicate';
 
+const SUCCESS_MESSAGES = ['로그인이 필요합니다.', '회원탈퇴 되었습니다.'];
 
 function YouthDrawerEdit() {
     const navigate = useNavigate();
@@ -392,7 +393,25 @@ function YouthDrawerEdit() {
                 </a>
             </div>
 
-            {isResultModalOpen && <AlertModal message={resultMessage} onClose={() => setIsResultModalOpen(false)} />}
+            {isResultModalOpen && (
+                <AlertModal
+                    message={resultMessage}
+                    onClose={() => {
+                        setIsResultModalOpen(false);
+                        if (SUCCESS_MESSAGES.includes(resultMessage)) {
+                            localStorage.clear();
+                            navigate('/');
+                        }
+                    }}
+                    onConfirm={() => {
+                        setIsResultModalOpen(false);
+                        if (SUCCESS_MESSAGES.includes(resultMessage)) {
+                            localStorage.clear();
+                            navigate('/');
+                        }
+                    }}
+                />
+            )}
 
             {isImageModalOpen && (
                 <UploadModal     
