@@ -155,6 +155,7 @@ const YouthCalendar: React.FC = () => {
       try {
         if (editingScheduleId) {
           // 일정 수정
+           // 1. 서버에 일정 수정 요청
           const response = await patchSchedule(editingScheduleId, {
             title: scheduleTitle,
             description: memo,
@@ -167,6 +168,7 @@ const YouthCalendar: React.FC = () => {
 
           console.log("일정 수정 성공:", response);
 
+          // 2. 로컬 savedSchedules 업데이트
           const updatedEntry = {
             scheduleId: editingScheduleId,
             title: scheduleTitle,
@@ -176,11 +178,29 @@ const YouthCalendar: React.FC = () => {
 
           const updatedSchedules = { ...savedSchedules };
 
-          // 모든 날짜의 동일한 scheduleId 항목 수정
+          // 2-1. 기존 scheduleId와 매칭되는 항목들 모두 제거
           for (const dateKey in updatedSchedules) {
-            updatedSchedules[dateKey] = updatedSchedules[dateKey].map((entry) =>
-              entry.scheduleId === editingScheduleId ? updatedEntry : entry
+            updatedSchedules[dateKey] = updatedSchedules[dateKey].filter(
+              (entry) => entry.scheduleId !== editingScheduleId
             );
+            if (updatedSchedules[dateKey].length === 0) {
+              delete updatedSchedules[dateKey];
+            }
+          }
+
+          // 2-2. 새로운 범위에 다시 등록
+          for (
+            let time = new Date(startDate).getTime();
+            time <= new Date(endDateStr).getTime();
+            time += 86400000
+          ) {
+            const d = new Date(time);
+            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+            const existing = updatedSchedules[key] || [];
+
+            if (existing.length >= 2) continue;
+
+            updatedSchedules[key] = [...existing, updatedEntry];
           }
 
           setSavedSchedules(updatedSchedules);
