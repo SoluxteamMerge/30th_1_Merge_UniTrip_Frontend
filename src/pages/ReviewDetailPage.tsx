@@ -10,6 +10,7 @@ import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
 import locationIcon from "../assets/toolbar/location.svg";
 import scheduleIcon from "../assets/toolbar/calender.svg";
+import backIcon from "../assets/back.svg";
 import { deleteReview } from '../api/Review/deleteReviewApi';
 import { getReviewDetail, ReviewDetailResponse } from '../api/Review/getReviewsApi';
 import { likeReview } from '../api/Review/likeReviewApi';
@@ -750,6 +751,10 @@ const YouthTalkDetailPage: React.FC = () => {
     ));
   };
 
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
 
 
   return (
@@ -757,7 +762,23 @@ const YouthTalkDetailPage: React.FC = () => {
       <style>{`
         .ytd-bg { background: #e8f0f2; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; }
         .ytd-container { max-width: 1200px; margin: 0 auto; padding: 0px; min-height: 100vh; box-shadow: 0 1px 6px #0001; border: 1.5px solid #e0e0e0; }
-        .ytd-post-card { background: #fff; border-radius: 0px; overflow: hidden; min-height: 100vh; }
+        .ytd-post-card { background: #fff; border-radius: 0px; overflow: hidden; min-height: 100vh; position: relative; }
+        .ytd-back-btn { 
+          position: absolute; 
+          top: 20px; 
+          left: 20px; 
+          background: none; 
+          border: none; 
+          cursor: pointer; 
+          z-index: 100;
+          padding: 8px;
+          border-radius: 50%;
+          transition: background-color 0.2s;
+        }
+        .ytd-back-btn img {
+          width: 25px;
+          height: 25px;
+        }
         .ytd-post-header { padding: 100px 20px 30px 20px; border-bottom: 1px solid #bbb; margin: 0 80px; }
         .ytd-public-badge { display: inline-block; font-size: 15px; font-weight: 300; margin-bottom: 12px; font-family: inherit; }
         .ytd-post-title { font-weight: 700; font-size: 24px; color: #black; margin-bottom: 25px; line-height: 1.4; font-family: inherit; }
@@ -954,24 +975,6 @@ const YouthTalkDetailPage: React.FC = () => {
           font-weight: 600;
           cursor: pointer;
         }
-        .ytd-back-btn {
-          position: fixed;
-          left: 40px;
-          top: 100px;
-          background: #fff;
-          border: 2px solid #0b0b61;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          z-index: 100;
-          transition: all 0.2s;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-          font-family: inherit;
-        }
         .ytd-comments-section {
           padding: 0px 100px 80px 100px;
         }
@@ -1111,13 +1114,12 @@ const YouthTalkDetailPage: React.FC = () => {
       `}</style>
               <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       
-      {/* 뒤로가기 버튼 */}
-      <button className="ytd-back-btn" onClick={() => navigate(-1)}>
-        ←
-      </button>
-
       <div className="ytd-container">
         <div className="ytd-post-card">
+          {/* 뒤로가기 버튼 */}
+          <button className="ytd-back-btn" onClick={handleBackClick}>
+            <img src={backIcon} alt="뒤로가기" />
+          </button>
           {/* 게시글 헤더 */}
           <div className="ytd-post-header">
             <h1 className="ytd-post-title">{postData.title}</h1>
