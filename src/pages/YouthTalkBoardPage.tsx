@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 import writeIcon from "../assets/write-icon.svg";
 import starIcon from "../assets/interaction/star.svg";
 import starFillIcon from "../assets/interaction/star_fill.svg";
-import { getReviewsByBoardType, ReviewItem } from '../api/Review/getReviewsApi';
+import { getAllReviews, getReviewsByBoardType, ReviewItem } from '../api/Review/getReviewsApi';
 import { getAverageRating } from '../api/Review/getAverageRatingApi';
+import { fetchMyUserInfo } from '../api/YouthDrawer/fetchMyUserInfo';
 
 const YouthTalkBoardPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
@@ -129,17 +130,49 @@ const YouthTalkBoardPage: React.FC = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('accessToken') || undefined;
-        // 청춘톡은 전체 리뷰를 가져오므로 boardType을 빈 문자열로 전달
-        const res = await getReviewsByBoardType('', token);
-        // 최신순으로 정렬
-        const sortedReviews = res.reviews.sort((a, b) => {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-        setReviews(sortedReviews);
+        // 청춘톡은 전체 리뷰를 가져오므로 getAllReviews 사용
+        const res = await getAllReviews(token);
+        console.log('API 응답:', res);
+        console.log('게시글 개수:', res.reviews?.length || 0);
+        
+        let finalReviews: ReviewItem[] = [];
+        
+        if (!res.reviews || res.reviews.length === 0) {
+          console.log('게시글이 없습니다. 다른 방법으로 시도합니다.');
+          // getAllReviews가 실패하면 개별 카테고리별로 가져와서 합치기
+          const allReviews: ReviewItem[] = [];
+          
+          // 각 카테고리별로 게시글 가져오기
+          const categories = ['청춘톡', 'MT_LT', '동행모집', '모임구인', '졸업_휴학여행', '국내학점교류', '해외교환'];
+          
+          for (const category of categories) {
+            try {
+              const categoryRes = await getReviewsByBoardType(category, token);
+              if (categoryRes.reviews && categoryRes.reviews.length > 0) {
+                allReviews.push(...categoryRes.reviews);
+                console.log(`${category} 카테고리에서 ${categoryRes.reviews.length}개 게시글 가져옴`);
+              }
+            } catch (error) {
+              console.log(`${category} 카테고리 조회 실패:`, error);
+            }
+          }
+          
+          // 최신순으로 정렬
+          finalReviews = allReviews.sort((a: ReviewItem, b: ReviewItem) => {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        } else {
+          // 최신순으로 정렬
+          finalReviews = res.reviews.sort((a: ReviewItem, b: ReviewItem) => {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        }
+        
+        setReviews(finalReviews);
         
         // 각 게시글의 키워드(장소명, 태그)에 대해 평균 별점 조회
         const keywords = new Set<string>();
-        sortedReviews.forEach(review => {
+        finalReviews.forEach((review: ReviewItem) => {
           if (review.placeName) keywords.add(review.placeName);
           if (review.categoryName) keywords.add(review.categoryName);
         });
@@ -216,10 +249,36 @@ const YouthTalkBoardPage: React.FC = () => {
           <div className="yt-board-title">게시글 모음</div>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
+          ) : reviews.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+              게시글이 없습니다.
+            </div>
           ) : (
             <div className="yt-post-list">
-              {reviews.map(review => (
-                <div key={review.postId} className="yt-post-card" onClick={() => navigate(`/review/${review.postId}?category=청춘톡`)} style={{ cursor: 'pointer' }}>
+                             {reviews.map(review => (
+                                   <div key={review.postId} className="yt-post-card" onClick={async () => {
+                    // 함께해요 카테고리 중 동행구해요, 번개모임만 이메일 인증 확인
+                    const restrictedCategories = ['동행구해요', '번개모임'];
+                    const isRestrictedCategory = restrictedCategories.some(cat => 
+                      review.categoryName?.includes(cat) || review.boardType?.includes(cat)
+                    );
+                   
+                                       if (isRestrictedCategory) {
+                      try {
+                        const userInfo = await fetchMyUserInfo();
+                        if (!userInfo.emailVerified) {
+                          alert('동행구해요/번개모임 게시글을 보려면 이메일 인증이 필요합니다.');
+                          return;
+                        }
+                      } catch (error) {
+                        console.error('사용자 정보 조회 실패:', error);
+                        alert('사용자 정보를 확인할 수 없습니다. 다시 로그인해주세요.');
+                        return;
+                      }
+                    }
+                   
+                   navigate(`/review/${review.postId}?category=청춘톡`);
+                 }} style={{ cursor: 'pointer' }}>
                   {/* 상단: 프로필/닉네임/날짜(왼쪽) + 태그(오른쪽) */}
                   <div className="yt-post-top-row">
                     <div className="yt-post-info-row">
@@ -245,49 +304,49 @@ const YouthTalkBoardPage: React.FC = () => {
                       <span className="yt-tag yt-tag-main">{review.categoryName}</span>
                     </div>
                   </div>
-                  {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
-                  <div className="yt-main-row">
-                    <div className="yt-main-texts">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div className="yt-post-title">{review.title}</div>
-                        {/* 평균 별점 표시 */}
-                        {(review.placeName && averageRatings[review.placeName]) && (
-                          <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '4px',
-                            fontSize: '14px',
-                            color: '#666',
-                            marginTop: '0px'
-                          }}>
-                            {renderStars(averageRatings[review.placeName])}
-                          </div>
-                        )}
-                        {(review.categoryName && averageRatings[review.categoryName] && !review.placeName) && (
-                          <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '4px',
-                            fontSize: '14px',
-                            color: '#666',
-                            marginTop: '0px'
-                          }}>
-                            {renderStars(averageRatings[review.categoryName])}
-                          </div>
-                        )}
-                      </div>
-                      <div className="yt-post-content">{review.content}</div>
-                    </div>
-                    <img 
-                      src={review.thumbnailUrl || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"} 
-                      alt="썸네일" 
-                      className="yt-thumbnail" 
-                      onError={(e) => {
-                        // 이미지 로드 실패 시 기본 이미지로 대체
-                        e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80";
-                      }}
-                    />
-                  </div>
+                                     {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
+                   <div className="yt-main-row">
+                     <div className="yt-main-texts">
+                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                         <div className="yt-post-title">{review.title}</div>
+                         {/* 평균 별점 표시 */}
+                         {(review.placeName && averageRatings[review.placeName]) && (
+                           <div style={{ 
+                             display: 'flex', 
+                             alignItems: 'center', 
+                             gap: '4px',
+                             fontSize: '14px',
+                             color: '#666',
+                             marginTop: '0px'
+                           }}>
+                             {renderStars(averageRatings[review.placeName])}
+                           </div>
+                         )}
+                         {(review.categoryName && averageRatings[review.categoryName] && !review.placeName) && (
+                           <div style={{ 
+                             display: 'flex', 
+                             alignItems: 'center', 
+                             gap: '4px',
+                             fontSize: '14px',
+                             color: '#666',
+                             marginTop: '0px'
+                           }}>
+                             {renderStars(averageRatings[review.categoryName])}
+                           </div>
+                         )}
+                       </div>
+                       <div className="yt-post-content">{review.content}</div>
+                     </div>
+                     <img 
+                       src={review.imageUrl || review.thumbnailUrl || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"} 
+                       alt="썸네일" 
+                       className="yt-thumbnail" 
+                       onError={(e) => {
+                         // 이미지 로드 실패 시 기본 이미지로 대체
+                         e.currentTarget.src = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80";
+                       }}
+                     />
+                   </div>
                 </div>
               ))}
             </div>
