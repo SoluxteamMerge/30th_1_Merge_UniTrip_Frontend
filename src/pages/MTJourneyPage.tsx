@@ -21,6 +21,7 @@ const MTJourneyPage: React.FC = () => {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -168,7 +169,14 @@ const MTJourneyPage: React.FC = () => {
           ) : (
             <div className="mt-post-list">
               {reviews.map(review => (
-                <div key={review.postId} className="mt-post-card" onClick={() => navigate(`/review/${review.postId}?category=MT여정지도`)} style={{ cursor: 'pointer' }}>
+                <div key={review.postId} className="mt-post-card" onClick={() => {
+                  const isLoggedIn = !!localStorage.getItem('accessToken');
+                  if (!isLoggedIn) {
+                    setShowLoginModal(true);
+                    return;
+                  }
+                  navigate(`/review/${review.postId}?category=MT여정지도`);
+                }} style={{ cursor: 'pointer' }}>
                   {/* 상단: 프로필/닉네임/날짜 */}
                   <div className="mt-post-top-row">
                     <div className="mt-post-info-row">
@@ -232,6 +240,82 @@ const MTJourneyPage: React.FC = () => {
       >
         <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
       </button>
+      
+      {/* 로그인 필요 모달 */}
+      {showLoginModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '15px',
+            padding: '40px',
+            maxWidth: '400px',
+            width: '90%',
+            textAlign: 'center',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+          }}>
+            <h3 style={{ 
+              color: '#333', 
+              marginBottom: '20px', 
+              fontSize: '18px',
+              fontWeight: '600'
+            }}>
+              로그인이 필요한 서비스입니다
+            </h3>
+            <p style={{ 
+              color: '#666', 
+              marginBottom: '30px',
+              fontSize: '14px',
+              lineHeight: '1.5'
+            }}>
+              게시글을 보려면 로그인해주세요
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowLoginModal(false)}
+                style={{
+                  padding: '10px 20px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  backgroundColor: 'white',
+                  color: '#666',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                취소
+              </button>
+              <button
+                onClick={() => {
+                  setShowLoginModal(false);
+                  navigate('/login');
+                }}
+                style={{
+                  padding: '10px 20px',
+                  border: 'none',
+                  borderRadius: '8px',
+                  backgroundColor: '#0b0b61',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                로그인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -54,51 +54,56 @@ const TogetherPage: React.FC = () => {
       <>
         <Header isLoggedIn={false} username="" profileUrl="" />
         {showLoginModal && (
-          <div className="modal-overlay" style={{
+          <div style={{
             position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.13)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             zIndex: 1000
           }}>
-            <div className="modal-content" style={{
-              backgroundColor: '#fff',
-              borderRadius: '25px',
-              padding: '80px 0px 50px 0px',
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '15px',
+              padding: '40px',
               maxWidth: '400px',
               width: '90%',
               textAlign: 'center',
-              boxShadow: '0 4px 32px 0 rgba(0,0,0,0.13)',
-              border: '2px solid #bbb'
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
             }}>
-              <h3 style={{
-                margin: '0 0 30px 0',
-                fontSize: '20px',
-                fontWeight: '700',
-                color: '#333'
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: '20px', 
+                fontSize: '18px',
+                fontWeight: '600'
               }}>
-                해당 서비스를 이용하려면<br />
-                로그인이 필요합니다.
+                로그인이 필요한 서비스입니다
               </h3>
+              <p style={{ 
+                color: '#666', 
+                marginBottom: '30px',
+                fontSize: '14px',
+                lineHeight: '1.5'
+              }}>
+                게시글을 보려면 로그인해주세요
+              </p>
               <button
                 onClick={handleLoginModalClose}
                 style={{
+                  padding: '10px 20px',
+                  border: 'none',
+                  borderRadius: '8px',
                   backgroundColor: '#0b0b61',
                   color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  padding: '12px 48px',
-                  fontSize: '20px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  fontSize: '14px'
                 }}
               >
-                확인
+                로그인
               </button>
             </div>
           </div>

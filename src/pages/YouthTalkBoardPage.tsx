@@ -16,6 +16,7 @@ const YouthTalkBoardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [averageRatings, setAverageRatings] = useState<Record<string, number>>({});
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // 별점 표시 컴포넌트
   const renderStars = (rating: number) => {
@@ -258,6 +259,13 @@ const YouthTalkBoardPage: React.FC = () => {
             <div className="yt-post-list">
               {reviews.map(review => (
                                    <div key={review.postId} className="yt-post-card" onClick={async () => {
+                    // 로그인 체크
+                    const isLoggedIn = !!localStorage.getItem('accessToken');
+                    if (!isLoggedIn) {
+                      setShowLoginModal(true);
+                      return;
+                    }
+                    
                     // 함께해요 카테고리 중 동행모집, 모임구인만 이메일 인증 확인
                     const restrictedCategories = ['동행모집', '모임구인'];
                     const isRestrictedCategory = restrictedCategories.some(cat => 
@@ -428,6 +436,82 @@ const YouthTalkBoardPage: React.FC = () => {
       </button>
             </div>
           </>
+        )}
+        
+        {/* 로그인 필요 모달 */}
+        {showLoginModal && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000
+          }}>
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '15px',
+              padding: '40px',
+              maxWidth: '400px',
+              width: '90%',
+              textAlign: 'center',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+            }}>
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: '20px', 
+                fontSize: '18px',
+                fontWeight: '600'
+              }}>
+                로그인이 필요한 서비스입니다
+              </h3>
+              <p style={{ 
+                color: '#666', 
+                marginBottom: '30px',
+                fontSize: '14px',
+                lineHeight: '1.5'
+              }}>
+                게시글을 보려면 로그인해주세요
+              </p>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  style={{
+                    padding: '10px 20px',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    backgroundColor: 'white',
+                    color: '#666',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  취소
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLoginModal(false);
+                    navigate('/login');
+                  }}
+                  style={{
+                    padding: '10px 20px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    backgroundColor: '#0b0b61',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  로그인
+                </button>
+              </div>
+            </div>
+          </div>
         )}
     </div>
   );
