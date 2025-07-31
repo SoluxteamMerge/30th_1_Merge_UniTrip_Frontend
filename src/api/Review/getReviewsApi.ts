@@ -30,9 +30,7 @@ export interface ReviewItem {
   region?: string;
   lat?: number;
   lng?: number;
-  // 모임구인 전용 필드 (선택적)
-  overnightFlag?: boolean;
-  recruitmentCnt?: number;
+
 }
 
 export interface GetReviewsResponse {
@@ -86,22 +84,24 @@ export interface ReviewDetailResponse {
   content: string; // HTML 문자열
   userId: number;
   nickname: string;
+  profileImageUrl?: string;
   createdAt: string;
+  commentCount: number;
   views: number;
   rating: number;
   likes: number;
-  isLiked: boolean;
-  bookmarkCount?: number; // 북마크 개수
-  overnightFlag?: boolean; // 모임구인만
-  recruitmentCnt?: number; // 모임구인만
-  // 장소정보 추가
-  placeName?: string; // 카카오 제공
-  address?: string; // 카카오 제공
-  kakaoId?: string; // 카카오 제공
-  categoryGroupName?: string; // 카카오 제공
-  region?: string; // 카카오 제공
-  lat?: number; // 위도
-  lng?: number; // 경도
+  scraps: number;
+  imageUrl?: string;
+  overnightFlag?: boolean;
+  recruitmentCnt?: number;
+  placeName?: string;
+  address?: string;
+  kakaoId?: string;
+  categoryGroupName?: string;
+  region?: string;
+  scrapCount: number;
+  liked: boolean;
+  scraped: boolean;
 }
 
 export const getReviewDetail = async (
