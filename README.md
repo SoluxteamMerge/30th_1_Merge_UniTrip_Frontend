@@ -1,4 +1,4 @@
-# UniTrip_Backend
+# UniTrip_Frontend
 
 MT부터 교환학생, 휴학 여행, 계절학기까지!
 
