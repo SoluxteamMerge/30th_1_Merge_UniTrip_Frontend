@@ -200,6 +200,136 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
           background: #f5f5f5;
           color: #666;
         }
+
+        /* 태블릿 (768px 이하) */
+        @media (max-width: 768px) {
+          .header {
+            padding: 15px 20px;
+          }
+          .header-logo {
+            height: 35px;
+          }
+          .header-nav-link {
+            margin-right: 16px;
+            font-size: 14px;
+          }
+          .header-username {
+            font-size: 14px;
+            margin-right: 8px;
+          }
+          .header-profile-img {
+            width: 40px;
+            height: 40px;
+          }
+          .header-logout-btn {
+            font-size: 15px;
+            margin-right: 15px;
+          }
+          .header-modal {
+            padding: 60px 80px 40px 80px;
+            min-width: 320px;
+          }
+          .header-modal-title {
+            font-size: 18px;
+          }
+          .header-modal-content {
+            font-size: 18px;
+          }
+          .header-modal-btn {
+            font-size: 18px;
+            padding: 10px 40px;
+          }
+        }
+
+        /* 모바일 (480px 이하) */
+        @media (max-width: 480px) {
+          .header {
+            padding: 10px 15px;
+            flex-direction: column;
+            gap: 10px;
+          }
+          .header-left {
+            width: 100%;
+            justify-content: space-between;
+          }
+          .header-logo {
+            height: 30px;
+          }
+          .header-nav-link {
+            margin-right: 12px;
+            font-size: 12px;
+          }
+          .header-right {
+            width: 100%;
+            justify-content: center;
+          }
+          .header-username {
+            font-size: 12px;
+            margin-right: 6px;
+          }
+          .header-profile-img {
+            width: 35px;
+            height: 35px;
+          }
+          .header-logout-btn {
+            font-size: 13px;
+            margin-right: 10px;
+          }
+          .header-modal {
+            padding: 40px 40px 30px 40px;
+            min-width: 280px;
+            margin: 20px;
+          }
+          .header-modal-title {
+            font-size: 16px;
+          }
+          .header-modal-content {
+            font-size: 16px;
+          }
+          .header-modal-btn {
+            font-size: 16px;
+            padding: 8px 30px;
+          }
+        }
+
+        /* 작은 모바일 (360px 이하) */
+        @media (max-width: 360px) {
+          .header {
+            padding: 8px 10px;
+          }
+          .header-logo {
+            height: 25px;
+          }
+          .header-nav-link {
+            margin-right: 8px;
+            font-size: 11px;
+          }
+          .header-username {
+            font-size: 11px;
+          }
+          .header-profile-img {
+            width: 30px;
+            height: 30px;
+          }
+          .header-logout-btn {
+            font-size: 12px;
+            margin-right: 8px;
+          }
+          .header-modal {
+            padding: 30px 20px 20px 20px;
+            min-width: 250px;
+          }
+          .header-modal-title {
+            font-size: 14px;
+          }
+          .header-modal-content {
+            font-size: 14px;
+          }
+          .header-modal-btn {
+            font-size: 14px;
+            padding: 6px 25px;
+          }
+        }
         `}
       </style>
       <header className="header">
