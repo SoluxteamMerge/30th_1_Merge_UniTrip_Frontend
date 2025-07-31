@@ -25,7 +25,7 @@ export interface SearchReview {
 export const searchReviews = async (
   keyword: string,
   token: string,
-  //sort: string = "인기순", // 기본 정렬: 인기순
+  sort: string = "인기순", // 기본 정렬: 인기순
   isPopular: boolean = false
 ): Promise<SearchReviewResponse> => {
 
@@ -35,11 +35,11 @@ export const searchReviews = async (
 
   try {
     console.log("🌐 요청 보낼 URL:", endpoint);
-    console.log("📨 요청 파라미터:", { keyword });
+    console.log("📨 요청 파라미터:", { keyword, sort });
     console.log("🔐 요청 헤더:", { Authorization: `Bearer ${token}` });
 
     const response = await axios.get(`${BASE_URL}/api/reviews/search`, {
-      params: { keyword },
+      params: { keyword, sort },
 
       headers: { Authorization: `Bearer ${token.trim()}` }
     });
