@@ -40,7 +40,8 @@ export const searchReviews = async (
 
     const response = await axios.get(`${BASE_URL}/api/reviews/search`, {
       params: { keyword },
-      headers: { Authorization: `Bearer ${token}` }
+
+      headers: { Authorization: `Bearer ${token.trim()}` }
     });
 
   console.log("📦 [searchReviews] 전체 response:", response);
