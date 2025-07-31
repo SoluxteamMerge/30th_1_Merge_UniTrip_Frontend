@@ -5,6 +5,15 @@ export interface UpdateReviewRequest {
   categoryName?: string;
   title?: string;
   content?: string; // HTML 문자열
+  scheduleDate?: string;
+  imageUrl?: string;
+  placeName?: string;
+  address?: string;
+  kakaoId?: string;
+  categoryGroupName?: string;
+  region?: string;
+  lat?: number;
+  lng?: number;
   overnightFlag?: boolean;
   recruitmentCnt?: number;
 }
