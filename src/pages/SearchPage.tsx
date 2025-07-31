@@ -141,7 +141,7 @@
     "경북": "GYEONGBUK",
     "경남": "GYEONGNAM",
     "제주": "JEJU",
-    "전체보기": "ETC",
+    "전체보기": "",
   };
   
   //const popularKeywords = ["부산", "제주", "바다", "광안리", "속초", "강릉", "MT", "대구", "전주", "힐링"];
@@ -234,11 +234,13 @@
         const regionCode = regionMap[region];
         const token = localStorage.getItem("accessToken");
 
+        const regionParam = regionCode === "" ? null : regionCode;
+
         if (token && regionCode !== undefined) {
           try {
             const response = await getPlaceByRegion(regionCode, token);
             setRegionReviews(response.data);
-            setIsRegionFiltered(true);
+            setIsRegionFiltered(regionCode !== "");
           } catch (error) {
             console.error("Error fetching region posts:", error);
           }
