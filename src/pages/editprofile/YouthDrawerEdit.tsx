@@ -13,6 +13,7 @@ import { fetchMyUserInfo } from '../../api/YouthDrawer/fetchMyUserInfo';
 import { sendEmailVerification } from '../../api/Signup/sendEmailVerification';
 import { verifyEmailCode } from '../../api/Signup/verifyEmailCode';
 import { deleteUserProfileImage, uploadUserProfileImage } from '../../api/userProfileImageApi';
+import { checkNicknameDuplicate } from '../../api/Signup/checkNicknameDuplicate';
 
 
 function YouthDrawerEdit() {
@@ -57,21 +58,35 @@ function YouthDrawerEdit() {
     fetchUserProfile();
     }, []); 
 
-    const handleCheckNickname = () => {
-        if (!nickname) {
-            setResultMessage('닉네임을 입력하세요');
-            setIsResultModalOpen(true);
-            return;
-        }
-        if (nickname.length < 2 || nickname.length > 20) {
-            setResultMessage('닉네임은 2~20자여야 합니다.');
-            setIsResultModalOpen(true);
-            return;
-        }
-        setResultMessage('사용 가능한 닉네임입니다.');
-        setNicknameChecked(true);
-        setIsResultModalOpen(true);
-    };
+    const handleCheckNickname = async () => {
+  if (!nickname) {
+    setResultMessage('닉네임을 입력하세요');
+    setIsResultModalOpen(true);
+    return;
+  }
+  if (nickname.length < 2 || nickname.length > 20) {
+    setResultMessage('닉네임은 2~20자여야 합니다.');
+    setIsResultModalOpen(true);
+    return;
+  }
+
+  try {
+    const response = await checkNicknameDuplicate(nickname);
+    const isDuplicated = response.data.isDuplicated;
+
+    if (isDuplicated) {
+      setResultMessage('이미 사용 중인 닉네임입니다.');
+      setNicknameChecked(false);
+    } else {
+      setResultMessage('사용 가능한 닉네임입니다.');
+      setNicknameChecked(true);
+    }
+  } catch (error) {
+    setResultMessage((error as Error).message);
+  } finally {
+    setIsResultModalOpen(true);
+  }
+};
     
     const formatPhoneNumber = (value: string) => {
         const onlyNumber = value.replace(/[^0-9]/g, '');
@@ -247,7 +262,15 @@ function YouthDrawerEdit() {
                                 <label className="Drawer-label">닉네임</label>
                                 <span className="Drawer-check-duplicate" onClick={handleCheckNickname}>중복확인</span>
                             </div>
-                            <input type="text" className="Drawerinput" value={nickname} onChange={(e) => { setNickname(e.target.value); {/*setNicknameChecked(false);*/} }} placeholder="닉네임을 입력하세요" />
+                            <input 
+                                type="text"
+                                className="Drawerinput" 
+                                value={nickname} 
+                                onChange={(e) => { 
+                                    setNickname(e.target.value); 
+                                    setNicknameChecked(false); 
+                                }} 
+                                placeholder="닉네임을 입력하세요" />
                             <div className="Drawer-underline"></div>
                         </div>
 
