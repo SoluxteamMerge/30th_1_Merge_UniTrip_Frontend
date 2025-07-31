@@ -2,7 +2,7 @@ import './ReviewCard.css';
 import starIcon from '../../assets/mainpage/star.svg';
 import heartIcon from '../../assets/mainpage/heart.svg';
 import scrapIcon from '../../assets/mainpage/scrap.svg';
-import fillscrap from '../../assets/mainpage/fillscrap.svg';
+//import fillscrap from '../../assets/mainpage/fillscrap.svg';
 
 interface ReviewCardProps {
   postId: number;
