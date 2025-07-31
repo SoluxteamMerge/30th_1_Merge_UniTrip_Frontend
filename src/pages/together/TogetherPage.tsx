@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import SortDropdown from "../../components/SortDropdown";
-import AlertModal from "../../components/AlertModal/AlertModal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import writeIcon from "../../assets/write-icon.svg";
 import starWishIcon from "../../assets/module/star_wish.svg";
@@ -55,10 +54,54 @@ const TogetherPage: React.FC = () => {
       <>
         <Header isLoggedIn={false} username="" profileUrl="" />
         {showLoginModal && (
-          <AlertModal 
-            message="로그인이 필요한 서비스입니다. 로그인 후 이용해주세요." 
-            onClose={handleLoginModalClose} 
-          />
+          <div className="modal-overlay" style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.13)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000
+          }}>
+            <div className="modal-content" style={{
+              backgroundColor: '#fff',
+              borderRadius: '25px',
+              padding: '80px 0px 50px 0px',
+              maxWidth: '400px',
+              width: '90%',
+              textAlign: 'center',
+              boxShadow: '0 4px 32px 0 rgba(0,0,0,0.13)',
+              border: '2px solid #bbb'
+            }}>
+              <h3 style={{
+                margin: '0 0 30px 0',
+                fontSize: '20px',
+                fontWeight: '700',
+                color: '#333'
+              }}>
+                해당 서비스를 이용하려면<br />
+                로그인이 필요합니다.
+              </h3>
+              <button
+                onClick={handleLoginModalClose}
+                style={{
+                  backgroundColor: '#0b0b61',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '12px 48px',
+                  fontSize: '20px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                확인
+              </button>
+            </div>
+          </div>
         )}
       </>
     );
@@ -161,8 +204,8 @@ const TogetherPage: React.FC = () => {
         .together-container { max-width: 1500px; margin: 0 auto; padding: 60px 0px 60px 300px; position: relative; }
         .together-sidebar {
           position: absolute;
-          left: -320px;
-          top: 0;
+          left: 0px;
+          top: 115px;
           width: 280px;
           background: #fff;
           border-radius: 15px;
