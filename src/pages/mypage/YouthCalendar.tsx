@@ -61,6 +61,8 @@ const YouthCalendar: React.FC = () => {
     color: string;
   } | null>(null); // ← 메모 클릭 시 불러올 일정
 
+  
+
   const [endDate, setEndDate] = useState<number | null>(null);
   const [endMonth, setEndMonth] = useState<number | null>(null); 
   const [endYear, setEndYear] = useState<number | null>(null);
@@ -155,7 +157,7 @@ const YouthCalendar: React.FC = () => {
       try {
         if (editingScheduleId) {
           // 일정 수정
-           // 1. 서버에 일정 수정 요청
+           // 1. 서버에 일정 수정 api요청
           const response = await patchSchedule(editingScheduleId, {
             title: scheduleTitle,
             description: memo,
@@ -438,6 +440,17 @@ const YouthCalendar: React.FC = () => {
                   setEditingScheduleId(entry.scheduleId);
                   setIsMemoSelected(true);
                   setIsModalOpen(true);
+
+
+                  const start = new Date(detail.startDate);
+                  const end = new Date(detail.endDate);
+
+                  // 시작일도 세팅
+                  setSelectedDate(start.getDate());
+                  setCurrentMonth(start.getMonth());
+                  setCurrentYear(start.getFullYear());
+
+                  // 종료일 세팅
                   setEndDate(new Date(detail.endDate).getDate());
                   setEndMonth(new Date(detail.endDate).getMonth() + 1);
                   setEndYear(new Date(detail.endDate).getFullYear());
