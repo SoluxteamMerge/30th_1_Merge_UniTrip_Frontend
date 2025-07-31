@@ -4,7 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
 
-import { ReviewCardTwo } from "../../pages/reviewcard/ReviewCardTwo";
+//import { ReviewCardTwo } from "../../pages/reviewcard/ReviewCardTwo";
+import { ReviewCard } from '../reviewcard/ReviewCard';
 import '../mainpage/MainPage.css';
 import MyPageSidebar from "../../components/MyPageSidebar";
 import Pagination from "../../components/Pagination"; 
@@ -226,18 +227,18 @@ const ScrappedYouthPage: React.FC = () => {
                 itemsPerPage={6}
                 renderItem={(post) => (
                   <div key={post.postId} onClick={() => navigate(`/youth-talk/${post.postId}`)}>
-                    <ReviewCardTwo
+                    <ReviewCard
                       postId={post.postId}
-                      title={post.postTitle}
+                      postTitle={post.postTitle}
                       categoryName={post.categoryName}
-                      thumbnailUrl={post.imageUrl}
+                      imageUrl={post.imageUrl}
                       nickname={post.nickname}
                       //createdAt={post.createdAt}
-                      likes={post.likeCount}
+                      likeCount={post.likeCount}
                       scrapCount={post.scrapCount}
                       rating={post.rating}
-                      isLiked={false} //숫자만 표시되게
-                      isScraped={false} //숫자만 표시되게
+                      //isLiked={false} //숫자만 표시되게
+                      //isScraped={false} //숫자만 표시되게
                     />
                   </div>
                 )}
