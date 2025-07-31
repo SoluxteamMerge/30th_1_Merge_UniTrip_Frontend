@@ -11,6 +11,13 @@ import { fetchMyUserInfo } from '../api/YouthDrawer/fetchMyUserInfo';
 
 const YouthTalkBoardPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 정렬 변경 시 1페이지로 이동
+  const handleSortChange = (newSort: string) => {
+    setSort(newSort);
+    setCurrentPage(1);
+  };
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +40,18 @@ const YouthTalkBoardPage: React.FC = () => {
         return 0;
     }
   });
+
+  // 현재 페이지의 리뷰 계산
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentReviews = sortedReviews.slice(startIndex, startIndex + itemsPerPage);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // 별점 표시 컴포넌트
   const renderStars = (rating: number) => {
@@ -261,7 +280,7 @@ const YouthTalkBoardPage: React.FC = () => {
           <div className="yt-title-box">
             <span className="yt-title-icon">▶</span>청춘톡
           </div>
-          <SortDropdown value={sort} onChange={setSort} />
+          <SortDropdown value={sort} onChange={handleSortChange} />
         </div>
         <div className="yt-white-container">
           <div className="yt-board-title">게시글 모음</div>
@@ -271,9 +290,10 @@ const YouthTalkBoardPage: React.FC = () => {
             <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
               게시글이 없습니다.
             </div>
-          ) : (
-            <div className="yt-post-list">
-              {sortedReviews.map(review => (
+                      ) : (
+              <>
+                                   <div className="yt-post-list">
+                     {currentReviews.map(review => (
                                    <div key={review.postId} className="yt-post-card" onClick={async () => {
                     // 로그인 체크
                     const isLoggedIn = !!localStorage.getItem('accessToken');
@@ -388,10 +408,34 @@ const YouthTalkBoardPage: React.FC = () => {
                       }}
                     />
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                                 </div>
+               ))}
+             </div>
+                                {/* 페이지네이션 버튼 */}
+                   {totalPages >= 1 && (
+                     <div style={{ textAlign: "center", marginTop: 24 }}>
+                       {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => (
+                         <button
+                           key={page}
+                           onClick={() => handlePageChange(page)}
+                           style={{
+                             margin: "0 8px",
+                             padding: "8px 14px",
+                             border: "none",
+                             borderRadius: 6,
+                             fontWeight: currentPage === page ? 700 : 400,
+                             backgroundColor: currentPage === page ? "#ececec" : "transparent",
+                             cursor: "pointer",
+                             fontSize: 16
+                           }}
+                         >
+                           {page}
+                         </button>
+                       ))}
+                     </div>
+                   )}
+           </>
+         )}
         </div>
       </div>
 

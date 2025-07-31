@@ -27,6 +27,13 @@ const categories = [
 const TogetherPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
   const [selectedCategory, setSelectedCategory] = useState("동행구해요");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 정렬 변경 시 1페이지로 이동
+  const handleSortChange = (newSort: string) => {
+    setSort(newSort);
+    setCurrentPage(1);
+  };
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
@@ -48,6 +55,18 @@ const TogetherPage: React.FC = () => {
         return 0;
     }
   });
+
+  // 현재 페이지의 리뷰 계산
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentReviews = sortedReviews.slice(startIndex, startIndex + itemsPerPage);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // 로그인 상태 확인
   const isLoggedIn = !!localStorage.getItem('accessToken');
@@ -333,71 +352,95 @@ const TogetherPage: React.FC = () => {
           <div className="together-title-box">
             <span className="together-title-icon">▶</span>함께해요
           </div>
-          <SortDropdown value={sort} onChange={setSort} />
+          <SortDropdown value={sort} onChange={handleSortChange} />
         </div>
         <div className="together-white-container">
           <div className="together-board-title">{selectedCategory}</div>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
           ) : (
-            <div className="together-post-list">
-              {sortedReviews.map(review => (
-                <div key={review.postId} className="together-post-card" onClick={() => navigate(`/review/${review.postId}?category=${selectedCategory}`)} style={{ cursor: 'pointer' }}>
-                  {/* 상단: 프로필/닉네임/날짜 */}
-                  <div className="together-post-top-row">
-                    <div className="together-post-info-row">
-                      <div 
-                        className="together-profile" 
-                        style={{
-                          backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
+            <>
+                               <div className="together-post-list">
+                   {currentReviews.map(review => (
+                  <div key={review.postId} className="together-post-card" onClick={() => navigate(`/review/${review.postId}?category=${selectedCategory}`)} style={{ cursor: 'pointer' }}>
+                    {/* 상단: 프로필/닉네임/날짜 */}
+                    <div className="together-post-top-row">
+                      <div className="together-post-info-row">
+                        <div 
+                          className="together-profile" 
+                          style={{
+                            backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                          }}
+                        />
+                        <span className="together-username">{review.nickname} 님</span>
+                        <div className="together-info-divider" />
+                        <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}</span>
+                      </div>
+                      {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
+                      {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
+                        <div className="together-rating-container">
+                          {renderStars(review.rating)}
+                        </div>
+                      )}
+                    </div>
+                    {/* 제목+내용 */}
+                    <div className="together-main-row">
+                      <div className="together-main-texts">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div className="together-post-title">{review.title}</div>
+                        </div>
+                        <div className="together-post-content">{review.content}</div>
+                      </div>
+                      <img 
+                        src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
+                        alt="썸네일" 
+                        className="together-thumbnail" 
+                        onError={(e) => {
+                          // 이미지 로드 실패 시 기본 이미지로 대체
+                          e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
                         }}
                       />
-                      <span className="together-username">{review.nickname} 님</span>
-                      <div className="together-info-divider" />
-                      <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}</span>
                     </div>
-                    {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
-                    {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
-                      <div className="together-rating-container">
-                        {renderStars(review.rating)}
-                      </div>
-                    )}
-                  </div>
-                  {/* 제목+내용 */}
-                  <div className="together-main-row">
-                    <div className="together-main-texts">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div className="together-post-title">{review.title}</div>
-                      </div>
-                      <div className="together-post-content">{review.content}</div>
+                    {/* 태그들 */}
+                    <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                      <span className="together-tag together-tag-main">{review.categoryName}</span>
                     </div>
-                    <img 
-                      src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
-                      alt="썸네일" 
-                      className="together-thumbnail" 
-                      onError={(e) => {
-                        // 이미지 로드 실패 시 기본 이미지로 대체
-                        e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
-                      }}
-                    />
                   </div>
-                  {/* 태그들 */}
-                  <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                    <span className="together-tag together-tag-main">{review.categoryName}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+                                 {/* 페이지네이션 버튼 */}
+                   {totalPages >= 1 && (
+                     <div style={{ textAlign: "center", marginTop: 24 }}>
+                       {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => (
+                         <button
+                           key={page}
+                           onClick={() => handlePageChange(page)}
+                           style={{
+                             margin: "0 8px",
+                             padding: "8px 14px",
+                             border: "none",
+                             borderRadius: 6,
+                             fontWeight: currentPage === page ? 700 : 400,
+                             backgroundColor: currentPage === page ? "#ececec" : "transparent",
+                             cursor: "pointer",
+                             fontSize: 16
+                           }}
+                         >
+                           {page}
+                         </button>
+                       ))}
+                     </div>
+                   )}
+            </>
           )}
-        </div>
       </div>
 
       {/* 플로팅 글쓰기 버튼 */}
@@ -408,7 +451,7 @@ const TogetherPage: React.FC = () => {
         <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
       </button>
     </div>
-  );
-};
+  </div>
+)};
 
 export default TogetherPage; 
