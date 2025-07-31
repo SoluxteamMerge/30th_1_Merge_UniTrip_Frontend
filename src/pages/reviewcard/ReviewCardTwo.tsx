@@ -6,38 +6,39 @@ import fillscrap from '../../assets/mainpage/fillscrap.svg';
 
 interface ReviewCardProps {
   postId: number;
-  title: string;
+  postTitle: string;
   categoryName: string;
-  thumbnailUrl: string;
+  imageUrl: string;
   nickname: string;
   //createdAt: string;
-  likes: number;
-  scrapCount: number;
-  rating: number; //백엔드 구현 중
-  isLiked: boolean;
-  isScraped: boolean;
+  rating: number; 
+  likeCount: number;
+  scrapCount: number; 
+  //isLiked: boolean;
+  //isScraped: boolean;
 }
 
 export const ReviewCardTwo = ({
   postId,
-  title,
+  postTitle,
   categoryName,
-  thumbnailUrl,
+  imageUrl,
   nickname,
   //createdAt,
-  likes,
-  scrapCount,
   rating,
-  isLiked,
-  isScraped,
+  likeCount,
+  scrapCount,
+  //isLiked,
+  //isScraped,
 }: ReviewCardProps) => {
 
   const DEFAULT_IMAGE_URL = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
-  const finalImageUrl = thumbnailUrl?.trim() || DEFAULT_IMAGE_URL;
+  const finalImageUrl = imageUrl?.trim() || DEFAULT_IMAGE_URL;
 
   return (
     <div className="review-card">
-      <img src={thumbnailUrl} alt="리뷰 이미지" className="card-img" />
+      <img src={imageUrl} alt="리뷰 이미지" className="card-img" />
+
       <div className="card-content">
         <div className="card-author-line">
           <p className="card-author">{nickname}</p>
@@ -47,16 +48,16 @@ export const ReviewCardTwo = ({
               <span>{rating}</span>
             </div>
             <div className="icon-button">
-              <img src={heartIcon} alt="좋아요" className={isLiked ? 'heart-colored' : ''} />
-              <span>{likes}</span>
+              <img src={heartIcon} alt="좋아요"/>
+              <span>{likeCount}</span>
             </div>
             <div className="icon-button">
-              <img src={isScraped? fillscrap : scrapIcon} alt="스크랩" className={isScraped ? 'scrap-colored' : ''}/>
+              <img src={scrapIcon} alt="스크랩" />
               <span>{scrapCount}</span>
             </div>
           </div>
         </div>
-        <p className="card-title">{title}</p>
+        <p className="card-title">{postTitle}</p>
         <p className="card-category">#{categoryName}</p>
       </div>
     </div>
