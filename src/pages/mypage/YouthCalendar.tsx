@@ -75,8 +75,16 @@ const YouthCalendar: React.FC = () => {
   // 서버에서 일정 목록 불러오는 useEffect 추가
   useEffect(() => {
     const fetchSchedules = async () => {
+
+      const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setAlertMessage("로그인이 필요합니다.");
+      setShowAlert(true);
+      return;
+    }
+
       try {
-        const response = await getScheduleList(0, 100); // page, size
+        const response = await getScheduleList(0, token, 0, 100); // page, size
         const fetched = response.data.content;
 
         const parsed: {
@@ -390,8 +398,17 @@ const YouthCalendar: React.FC = () => {
                 e.stopPropagation();
                 setSelectedDate(day);
 
+                const token = localStorage.getItem("accessToken"); 
+
+                if (!token) {
+                  setAlertMessage("로그인이 필요합니다.");
+                  setShowAlert(true);
+                  return;
+                }
+
                 try {
-                  const response = await getScheduleDetail(entry.scheduleId);
+                  // 일정 상세 조회
+                  const response = await getScheduleDetail(entry.scheduleId, token); // ✅ token 추가
                   const detail = response.data;
 
                   setScheduleTitle(detail.title);
