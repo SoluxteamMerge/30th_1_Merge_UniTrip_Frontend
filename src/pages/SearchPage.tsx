@@ -425,7 +425,11 @@
                         postId={review.postId}
                         postTitle={review.postTitle}
                         categoryName={review.categoryName}
-                        imageUrl={review.imageUrl}
+                        imageUrl={
+                          review.imageUrl?.trim() && review.imageUrl !== "null" && review.imageUrl !== "undefined"
+                            ? review.imageUrl.trim()
+                            : null
+                        }
                         nickname={review.nickname}
                         //createdAt={review.createdAt}
                         likeCount={review.likeCount}
@@ -487,7 +491,11 @@
                         postId={review.postId}
                         postTitle={review.postTitle}
                         categoryName={review.categoryName}
-                        imageUrl={review.imageUrl} 
+                        imageUrl={
+                          review.imageUrl?.trim() && review.imageUrl !== "null" && review.imageUrl !== "undefined"
+                            ? review.imageUrl.trim()
+                            : null
+                        }
                         nickname={review.nickname}
                         likeCount={review.likeCount}
                         scrapCount={review.scrapCount}
