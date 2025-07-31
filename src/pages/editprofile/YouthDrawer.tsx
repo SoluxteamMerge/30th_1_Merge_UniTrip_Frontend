@@ -184,7 +184,7 @@ function YouthDrawer() {
                                 }}
                                 onConfirm={() => {
                                     setIsResultModalOpen(false);
-                                    if (SUCCESS_MESSAGES.includes(resultMessage)) {
+                                    if (shouldRedirect) {
                                         localStorage.clear();
                                         navigate('/');
                                     }
