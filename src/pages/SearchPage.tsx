@@ -141,7 +141,7 @@
 
       const [popularKeywords, setPopularKeywords] = useState<{ keyword: string, rank: number, searchCount: number }[]>([]);
 
-      console.log("🔥 SearchPage 렌더링됨");
+      //console.log("🔥 SearchPage 렌더링됨");
 
       //인기 키워드 조회
       useEffect(() => {
@@ -247,6 +247,12 @@
           const token = localStorage.getItem("accessToken");
           if (!token) {
             alert("로그인이 필요합니다.");
+            return;
+          }
+
+           // 공백이나 빈 문자열 감지
+          if (!searchQuery.trim()) {
+            alert("검색어를 입력해주세요.");
             return;
           }
           try {
