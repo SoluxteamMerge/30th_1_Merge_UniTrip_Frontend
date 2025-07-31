@@ -12,6 +12,7 @@ import starIcon from "../assets/toolbar/star.svg";
 import leftlistIcon from "../assets/toolbar/leftlist.svg";
 import middlelistIcon from "../assets/toolbar/middlelist.svg";
 import rightlistIcon from "../assets/toolbar/rightlist.svg";
+import calendarIcon from "../assets/toolbar/calender.svg";
 import closeIcon from "../assets/module/close.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
 import starWishFillIcon from "../assets/module/star_wish_fill.svg";
@@ -68,6 +69,7 @@ const WriteReviewPage: React.FC = () => {
         setSelectedLocation(editData.location || null);
         setTags(editData.tags || []);
         setRating(editData.rating || 0);
+        setScheduleInput(editData.schedule || "");
       } catch (error) {
         console.error('수정 데이터 파싱 오류:', error);
       }
@@ -115,13 +117,10 @@ const WriteReviewPage: React.FC = () => {
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
     setCategoryOpen(false);
-    
-    // MT여정지도가 선택되면 MT일정 모달을, 나머지는 여행일정 모달을 표시
-    if (cat === "MT여정지도") {
-      setShowScheduleModal(true);
-    } else {
-      setShowScheduleModal(true);
-    }
+  };
+
+  const handleCalendarButtonClick = () => {
+    setShowScheduleModal(true);
   };
 
   const handleScheduleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,16 +128,16 @@ const WriteReviewPage: React.FC = () => {
     // 숫자만 허용
     const numbersOnly = value.replace(/[^0-9]/g, '');
     
-    if (numbersOnly.length <= 12) { // 최대 12자리 (YYMMDDYYMMDD)
+    if (numbersOnly.length <= 16) { // 최대 16자리 (YYYYMMDDYYYYMMDD)
       let formatted = '';
       
-      // 숫자를 2자리씩 그룹화하여 하이픈과 물결표 추가
+      // 숫자를 4자리씩 그룹화하여 하이픈과 물결표 추가
       for (let i = 0; i < numbersOnly.length; i++) {
-        if (i === 2 || i === 4) {
+        if (i === 4 || i === 6) {
           formatted += '-';
-        } else if (i === 6) {
+        } else if (i === 8) {
           formatted += ' ~ ';
-        } else if (i === 8 || i === 10) {
+        } else if (i === 12 || i === 14) {
           formatted += '-';
         }
         formatted += numbersOnly[i];
@@ -146,6 +145,12 @@ const WriteReviewPage: React.FC = () => {
       
       setScheduleInput(formatted);
     }
+  };
+
+  // 여정일정 입력이 완전한지 확인하는 함수
+  const isScheduleComplete = () => {
+    const numbersOnly = scheduleInput.replace(/[^0-9]/g, '');
+    return numbersOnly.length === 16; // YYYYMMDDYYYYMMDD (16자리)
   };
 
   const handleTagInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -511,8 +516,8 @@ const WriteReviewPage: React.FC = () => {
         }
         .wr-container { max-width: 1200px; margin: 0 auto; padding: 0px; min-height: 100vh; display: flex; flex-direction: column; }
         .wr-main { flex: 1; background: #fff; border-radius: 0; box-shadow: 0 1px 6px #0001; border: 1.5px solid #e0e0e0; padding: 0; min-height: 600px; display: flex; flex-direction: column; }
-        .wr-toolbar { display: flex; align-items: center; border-bottom: 1px solid #dedede; padding: 18px 32px 10px 32px; gap: 30px; font-size: 22px; color: #222; }
-        .wr-toolbar-btn { background: none; border: none; font-size: 30px; cursor: pointer; color: #222; margin-right: 10px; }
+        .wr-toolbar { display: flex; align-items: center; border-bottom: 1px solid #dedede; padding: 18px 32px 10px 50px; gap: 30px; font-size: 22px; color: #222; }
+        .wr-toolbar-btn { background: none; border: none; font-size: 30px; cursor: pointer; color: #222; margin-right: 20px; }
         .wr-toolbar-btn:last-child { margin-right: 0; }
         .wr-title-input,
         .wr-content-input {
@@ -765,6 +770,11 @@ const WriteReviewPage: React.FC = () => {
           width: 150%;
           padding: 12px 80px;
         }
+        .wr-modal-btn.schedule.disabled {
+          background-color: #ccc;
+          color: #999;
+          cursor: not-allowed;
+        }
         .wr-schedule-input-container {
           margin-bottom: 50px;
           width: 150%;
@@ -904,6 +914,18 @@ const WriteReviewPage: React.FC = () => {
           background: none;
         }
         .wr-image-remove {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: #999;
+          cursor: pointer;
+          font-size: 18px;
+          padding: 0;
+        }
+        .wr-rating-remove {
           position: absolute;
           right: 0;
           top: 50%;
@@ -1060,20 +1082,13 @@ const WriteReviewPage: React.FC = () => {
           </div>
           <div className="wr-container">
             <div className="wr-main">
-              <div className="wr-toolbar">
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><b>B</b></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><b><u>U</u></b></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><b><s>S</s></b></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list1Icon} alt="리스트1" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={list2Icon} alt="리스트2" style={{ width: 33, height: 40, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleTagButtonClick}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleImageButtonClick}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleLocationButtonClick}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleRatingButtonClick}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={leftlistIcon} alt="왼쪽정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={middlelistIcon} alt="가운데정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
-                <button className="wr-toolbar-btn" disabled={!isEmailVerified}><img src={rightlistIcon} alt="오른쪽 정렬" style={{ width: 40, height: 40, verticalAlign: "middle" }} /></button>
-              </div>
+                <div className="wr-toolbar">
+                  <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleCalendarButtonClick}><img src={calendarIcon} alt="날짜" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                  <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleTagButtonClick}><img src={tagIcon} alt="태그" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                  <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleImageButtonClick}><img src={imageInsertIcon} alt="이미지삽입" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                  <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleLocationButtonClick}><img src={locationIcon} alt="장소정보" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                  <button className="wr-toolbar-btn" disabled={!isEmailVerified} onClick={handleRatingButtonClick}><img src={starIcon} alt="즐겨찾기" style={{ width: 25, height: 25, verticalAlign: "middle" }} /></button>
+                </div>
               <div className="wr-category-row">
             <div className="wr-category-select">
               <button
@@ -1214,12 +1229,18 @@ const WriteReviewPage: React.FC = () => {
                 <input 
                   type="text" 
                   className="wr-schedule-input"
-                  placeholder="YY-MM-DD ~ YY-MM-DD"
+                  placeholder="YYYY-MM-DD ~ YYYY-MM-DD"
                   value={scheduleInput}
                   onChange={handleScheduleInput}
                 />
               </div>
-              <button className="wr-modal-btn schedule" onClick={() => setShowScheduleModal(false)}>확인</button>
+              <button 
+                className={`wr-modal-btn schedule ${!isScheduleComplete() ? 'disabled' : ''}`} 
+                onClick={() => setShowScheduleModal(false)}
+                disabled={!isScheduleComplete()}
+              >
+                확인
+              </button>
             </div>
           </>
         )}
@@ -1352,6 +1373,7 @@ const WriteReviewPage: React.FC = () => {
                         </div>
                       ))}
                     </div>
+                    <button className="wr-rating-remove" onClick={() => setRating(0)}>×</button>
                   </div>
                   <button className="wr-rating-confirm-btn" onClick={() => setShowRatingModal(false)}>
                     확인
