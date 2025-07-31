@@ -117,7 +117,8 @@ const YouthTalkDetailPage: React.FC = () => {
         const data = await getReviewDetail(parseInt(id), token);
         console.log('API 응답:', data);
         setPostData(data);
-        setIsLiked(data.isLiked);
+        setIsLiked(data.liked);
+        setIsStarred(data.scraped);
         
         // 댓글 목록도 함께 가져오기
         try {
@@ -161,11 +162,24 @@ const YouthTalkDetailPage: React.FC = () => {
           content: "게시글을 불러오는 중 오류가 발생했습니다.",
           userId: 0,
           nickname: "알 수 없음",
+          profileImageUrl: undefined,
           createdAt: new Date().toISOString(),
+          commentCount: 0,
           views: 0,
           rating: 0,
           likes: 0,
-          isLiked: false
+          scraps: 0,
+          imageUrl: undefined,
+          overnightFlag: undefined,
+          recruitmentCnt: undefined,
+          placeName: undefined,
+          address: undefined,
+          kakaoId: undefined,
+          categoryGroupName: undefined,
+          region: undefined,
+          scrapCount: 0,
+          liked: false,
+          scraped: false
         });
       } finally {
         setLoading(false);
@@ -1052,7 +1066,18 @@ const YouthTalkDetailPage: React.FC = () => {
             <h1 className="ytd-post-title">{postData.title}</h1>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div className="ytd-user-info">
-                <div className="ytd-profile ytd-profile-default" />
+                {postData.profileImageUrl ? (
+                  <img 
+                    src={postData.profileImageUrl} 
+                    alt="프로필" 
+                    className="ytd-profile"
+                    onError={(e) => {
+                      e.currentTarget.className = 'ytd-profile ytd-profile-default';
+                    }}
+                  />
+                ) : (
+                  <div className="ytd-profile ytd-profile-default" />
+                )}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div className="ytd-username">{postData.nickname}</div>
                   <div className="yt-info-divider" />
@@ -1071,14 +1096,14 @@ const YouthTalkDetailPage: React.FC = () => {
                   onClick={handleLike}
                 >
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
-                  <span className="ytd-interaction-count">{postData.likes + (isLiked ? 1 : 0)}</span>
+                  <span className="ytd-interaction-count">{postData.likes}</span>
                 </button>
                 <button 
-                  className="ytd-interaction-btn"
+                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
                   onClick={handleStar}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
-                  <span className="ytd-interaction-count">{postData.bookmarkCount}</span>
+                  <span className="ytd-interaction-count">{postData.scrapCount}</span>
                 </button>
                 <button 
                   className="ytd-interaction-btn"
@@ -1111,6 +1136,29 @@ const YouthTalkDetailPage: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* 게시글 이미지 */}
+          {postData.imageUrl && (
+            <div style={{ 
+              marginTop: '30px',
+              marginLeft: '100px',
+              marginRight: '100px'
+            }}>
+              <img 
+                src={postData.imageUrl} 
+                alt="게시글 이미지" 
+                style={{ 
+                  width: '100%',
+                  maxHeight: '600px',
+                  objectFit: 'cover',
+                  borderRadius: '8px'
+                }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
 
           {/* 게시글 내용 */}
           <div className="ytd-post-content">
