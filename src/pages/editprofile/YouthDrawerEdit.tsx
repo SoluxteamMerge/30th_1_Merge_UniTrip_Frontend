@@ -37,6 +37,7 @@ function YouthDrawerEdit() {
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [originalNickname, setOriginalNickname] = useState('');
 
 
     
@@ -46,6 +47,7 @@ function YouthDrawerEdit() {
             const data = await fetchMyUserInfo();
             setName(data.name);
             setNickname(data.nickname);
+            setOriginalNickname(data.nickname);
             setPhoneNumber(data.phoneNumber);
             setEmailVerified(data.emailVerified);
             setProfileImageUrl(data.profileImageUrl || '');
@@ -66,6 +68,13 @@ function YouthDrawerEdit() {
   }
   if (nickname.length < 2 || nickname.length > 20) {
     setResultMessage('닉네임은 2~20자여야 합니다.');
+    setIsResultModalOpen(true);
+    return;
+  }
+
+  if (nickname === originalNickname) {
+    setResultMessage('현재 사용 중인 닉네임입니다.');
+    setNicknameChecked(true);
     setIsResultModalOpen(true);
     return;
   }
