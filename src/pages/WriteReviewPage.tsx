@@ -27,7 +27,6 @@ const WriteReviewPage: React.FC = () => {
   const [editPostId, setEditPostId] = useState<number | null>(null);
 
   const categories = [
-    "청춘톡",
     "MT여정지도",
     "함께해요-동행구해요",
     "함께해요-번개모임",
@@ -74,6 +73,8 @@ const WriteReviewPage: React.FC = () => {
         console.log('수정 모드 데이터 로드:', editData);
         console.log('설정된 카테고리:', editData.category);
         console.log('설정된 태그:', editData.tags);
+        console.log('selectedCategory 상태:', selectedCategory);
+        console.log('tags 상태:', tags);
       } catch (error) {
         console.error('수정 데이터 파싱 오류:', error);
       }

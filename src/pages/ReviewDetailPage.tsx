@@ -335,7 +335,6 @@ const YouthTalkDetailPage: React.FC = () => {
     
     // categoryName에서 카테고리와 태그를 분리
     const categories = [
-      "청춘톡",
       "MT여정지도", 
       "함께해요-동행구해요",
       "함께해요-번개모임",
@@ -387,6 +386,8 @@ const YouthTalkDetailPage: React.FC = () => {
         region: postData.region || ''
       } : null
     };
+    
+    console.log('전달할 데이터:', editData);
     
     const queryString = new URLSearchParams({
       edit: 'true',
