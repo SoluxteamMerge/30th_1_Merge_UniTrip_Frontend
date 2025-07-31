@@ -163,10 +163,10 @@ const YouthTalkBoardPage: React.FC = () => {
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
           });
         } else {
-          // 최신순으로 정렬
+        // 최신순으로 정렬
           finalReviews = res.reviews.sort((a: ReviewItem, b: ReviewItem) => {
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          });
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
         }
         
         setReviews(finalReviews);
@@ -256,7 +256,7 @@ const YouthTalkBoardPage: React.FC = () => {
             </div>
           ) : (
             <div className="yt-post-list">
-                             {reviews.map(review => (
+              {reviews.map(review => (
                                    <div key={review.postId} className="yt-post-card" onClick={async () => {
                     // 함께해요 카테고리 중 동행모집, 모임구인만 이메일 인증 확인
                     const restrictedCategories = ['동행모집', '모임구인'];
@@ -321,49 +321,49 @@ const YouthTalkBoardPage: React.FC = () => {
                       <span className="yt-tag yt-tag-main">{review.categoryName}</span>
                     </div>
                   </div>
-                                     {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
-                   <div className="yt-main-row">
-                     <div className="yt-main-texts">
-                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                         <div className="yt-post-title">{review.title}</div>
-                         {/* 평균 별점 표시 */}
-                         {(review.placeName && averageRatings[review.placeName]) && (
-                           <div style={{ 
-                             display: 'flex', 
-                             alignItems: 'center', 
-                             gap: '4px',
-                             fontSize: '14px',
-                             color: '#666',
-                             marginTop: '0px'
-                           }}>
-                             {renderStars(averageRatings[review.placeName])}
-                           </div>
-                         )}
-                         {(review.categoryName && averageRatings[review.categoryName] && !review.placeName) && (
-                           <div style={{ 
-                             display: 'flex', 
-                             alignItems: 'center', 
-                             gap: '4px',
-                             fontSize: '14px',
-                             color: '#666',
-                             marginTop: '0px'
-                           }}>
-                             {renderStars(averageRatings[review.categoryName])}
-                           </div>
-                         )}
-                       </div>
-                       <div className="yt-post-content">{review.content}</div>
-                     </div>
-                     <img 
+                  {/* 제목+내용(왼쪽) + 썸네일(오른쪽) 한 줄 */}
+                  <div className="yt-main-row">
+                    <div className="yt-main-texts">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div className="yt-post-title">{review.title}</div>
+                        {/* 평균 별점 표시 */}
+                        {(review.placeName && averageRatings[review.placeName]) && (
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px',
+                            fontSize: '14px',
+                            color: '#666',
+                            marginTop: '0px'
+                          }}>
+                            {renderStars(averageRatings[review.placeName])}
+                          </div>
+                        )}
+                        {(review.categoryName && averageRatings[review.categoryName] && !review.placeName) && (
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px',
+                            fontSize: '14px',
+                            color: '#666',
+                            marginTop: '0px'
+                          }}>
+                            {renderStars(averageRatings[review.categoryName])}
+                          </div>
+                        )}
+                      </div>
+                      <div className="yt-post-content">{review.content}</div>
+                    </div>
+                    <img 
                        src={review.imageUrl || review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
-                       alt="썸네일" 
-                       className="yt-thumbnail" 
-                       onError={(e) => {
-                         // 이미지 로드 실패 시 기본 이미지로 대체
+                      alt="썸네일" 
+                      className="yt-thumbnail" 
+                      onError={(e) => {
+                        // 이미지 로드 실패 시 기본 이미지로 대체
                          e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
-                       }}
-                     />
-                   </div>
+                      }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -410,7 +410,7 @@ const YouthTalkBoardPage: React.FC = () => {
                 동행 구해요/번개모임 게시글을 보려면<br />
                 이메일 인증이 필요합니다.
               </div>
-              <button
+      <button
                 className="wr-modal-btn"
                 onClick={() => setShowEmailVerificationModal(false)}
                 style={{
@@ -425,7 +425,7 @@ const YouthTalkBoardPage: React.FC = () => {
                 }}
               >
                 확인
-              </button>
+      </button>
             </div>
           </>
         )}
