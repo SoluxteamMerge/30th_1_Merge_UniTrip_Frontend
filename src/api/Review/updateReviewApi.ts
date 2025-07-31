@@ -22,7 +22,6 @@ export const updateReview = async (
 ): Promise<UpdateReviewResponse> => {
   const response = await api.patch(`/api/reviews/${postId}`, review, {
     headers: {
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
   });
