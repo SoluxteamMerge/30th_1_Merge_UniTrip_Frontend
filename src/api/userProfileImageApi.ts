@@ -21,15 +21,23 @@ const handleApiError = (error: unknown, defaultMessage: string): never => {
 /* 프로필 이미지 업로드 */
 export const uploadUserProfileImage = async (file: File, token: string) => {
   if (!token) throw new Error('토큰이 없습니다.');
+  console.log('🔍 전달된 file:', file);
+  console.log('📎 file name:', file.name);
+  console.log('📎 file type:', file.type);
 
   try {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('image', file);
+
+    // formData에 잘 들어갔는지 확인 로그
+    for (const pair of formData.entries()) {
+      console.log('formData key:', pair[0], 'value:', pair[1]);
+    }
 
     const response = await api.post('/api/user/profileImage', formData, {
       headers: {
-        ...getAuthHeader(token),
-        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`, // 인증 헤더만 넣기
+        // Content-Type은 지정하지 마세요 (자동 설정)
       },
     });
 
@@ -50,6 +58,7 @@ export const deleteUserProfileImage = async (token: string) => {
   try {
     const response = await api.delete('/api/user/profileImage', {
       headers: getAuthHeader(token),
+      data: {},
     });
 
     if (response.data.code !== 200) {
@@ -61,3 +70,4 @@ export const deleteUserProfileImage = async (token: string) => {
     handleApiError(error, '프로필 이미지 삭제에 실패했습니다.');
   }
 };
+

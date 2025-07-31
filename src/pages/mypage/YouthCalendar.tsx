@@ -17,10 +17,6 @@ import { deleteSchedule } from "../../api/schedule/deleteSchedule";
 import { getScheduleList } from "../../api/schedule/getScheduleList";
 import { getScheduleDetail } from "../../api/schedule/getScheduleDetail";
 
-
-
-
-
 const YouthCalendar: React.FC = () => {
   const navigate = useNavigate(); 
   const username = "김눈송";
@@ -129,6 +125,13 @@ const YouthCalendar: React.FC = () => {
         endDate || selectedDate
       );
 
+      // 🔽 유효성 검사 추가
+      if (end < start) {
+        setAlertMessage("종료일은 시작일보다 같거나 이후여야 합니다.");
+        setShowAlert(true);
+        return;
+      }
+
       const startDate = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
       const endDateStr = `${endYear || currentYear}-${String((endMonth || currentMonth + 1)).padStart(2, "0")}-${String(endDate || selectedDate).padStart(2, "0")}`;
 
@@ -170,6 +173,17 @@ const YouthCalendar: React.FC = () => {
           setSavedSchedules(updatedSchedules);
           localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
         } else {
+
+          console.log("✅ 전송할 일정 생성 데이터:", {
+            title: scheduleTitle,
+            description: memo,
+            travelType: "기타",
+            startDate: startDate,
+            endDate: endDateStr,
+            companions: "",
+            isPublic: true,
+          });
+          
           //일정 생성
           const response = await createSchedule({
             title: scheduleTitle,

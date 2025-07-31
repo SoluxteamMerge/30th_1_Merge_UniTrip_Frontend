@@ -133,8 +133,10 @@ const RecordedYouthPage: React.FC = () => {
     const loadReviews = async () => {
       try {
         const data = await fetchMyReviews();
+        console.log("📌 내가 쓴 리뷰 목록:", data); 
         setMyReviews(data);
       } catch (err) {
+        console.error("❌ 리뷰 로드 실패:", err); 
         setError("리뷰를 불러오는 데 실패했습니다.");
         console.error(err);
       } finally {
@@ -171,7 +173,7 @@ const RecordedYouthPage: React.FC = () => {
                 background: "#FBFBFB",
                 borderRadius: 15,
                 padding: "24px 40px 24px 40px",
-                boxShadow: "0 1px 6px #0001;",
+                boxShadow: "0 1px 6px #0001",
                 minHeight: "580px",
                 position: "relative",
                 width: "100%",
@@ -187,7 +189,7 @@ const RecordedYouthPage: React.FC = () => {
                    <p>로딩 중...</p>
                   ) : error ? ( 
                     <p style={{ color: "red" }}>{error}</p>
-                  ) : myReviews.length > 0 ? (// 정상적으로 데이터가 있을 때 처리
+                  ) :Array.isArray(myReviews) && myReviews && myReviews.length > 0 ? (// 정상적으로 데이터가 있을 때 처리
                   <Pagination
                       items={myReviews}
                       itemsPerPage={6}
@@ -221,11 +223,11 @@ const RecordedYouthPage: React.FC = () => {
                         textAlign: "center"
                       }}
                     >
-                      <p style={{ fontSize: 16, color: "#0B0B61", fontWeight: 600, margin: 0 }}>
+                      <p style={{ fontSize: 20, color: "#0B0B61", fontWeight: 700, margin: 0 }}>
                         아직 내가 만든 청춘이 없어요
                       </p>
                       
-                      <p style={{ fontSize: 14, color: "#888", marginTop: 8 }}>
+                      <p style={{ fontSize: 16, color: "#888", marginTop: 10 }}>
                         <Link to="/review-write" style={{ color: "#888", textDecoration: "underline" }}>
                           청춘을 만들러 가볼까요? &gt;
                         </Link>

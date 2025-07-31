@@ -92,7 +92,21 @@
 }
 
 .spin-button {
-  width: 350px;
+  width: 250px;
+  height: 50px;
+  background: #0B0B61;
+  color: #FBFBFB;
+  padding: 10px 20px;
+  margin-top: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.spin-new-button {
+  width: 250px;
   height: 50px;
   background: #0B0B61;
   color: #FBFBFB;
@@ -136,4 +150,11 @@
   padding: 5px;
   border-radius: 10px;
   background-color: #f2f2f2
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  justify-content: center;
 }

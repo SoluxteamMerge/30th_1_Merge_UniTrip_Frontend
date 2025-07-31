@@ -141,14 +141,17 @@
 
       const [popularKeywords, setPopularKeywords] = useState<{ keyword: string, rank: number, searchCount: number }[]>([]);
 
+      //console.log("🔥 SearchPage 렌더링됨");
+
       //인기 키워드 조회
       useEffect(() => {
         const fetchPopularKeywords = async () => {
           try {
             const keywords = await getPopularKeywords(10);
+            console.log("받은 인기 키워드:", keywords); // 콘솔 로그
             setPopularKeywords(keywords);// 상태 업데이트 완료
           } catch (err) {
-            console.error("인기 키워드 조회 실패:", err);
+            console.error("인기 키워드 조회 안됨:", err);
           }
         };
         fetchPopularKeywords();
@@ -156,17 +159,18 @@
 
       //인기 검색어 하루 단위로 갱신
       useEffect(() => {
-        const today = new Date().toISOString().split("T")[0]; // 오늘 날짜
-        const lastUpdate = localStorage.getItem("lastKeywordUpdateDate");
+        const now = Date.now(); // 현재 시간(ms)
+        const lastUpdateTime = parseInt(localStorage.getItem("lastKeywordUpdateTime") || "0", 10);
+        const fiveMinutes = 5 * 60 * 1000; // 5분 in ms
 
-        if (lastUpdate !== today) {
+        if (now - lastUpdateTime > fiveMinutes) {
           updateKeywordRank()
             .then(() => {
-              console.log("인기 키워드 랭킹 갱신 완료");
-              localStorage.setItem("lastKeywordUpdateDate", today); // 성공 시에만 저장
+              console.log("🔥 인기 키워드 랭킹 5분 단위로 갱신 완료");
+              localStorage.setItem("lastKeywordUpdateDate", now.toString()); // 성공 시에만 저장
             })
             .catch((err) => {
-              console.error("인기 키워드 랭킹 갱신 실패:", err.message);
+              console.error("인기 키워드 랭킹 갱신 안됨:", err.message);
             });
         }
       }, []);
@@ -238,17 +242,27 @@
 
 
       const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+        console.log("💡 handleKeyDown 호출됨");
         if (e.key === "Enter") {
           const token = localStorage.getItem("accessToken");
           if (!token) {
             alert("로그인이 필요합니다.");
             return;
           }
+
+           // 공백이나 빈 문자열 감지
+          if (!searchQuery.trim()) {
+            alert("검색어를 입력해주세요.");
+            return;
+          }
           try {
             setIsRegionFiltered(false);
             setRegionReviews([]);
 
+            console.log("💥 searchReviews 호출됨:", searchQuery);
             const response = await searchReviews(searchQuery, token, "popular"); // 공통 함수로 변경
+
+            console.log("🔍 검색 결과:", response);
 
             if (response.code === 200 && Array.isArray(response.data)) {
               setSearchResults(response.data);
@@ -420,7 +434,7 @@
                 {/* 오른쪽: 인기 검색어 박스 */}
                 <div
                   style={{
-                    width: 160,
+                    width: 210,
                     backgroundColor: "#fff",
                     border: "1px solid #ccc",
                     borderRadius: 16,
@@ -478,7 +492,7 @@
                 //fontFamily: "Pretendard, sans-serif"
               }}>
                 <p style={{ fontSize: 18, fontWeight: 600, color: "#333" }}>해당 옵션 검색 결과 없음</p>
-                <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>청춘시는 결과가 보이지 않아요! 내가 먼저 후기를 남겨볼까요?</p>
+                <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>찾으시는 결과가 보이지 않아요! 내가 먼저 후기를 남겨볼까요?</p>
                 <button 
                 onClick={() => navigate("/review-write")}
                 style={{
@@ -538,8 +552,22 @@
                   textAlign: "center",
                   borderRadius: 24,
                 }}>
-                  <p style={{ fontSize: 18, fontWeight: 600, color: "#333" }}>검색 결과 없음</p>
-                  <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>청춘시는 결과가 없어요! 직접 후기를 남겨볼까요?</p>
+                  <p style={{ fontSize: 18, fontWeight: 600, color: "#333" }}>해당 옵션 검색 결과 없음</p>
+                  <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>찾으시는 결과가 없어요! 직접 후기를 남겨볼까요?</p>
+
+                  <button 
+                    onClick={() => navigate("/review-write")}
+                    style={{
+                      marginTop: 20,
+                      backgroundColor: "#0B0B61",
+                      color: "white",
+                      fontWeight: 600,
+                      padding: "12px 24px",
+                      border: "none",
+                      borderRadius: 12,
+                      cursor: "pointer"
+                    }}>직접 후기 쓰기</button>
+
                 </div>
               ) : (
                 <Pagination

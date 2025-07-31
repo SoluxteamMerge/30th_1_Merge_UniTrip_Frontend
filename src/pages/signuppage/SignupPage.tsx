@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import type { ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { postUserProfile } from '../../api/Signup/postUserProfile';
 import { checkNicknameDuplicate } from '../../api/Signup/checkNicknameDuplicate';
 import { sendEmailVerification } from '../../api/Signup/sendEmailVerification';
@@ -10,7 +10,14 @@ import logo from '../../assets/header/logo.svg';
 import checkIcon from "../../assets/체크아이콘.svg";
 import AlertModal from '../../components/AlertModal/AlertModal';
 
+const userTypeMapping: Record<string, string> = {
+  개인: "PERSONAL",
+  조직: "ORGANIZATION",
+};
+
 const SignupPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const [nickname, setNickname] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [userType, setUserType] = useState('');
@@ -25,11 +32,32 @@ const SignupPage: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // 성공 상태 관리
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,20}$/;
 
+  // 모달 띄우기 함수
   const showModal = (message: string) => {
+    console.log('[showModal] 메시지:', message);
     setModalMessage(message);
     setIsModalOpen(true);
+  };
+
+  // 모달 닫기 핸들러 (성공 시 메인페이지 이동)
+  const handleModalClose = () => {
+    console.log('[handleModalClose] 호출됨');
+    console.log('[handleModalClose] modalMessage:', modalMessage);
+    setIsModalOpen(false);
+
+    if (isSuccess) {
+      console.log('[handleModalClose] 회원가입 성공 - 1.5초 후 메인페이지 이동');
+      setTimeout(() => {
+        console.log('[handleModalClose] navigate("/") 호출');
+        navigate('/');
+        setIsSuccess(false);
+      }, 1500);
+    }
   };
 
   const handleCheckNickname = async () => {
@@ -107,26 +135,41 @@ const SignupPage: React.FC = () => {
     if (!userType) return showModal('유저 타입 입력은 필수입니다.');
     if (!userEmail || !emailVerified) return showModal('학교 이메일 인증은 필수입니다.');
 
+    const token = localStorage.getItem('accessToken') || '';
+    if (!token) {
+      showModal('로그인 상태가 아닙니다. 다시 로그인 해주세요.');
+      return;
+    }
+
+    const cleanPhoneNumber = phoneNumber.replace(/-/g, '');
+
     try {
-      let uploadedUrl = '';
-      const token = localStorage.getItem('accessToken') || '';
-
-      if (selectedFile) {
-        uploadedUrl = await uploadUserProfileImage(selectedFile, token);
-      }
-
-      const response = await postUserProfile({
+      const profileResponse = await postUserProfile({
         nickname,
-        phoneNumber,
-        userType,
+        phoneNumber: cleanPhoneNumber,
+        userType: userTypeMapping[userType] || userType,
         emailVerified,
-        profileImageUrl: uploadedUrl,
       });
 
-      showModal(response.message);
+      if (selectedFile) {
+        try {
+          await uploadUserProfileImage(selectedFile, token);
+        } catch (error) {
+          if (error instanceof Error) {
+            showModal(`이미지 업로드 실패: ${error.message}`);
+            return;
+          }
+        }
+      }
+
+      showModal('회원정보가 등록되었습니다.');
+      setIsSuccess(true); // 성공 플래그 설정
+
     } catch (error) {
       if (error instanceof Error) {
-        showModal(error.message || '회원가입 실패');
+        showModal(`프로필 등록 실패: ${error.message}`);
+      } else {
+        showModal('회원가입 실패');
       }
     }
   };
@@ -244,10 +287,11 @@ const SignupPage: React.FC = () => {
           <button className="signup-submit-btn" onClick={handleRegister}>확인</button>
         </div>
 
-        {isModalOpen && <AlertModal message={modalMessage} onClose={() => setIsModalOpen(false)} />}
+        {isModalOpen && <AlertModal message={modalMessage} onClose={handleModalClose} />}
       </div>
     </div>
   );
 };
 
 export default SignupPage;
+

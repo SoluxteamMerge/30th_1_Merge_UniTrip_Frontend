@@ -165,10 +165,12 @@ const ScrappedYouthPage: React.FC = () => {
   const [myScraps, setMyScraps] = useState<MyScrap[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
   const loadScraps = async () => {
     try {
       const data = await fetchMyScraps();
+      console.log("✅✅✅ 가져온 스크랩 배열:", data); 
       setMyScraps(data);
     } catch (err) {
       setError("스크랩한 리뷰를 불러오는 데 실패했습니다.");
@@ -205,7 +207,7 @@ const ScrappedYouthPage: React.FC = () => {
                 background: "#FBFBFB",
                 borderRadius: 15,
                 padding: "24px 40px 24px 40px",
-                boxShadow: "0 1px 6px #0001;",
+                boxShadow: "0 1px 6px #0001",
                 minHeight: "580px",
                 position: "relative",
               }}
@@ -217,7 +219,7 @@ const ScrappedYouthPage: React.FC = () => {
                 <p>로딩 중...</p>
               ) : error ? (
                 <p style={{ color: "red" }}>{error}</p>
-              ) : myScraps.length > 0 ? (
+              ) :Array.isArray(myScraps) && myScraps&&myScraps.length > 0 ? (
               //스크랩한 게시글이 있을 때 보여줄 카드 리스트
               <Pagination
                 items={myScraps}
@@ -254,7 +256,7 @@ const ScrappedYouthPage: React.FC = () => {
                 아직 스크랩한 청춘이 없어요
               </p>
                 
-              <p style={{fontSize: 16, color: "#888", fontWeight: 700, marginTop: 10}}>
+              <p style={{fontSize: 16, color: "#888", marginTop: 10}}>
                 <Link to="/mt-journey" style={{ color: "#888", textDecoration: "underline" }}>
                   청춘을 스크랩하러 가볼까요? &gt;
                 </Link>

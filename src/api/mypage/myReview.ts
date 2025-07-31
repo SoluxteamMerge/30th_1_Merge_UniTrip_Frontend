@@ -25,9 +25,9 @@ export const fetchMyReviews = async (): Promise<MyReview[]> => {
 
   const response: AxiosResponse<MyReviewResponse> = await api.get('/api/user/reviews', {
     headers: {
-      Authorization: token,
+      Authorization: `Bearer ${token}`,
     },
   });
 
-  return response.data.data; // 배열 형태 반환
+  return response.data?.data ?? []; // 배열 형태 반환
 };
