@@ -25,7 +25,7 @@ export const getPlaceByRegion = async (
   token: string
 ) : Promise<RegionPostResponse> => {
   const hasRegion = region !== null && region !== undefined && region.trim() !== "";
-  const url = region ? `/api/reviews/filter?region=${region}` : `/api/reviews/filter`;
+  const url = hasRegion ? `/api/reviews/filter?region=${region}` : `/api/reviews/filter`;
   
   const response = await axios.get(url, {
     headers: {
