@@ -183,6 +183,17 @@ const YouthCalendar: React.FC = () => {
             companions: "",
             isPublic: true,
           });
+
+          console.log("📨 일정 생성 요청 데이터:", {
+          title: scheduleTitle,
+          description: memo,
+          travelType: "기타",
+          startDate,
+          endDate: endDateStr,
+          companions: "",
+          isPublic: true,
+        });
+        console.log("🔐 Bearer 토큰:", token);
           
           //일정 생성
           const response = await createSchedule({
