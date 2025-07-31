@@ -343,28 +343,28 @@ const YouthTalkDetailPage: React.FC = () => {
       "함께해요-해외교환학생"
     ];
     
-    let actualCategory = postData.categoryName;
-    let tags: string[] = [];
+    // boardType을 기준으로 카테고리 결정
+    const boardTypeToCategory: Record<string, string> = {
+      "청춘톡": "청춘톡",
+      "MT_LT": "MT여정지도",
+      "동행모집": "함께해요-동행구해요",
+      "모임구인": "함께해요-번개모임",
+      "졸업_휴학여행": "함께해요-졸업/휴학여행",
+      "국내학점교류": "함께해요-국내학점교류",
+      "해외교환": "함께해요-해외교환학생"
+    };
     
-    // categoryName에 쉼표가 있으면 카테고리와 태그가 섞여있을 수 있음
-    if (postData.categoryName && postData.categoryName.includes(',')) {
-      const parts = postData.categoryName.split(',').map(part => part.trim());
-      
-      // 첫 번째 부분이 실제 카테고리인지 확인
-      const firstPart = parts[0];
-      const isActualCategory = categories.includes(firstPart) || 
-        categories.some(cat => cat.includes(firstPart)) ||
-        firstPart.includes('함께해요-');
-      
-      if (isActualCategory) {
-        actualCategory = firstPart;
-        // 나머지 부분들을 태그로 설정
-        tags = parts.slice(1).filter(tag => tag.trim() !== '');
-      } else {
-        // 첫 번째 부분이 태그인 경우, 기본 카테고리 설정
-        actualCategory = categories[0];
-        tags = parts.filter(tag => tag.trim() !== '');
-      }
+    // boardType을 기준으로 정확한 카테고리 설정
+    let actualCategory = boardTypeToCategory[postData.boardType];
+    if (!actualCategory) {
+      // boardType 매핑이 없는 경우 기본값
+      actualCategory = categories[0];
+    }
+    
+    // categoryName에서 태그만 추출
+    let tags: string[] = [];
+    if (postData.categoryName && postData.categoryName.trim() !== '') {
+      tags = postData.categoryName.split(',').map(part => part.trim()).filter(tag => tag.trim() !== '');
     }
     
     const editData = {

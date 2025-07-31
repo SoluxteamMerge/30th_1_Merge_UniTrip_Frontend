@@ -329,9 +329,9 @@ const WriteReviewPage: React.FC = () => {
 
       if (isEditMode && editPostId) {
         // 수정 모드
-        // 태그들을 categoryName에 포함
+        // 태그들을 categoryName에 포함 (카테고리는 제외)
         const tagString = tags.length > 0 ? tags.join(', ') : '';
-        const categoryNameWithTags = tagString ? `${selectedCategory}, ${tagString}` : selectedCategory;
+        const categoryNameWithTags = tagString || '';
         
         const updateData = {
           boardType: selectedCategory,
@@ -371,9 +371,9 @@ const WriteReviewPage: React.FC = () => {
 
         const boardType = categoryToBoardType[selectedCategory] || selectedCategory;
         
-        // 태그들을 categoryName에 포함 (선택된 카테고리는 제외)
+        // 태그들을 categoryName에 포함 (카테고리는 제외)
         const tagString = tags.length > 0 ? tags.join(', ') : '';
-        const categoryNameWithTags = tagString || selectedCategory;
+        const categoryNameWithTags = tagString || '';
         
         const reviewData = {
           boardType: boardType,
