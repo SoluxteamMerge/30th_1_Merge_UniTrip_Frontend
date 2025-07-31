@@ -468,7 +468,7 @@
                   <p style={{ color: "#888", fontSize: 14, marginTop: 8 }}>찾으시는 결과가 없어요! 직접 후기를 남겨볼까요?</p>
 
                   <button 
-                    onClick={() => navigate("/review-write")}
+                    onClick={() => navigate("/review-write?category=국내학점교류")}
                     style={{
                       marginTop: 20,
                       backgroundColor: "#0B0B61",
