@@ -25,7 +25,32 @@ function MainPage() {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [randomRecommend, setRandomRecommend] = useState<RecommendItem | null>(null);
   const [alertMessage, setAlertMessage] = useState('');
+  const [redirectToLogin, setRedirectToLogin] = useState(false);
   const navigate = useNavigate();
+
+  const token = localStorage.getItem('accessToken') ?? '';
+  const isLoggedIn = token && token !== 'undefined' && token !== 'null';
+
+  const handleLoginRedirect = () => {
+    setAlertMessage('로그인이 필요합니다.');
+    setRedirectToLogin(true);
+  };
+
+  const handleCardClick = (postId: number) => {
+    if (!isLoggedIn) {
+      handleLoginRedirect();
+      return;
+    }
+    navigate(`/youth-talk/${postId}`);
+  };
+
+  const handleRecommendClick = (postId: number) => {
+    if (!isLoggedIn) {
+      handleLoginRedirect();
+      return;
+    }
+    navigate(`/youth-talk/${postId}`);
+  };
 
   const handleMoreClick = () => {
     setVisibleCount((prev) => prev + 3);
@@ -90,7 +115,7 @@ function MainPage() {
           <section className="mainpage-suggest-section">
             <div
               className="mainpage-suggest-card"
-              onClick={() => navigate(`/youth-talk/${randomRecommend.postId}`)}
+              onClick={() => handleRecommendClick(randomRecommend.postId)}
             >
               <p className="mainpage-suggest-label">이런 글은 어떠신가요?</p>
               <div className="mainpage-suggest-content-wrapper">
@@ -121,7 +146,7 @@ function MainPage() {
             </div>
             <div className="review-grid">
               {reviews.slice(0, visibleCount).map((review) => (
-                <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
+                <div key={review.postId} onClick={() => handleCardClick(review.postId)}>
                   <ReviewCard
                     postId={review.postId}
                     postTitle={review.postTitle}
@@ -161,7 +186,17 @@ function MainPage() {
       {alertMessage && (
         <AlertModal
           message={alertMessage}
-          onClose={() => setAlertMessage('')}
+          onClose={() => {
+            setAlertMessage('');
+            setRedirectToLogin(false);
+          }}
+          onConfirm={() => {
+            setAlertMessage('');
+            if (redirectToLogin) {
+              setRedirectToLogin(false);
+              navigate('/login');
+            }
+          }}
         />
       )}
     </>
