@@ -327,8 +327,9 @@ const WriteReviewPage: React.FC = () => {
         const updateData = {
           boardType: selectedCategory,
           categoryName: selectedCategory,
-        title: title.trim(),
+          title: title.trim(),
           content: content,
+          scheduleDate: scheduleInput,
         };
 
         const res = await updateReview(editPostId, updateData, accessToken);
@@ -363,6 +364,7 @@ const WriteReviewPage: React.FC = () => {
           categoryName: categoryNameWithTags,
           title: title.trim(),
           content: content,
+          scheduleDate: scheduleInput,
           placeName: selectedLocation?.name || '',
           address: selectedLocation?.address || '',
           kakaoId: selectedLocation?.kakaoId || '',

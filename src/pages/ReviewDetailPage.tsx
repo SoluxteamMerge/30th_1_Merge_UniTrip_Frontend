@@ -1083,7 +1083,7 @@ const YouthTalkDetailPage: React.FC = () => {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div className="ytd-username">{postData.nickname}</div>
                   <div className="yt-info-divider" />
-                  <div className="ytd-date">{new Date(postData.createdAt).toLocaleString('ko-KR', {
+                  <div className="ytd-date">{postData.scheduleDate || new Date(postData.createdAt).toLocaleString('ko-KR', {
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
