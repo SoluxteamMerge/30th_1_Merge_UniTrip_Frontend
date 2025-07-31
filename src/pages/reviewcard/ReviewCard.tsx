@@ -2,7 +2,7 @@ import './ReviewCard.css';
 import starIcon from '../../assets/mainpage/star.svg';
 import heartIcon from '../../assets/mainpage/heart.svg';
 import scrapIcon from '../../assets/mainpage/scrap.svg';
-import defaultImage from '../../assets/mainpage/defaultimage.png';
+//import defaultImage from '../../assets/mainpage/defaultimage.png';
 
 interface ReviewCardProps {
   postId: number;
@@ -25,7 +25,9 @@ export const ReviewCard = ({
   likeCount,
   scrapCount,
 }: ReviewCardProps) => {
-  const finalImageUrl = imageUrl || defaultImage;
+  
+  const DEFAULT_IMAGE_URL = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
+  const finalImageUrl = imageUrl?.trim() || DEFAULT_IMAGE_URL;
 
   return (
     <div className="review-card">

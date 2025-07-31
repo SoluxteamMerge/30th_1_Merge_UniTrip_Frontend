@@ -335,7 +335,6 @@ const YouthTalkDetailPage: React.FC = () => {
     
     // categoryName에서 카테고리와 태그를 분리
     const categories = [
-      "청춘톡",
       "MT여정지도", 
       "함께해요-동행구해요",
       "함께해요-번개모임",
@@ -351,34 +350,21 @@ const YouthTalkDetailPage: React.FC = () => {
     if (postData.categoryName && postData.categoryName.includes(',')) {
       const parts = postData.categoryName.split(',').map(part => part.trim());
       
-      // 실제 카테고리를 찾기 위해 각 부분을 확인
-      let categoryFound = false;
-      for (let i = 0; i < parts.length; i++) {
-        const part = parts[i];
-        const isActualCategory = categories.includes(part) || 
-          categories.some(cat => cat.includes(part)) ||
-          part.includes('함께해요-');
-        
-        if (isActualCategory && !categoryFound) {
-          actualCategory = part;
-          categoryFound = true;
-          // 나머지 부분들을 태그로 설정
-          tags = parts.filter((_, index) => index !== i).filter(tag => tag.trim() !== '');
-          break;
-        }
-      }
+      // 첫 번째 부분이 실제 카테고리인지 확인
+      const firstPart = parts[0];
+      const isActualCategory = categories.includes(firstPart) || 
+        categories.some(cat => cat.includes(firstPart)) ||
+        firstPart.includes('함께해요-');
       
-      // 카테고리를 찾지 못한 경우, 첫 번째 부분을 카테고리로 설정하고 나머지를 태그로
-      if (!categoryFound) {
+      if (isActualCategory) {
+        actualCategory = firstPart;
+        // 나머지 부분들을 태그로 설정
+        tags = parts.slice(1).filter(tag => tag.trim() !== '');
+      } else {
+        // 첫 번째 부분이 태그인 경우, 기본 카테고리 설정
         actualCategory = categories[0];
         tags = parts.filter(tag => tag.trim() !== '');
       }
-      
-      console.log('분석 결과:', {
-        originalCategoryName: postData.categoryName,
-        actualCategory: actualCategory,
-        tags: tags
-      });
     }
     
     const editData = {
@@ -400,6 +386,8 @@ const YouthTalkDetailPage: React.FC = () => {
         region: postData.region || ''
       } : null
     };
+    
+    console.log('전달할 데이터:', editData);
     
     const queryString = new URLSearchParams({
       edit: 'true',
