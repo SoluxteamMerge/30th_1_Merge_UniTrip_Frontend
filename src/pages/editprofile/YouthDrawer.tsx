@@ -76,6 +76,17 @@ function YouthDrawer() {
         }
     };
 
+    const getUserTypeLabel = (type: string): string => {
+        switch(type) {
+            case 'PERSONAL':
+                return '개인';
+            case 'ORGANIZATION':
+                return '조직';
+            default:
+                return '알 수 없음';
+        }
+    };
+
     return (
         <div>
             <Header />
@@ -112,7 +123,12 @@ function YouthDrawer() {
                             <div className="input-row-left">
                                 <label className="Drawer-label">유저 유형</label>
                             </div>
-                            <input type="text" className="Drawerinput" value={userType} readOnly placeholder="유저 유형" />
+                            <input 
+                                type="text"
+                                className="Drawerinput"
+                                value={getUserTypeLabel(userType)} 
+                                readOnly 
+                                placeholder="유저 유형" />
                             <div className="Drawer-underline"></div>
                         </div>
 

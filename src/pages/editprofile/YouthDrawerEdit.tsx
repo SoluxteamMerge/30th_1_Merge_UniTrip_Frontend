@@ -294,19 +294,22 @@ function YouthDrawerEdit() {
                                 <label className="Drawer-label">학교 이메일</label>
                                 {emailVerified && (
                                     <>
-                                    `<img 
+                                      <img 
                                         src={DrawerCheckIcon} 
                                         alt="체크아이콘" 
                                         style={{ width: '24px', marginLeft: '4px', verticalAlign: 'middle' }} 
                                       />
-                                      <span style={{ marginLeft: '8px', fontSize: '14px '}}>
-                                        이미 인증된 사용자입니다.
-                                      </span>
                                     </>
                                     )}
                             </div>
                             <div className="input-with-button">
-                                <input type="email" className="Drawerinput" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="학교 이메일을 입력하세요" />
+                                <input 
+                                    type="email"
+                                    className="Drawerinput" 
+                                    value={emailVerified? '' : email} 
+                                    onChange={(e) => setEmail(e.target.value)} 
+                                    placeholder={emailVerified ? '이미 인증된 사용자입니다.' : '학교 이메일을 입력하세요.'
+                                        } />
                                 <button className="Drawer-check-btn" onClick={handleSendEmailVerification}>인증요청</button>
                             </div>
                             <div className="Drawer-underline"></div>
