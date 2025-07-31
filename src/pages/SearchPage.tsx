@@ -234,11 +234,13 @@
         const regionCode = regionMap[region];
         const token = localStorage.getItem("accessToken");
 
+        const regionParam = regionCode === "" ? null : regionCode;
+
         if (token && regionCode !== undefined) {
           try {
             const response = await getPlaceByRegion(regionCode, token);
             setRegionReviews(response.data);
-            setIsRegionFiltered(true);
+            setIsRegionFiltered(regionCode !== "");
           } catch (error) {
             console.error("Error fetching region posts:", error);
           }
