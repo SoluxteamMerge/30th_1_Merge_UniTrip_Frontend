@@ -132,6 +132,7 @@ body {
 .Drawerinput::placeholder {
   color: #333333;
   font-weight: 400;
+  font-size: 20px !important;
 }
 
 .Drawer-file-name{

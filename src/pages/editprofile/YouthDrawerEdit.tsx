@@ -49,6 +49,7 @@ function YouthDrawerEdit() {
             setEmailVerified(data.emailVerified);
             setProfileImageUrl(data.profileImageUrl || '');
             setNicknameChecked(true);
+            setUserType(data.userType);
         } catch (error) {
             console.error('회원정보 불러오기 실패', error);
         }
@@ -252,8 +253,8 @@ function YouthDrawerEdit() {
                             <div className="input-row-left"><label className="Drawer-label">유저 유형</label></div>
                             <select id="userTypeSelect" className="Drawerinput" value={userType} onChange={(e) => setUserType(e.target.value)} aria-label="유저 유형 선택">
                                 <option value="">선택하세요</option>
-                                <option value="개인">개인</option>
-                                <option value="조직">조직</option>
+                                <option value="PERSONAL">개인</option>
+                                <option value="ORGANIZATION">조직</option>
                             </select>
                         </div>
 
