@@ -25,11 +25,16 @@ export interface SearchReview {
 export const searchReviews = async (
   keyword: string,
   token: string,
-  sort: string = "popular" // 기본 정렬: 인기순
+  sort: string = "popular", // 기본 정렬: 인기순
+  isPopular: boolean = false
 ): Promise<SearchReviewResponse> => {
 
+  const endpoint = isPopular
+    ? `${BASE_URL}/api/reviews/popular`
+    : `${BASE_URL}/api/reviews/search`;
+
   try {
-    console.log("🌐 요청 보낼 URL:", `${BASE_URL}/api/reviews/search`);
+    console.log("🌐 요청 보낼 URL:", endpoint);
     console.log("📨 요청 파라미터:", { keyword, sort });
     console.log("🔐 요청 헤더:", { Authorization: `Bearer ${token}` });
 

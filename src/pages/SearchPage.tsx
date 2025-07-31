@@ -292,7 +292,7 @@
           setRegionReviews([]);
           setSearchQuery(keyword);
 
-          const response = await searchReviews(keyword, token, "popular"); 
+          const response = await searchReviews(keyword, token, "popular", true); 
 
           if (response.code === 200 && Array.isArray(response.data)) {
             setSearchResults(response.data); // 응답 포맷 둘 다 처리
