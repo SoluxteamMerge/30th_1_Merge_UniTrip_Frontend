@@ -89,7 +89,8 @@ const YouthCalendar: React.FC = () => {
           const start = new Date(startDate);
           const end = new Date(endDate);
 
-          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          for (let time = start.getTime(); time <= end.getTime(); time += 86400000) {
+            const d = new Date(time);
             const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
             if (!parsed[key]) parsed[key] = [];
 
@@ -206,11 +207,7 @@ const YouthCalendar: React.FC = () => {
             isPublic: true,
           }, token);
 
-          // 서버에서 받은 일정 정보를 프론트 상태에 반영
-          const y = currentYear;
-          const m = String(currentMonth + 1).padStart(2, "0");
-          const d = String(selectedDate).padStart(2, "0");
-          const key = `${y}-${m}-${d}`;
+
 
           const newEntry = {
             scheduleId: response.data.scheduleId, //응답에서 받은 ID
@@ -219,17 +216,25 @@ const YouthCalendar: React.FC = () => {
             memo
           };
 
-          const existing = savedSchedules[key] || [];
-          if (existing.length >= 2) {
-            setAlertMessage("일정은 날짜당 최대 2개까지 추가할 수 있습니다.");
-            setShowAlert(true);
-            return;
+
+          const updated = { ...savedSchedules };
+          for (
+            let time = new Date(startDate).getTime();
+            time <= new Date(endDateStr).getTime();
+            time += 86400000
+          ) {
+            const d = new Date(time);
+            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+            const existing = updated[key] || [];
+            if (existing.length >= 2) continue;
+
+            updated[key] = [...existing, newEntry]; // ✔ 각 날짜에 push
           }
 
-          const updated = {
-            ...savedSchedules,
-            [key]: [...existing, newEntry]
-          };
+
+
+
           setSavedSchedules(updated);
           localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
 
