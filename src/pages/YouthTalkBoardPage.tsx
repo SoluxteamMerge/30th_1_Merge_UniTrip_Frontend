@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import SortDropdown from "../components/SortDropdown";
 import { useNavigate } from "react-router-dom";
-import writeIcon from "../assets/write-icon.svg";
+
 import starIcon from "../assets/interaction/star.svg";
 import starFillIcon from "../assets/interaction/star_fill.svg";
 import { getAllReviews, getReviewsByBoardType, ReviewItem } from '../api/Review/getReviewsApi';
@@ -370,14 +370,7 @@ const YouthTalkBoardPage: React.FC = () => {
           )}
         </div>
       </div>
-      {/* 플로팅 버튼 */}
-      <button
-        className="yt-floating-write-btn"
-        onClick={() => navigate("/review-write?category=청춘톡")}
-        aria-label="게시글 작성"
-      >
-        <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
-      </button>
+
 
                     {/* 이메일 인증 필요 모달 */}
         {showEmailVerificationModal && (
