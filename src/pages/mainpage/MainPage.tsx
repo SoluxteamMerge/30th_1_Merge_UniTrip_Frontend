@@ -10,6 +10,7 @@ import type { ReviewItem } from '../../api/mainpage/fetchReviews';
 import { fetchRecommendedReview } from '../../api/mainpage/getRecommendedReview';
 import { fetchReviews } from '../../api/mainpage/fetchReviews';
 import AlertModal from '../../components/AlertModal/AlertModal';
+import defaultImage from '../../assets/mainpage/defaultimage.png';
 
 interface RecommendItem {
   postId: number;
@@ -38,7 +39,7 @@ function MainPage() {
         setRandomRecommend({
           postId: data.postId,
           title: data.title,
-          imageUrl: data.thumbnailUrl || '/default-thumbnail.png',
+          imageUrl: data.imageUrl || defaultImage,
           content: data.content,
         });
       } catch (err: any) {

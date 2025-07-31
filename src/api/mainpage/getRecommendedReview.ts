@@ -5,7 +5,7 @@ export interface RecommendedReviewResponse {
   postId: number;
   title: string;
   content: string;
-  thumbnailUrl: string;
+  imageUrl: string;
 }
 
 
