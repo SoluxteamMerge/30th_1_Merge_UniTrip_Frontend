@@ -243,6 +243,7 @@
 
       const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         console.log("💡 handleKeyDown 호출됨");
+        
         if (e.key === "Enter") {
           const token = localStorage.getItem("accessToken");
           if (!token) {
