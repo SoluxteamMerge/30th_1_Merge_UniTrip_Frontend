@@ -361,8 +361,15 @@ const WriteReviewPage: React.FC = () => {
           lat: selectedLocation?.lat || 0,
           lng: selectedLocation?.lng || 0
         };
+        
+        console.log('매핑된 boardType:', boardType);
+        console.log('selectedCategory:', selectedCategory);
 
+        console.log('수정 모드 updateData:', updateData);
+        console.log('editPostId:', editPostId);
+        console.log('accessToken:', accessToken ? '있음' : '없음');
         const res = await updateReview(editPostId, updateData, accessToken);
+        console.log('수정 API 응답:', res);
         if (res.status === 200) {
           // 게시글 수정 성공 후 별점 등록
           if (rating > 0) {

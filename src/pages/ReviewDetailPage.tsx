@@ -388,6 +388,7 @@ const YouthTalkDetailPage: React.FC = () => {
     };
     
     console.log('전달할 데이터:', editData);
+    console.log('postData 원본:', postData);
     
     const queryString = new URLSearchParams({
       edit: 'true',

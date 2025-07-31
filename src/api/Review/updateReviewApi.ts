@@ -29,10 +29,18 @@ export const updateReview = async (
   review: UpdateReviewRequest,
   accessToken: string
 ): Promise<UpdateReviewResponse> => {
+  console.log('updateReview API 호출:', {
+    url: `/api/reviews/${postId}`,
+    data: review,
+    hasToken: !!accessToken
+  });
+  
   const response = await api.patch(`/api/reviews/${postId}`, review, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+  
+  console.log('updateReview API 응답:', response.data);
   return response.data;
 }; 
