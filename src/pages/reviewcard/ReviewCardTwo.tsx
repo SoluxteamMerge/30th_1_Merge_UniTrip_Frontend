@@ -31,6 +31,10 @@ export const ReviewCardTwo = ({
   isLiked,
   isScraped,
 }: ReviewCardProps) => {
+
+  const DEFAULT_IMAGE_URL = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
+  const finalImageUrl = thumbnailUrl?.trim() || DEFAULT_IMAGE_URL;
+
   return (
     <div className="review-card">
       <img src={thumbnailUrl} alt="리뷰 이미지" className="card-img" />
