@@ -331,7 +331,7 @@ const WriteReviewPage: React.FC = () => {
         // 수정 모드
         // 카테고리를 boardType으로 매핑 (백엔드 형식에 맞춤)
         const categoryToBoardType: Record<string, string> = {
-          "청춘톡": "청춘톡",
+
           "MT여정지도": "MT_LT",
           "함께해요-동행구해요": "동행모집",
           "함께해요-번개모임": "모임구인",
@@ -364,50 +364,63 @@ const WriteReviewPage: React.FC = () => {
         
         console.log('매핑된 boardType:', boardType);
         console.log('selectedCategory:', selectedCategory);
+        console.log('전체 updateData:', JSON.stringify(updateData, null, 2));
 
         console.log('수정 모드 updateData:', updateData);
         console.log('editPostId:', editPostId);
         console.log('accessToken:', accessToken ? '있음' : '없음');
-        const res = await updateReview(editPostId, updateData, accessToken);
-        console.log('수정 API 응답:', res);
-        if (res.status === 200) {
-          // 게시글 수정 성공 후 별점 등록
-          if (rating > 0) {
-            try {
-              await rateReview(editPostId, rating, accessToken);
-              console.log('별점 등록 성공:', rating);
-            } catch (ratingError) {
-              console.error('별점 등록 실패:', ratingError);
-              // 별점 등록 실패해도 게시글 수정은 성공했으므로 계속 진행
+        try {
+          const res = await updateReview(editPostId, updateData, accessToken);
+          console.log('수정 API 응답:', res);
+          if (res.status === 200) {
+            // 게시글 수정 성공 후 별점 등록
+            if (rating > 0) {
+              try {
+                await rateReview(editPostId, rating, accessToken);
+                console.log('별점 등록 성공:', rating);
+              } catch (ratingError) {
+                console.error('별점 등록 실패:', ratingError);
+                // 별점 등록 실패해도 게시글 수정은 성공했으므로 계속 진행
+              }
             }
+            
+            alert(res.message);
+            // 수정 완료 후 해당 게시판으로 이동
+            switch (selectedCategory) {
+              case "MT여정지도":
+                navigate('/mt-journey');
+                break;
+              case "함께해요-동행구해요":
+                navigate('/together?category=동행구해요');
+                break;
+              case "함께해요-번개모임":
+                navigate('/together?category=번개모임');
+                break;
+              case "함께해요-졸업/휴학여행":
+                navigate('/together?category=졸업/휴학여행');
+                break;
+              case "함께해요-국내학점교류":
+                navigate('/together?category=국내학점교류');
+                break;
+              case "함께해요-해외교환학생":
+                navigate('/together?category=해외교환학생');
+                break;
+              default:
+                navigate('/mt-journey');
+            }
+          } else {
+            alert('리뷰 수정에 실패했습니다.');
           }
+        } catch (error: any) {
+          console.error('게시글 처리 오류:', error);
+          console.error('에러 응답:', error.response?.data);
+          console.error('에러 상태:', error.response?.status);
           
-          alert(res.message);
-          // 수정 완료 후 해당 게시판으로 이동
-          switch (selectedCategory) {
-            case "MT여정지도":
-              navigate('/mt-journey');
-              break;
-            case "함께해요-동행구해요":
-              navigate('/together?category=동행구해요');
-              break;
-            case "함께해요-번개모임":
-              navigate('/together?category=번개모임');
-              break;
-            case "함께해요-졸업/휴학여행":
-              navigate('/together?category=졸업/휴학여행');
-              break;
-            case "함께해요-국내학점교류":
-              navigate('/together?category=국내학점교류');
-              break;
-            case "함께해요-해외교환학생":
-              navigate('/together?category=해외교환학생');
-              break;
-            default:
-              navigate('/mt-journey');
+          if (error.response?.status === 400) {
+            alert(`수정 실패: ${error.response.data.message}`);
+          } else {
+            alert('리뷰 수정 중 오류가 발생했습니다.');
           }
-        } else {
-          alert('리뷰 수정에 실패했습니다.');
         }
       } else {
         // 새로 작성 모드
