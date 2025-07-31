@@ -133,6 +133,9 @@
         if (token && regionCode !== undefined) {
           try {
             const response = await getPlaceByRegion(regionParam, token);
+
+            console.log("📦 전체보기 응답 데이터:", response);
+
             setRegionReviews(response.data);
             //setIsRegionFiltered(regionCode !== "");
             setIsRegionFiltered(true);
