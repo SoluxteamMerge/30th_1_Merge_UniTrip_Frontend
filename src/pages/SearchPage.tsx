@@ -3,7 +3,8 @@
   import searchIcon from '../assets/search_icon.svg';
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
   import { useNavigate } from "react-router-dom"; 
-  import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
+  //import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
+  import { ReviewCard } from "./reviewcard/ReviewCard";
 
   import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
   import Pagination from "../components/Pagination";
@@ -420,7 +421,7 @@
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCardTwo
+                      <ReviewCard
                         postId={review.postId}
                         postTitle={review.postTitle}
                         categoryName={review.categoryName}
@@ -482,7 +483,7 @@
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCardTwo
+                      <ReviewCard
                         postId={review.postId}
                         postTitle={review.postTitle}
                         categoryName={review.categoryName}
