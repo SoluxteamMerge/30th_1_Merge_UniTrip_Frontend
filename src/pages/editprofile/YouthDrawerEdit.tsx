@@ -23,7 +23,7 @@ function YouthDrawerEdit() {
     const [nicknameChecked, setNicknameChecked] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
-    const [userType, setUserType] = useState('개인');
+    const [userType, setUserType] = useState('');
     const [emailVerified, setEmailVerified] = useState(false);
     const [profileImageUrl, setProfileImageUrl] = useState('');
     const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
@@ -115,7 +115,7 @@ function YouthDrawerEdit() {
     }
 
     try {
-        const res = await api.delete('/user/signout', {
+        const res = await api.delete('/api/user/signout', {
             headers: { Authorization: token },
         });
 
@@ -203,7 +203,7 @@ function YouthDrawerEdit() {
             await updateMyUserInfo({
                 name: name,
                 nickname,
-                phoneNumber,
+                phoneNumber: phoneNumber.replace(/-/g, ''),
                 userType,
                 emailVerified,
             });
@@ -292,7 +292,18 @@ function YouthDrawerEdit() {
                         <div className="input-row">
                             <div className="input-row-left">
                                 <label className="Drawer-label">학교 이메일</label>
-                                {emailVerified && <img src={DrawerCheckIcon} alt="체크아이콘" style={{ width: '24px', marginLeft: '4px', verticalAlign: 'middle' }} />}
+                                {emailVerified && (
+                                    <>
+                                    `<img 
+                                        src={DrawerCheckIcon} 
+                                        alt="체크아이콘" 
+                                        style={{ width: '24px', marginLeft: '4px', verticalAlign: 'middle' }} 
+                                      />
+                                      <span style={{ marginLeft: '8px', fontSize: '14px '}}>
+                                        이미 인증된 사용자입니다.
+                                      </span>
+                                    </>
+                                    )}
                             </div>
                             <div className="input-with-button">
                                 <input type="email" className="Drawerinput" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="학교 이메일을 입력하세요" />

@@ -57,7 +57,7 @@ function YouthDrawer() {
         }
 
         try {
-            const res = await api.delete('/user/signout', {
+            const res = await api.delete('/api/user/signout', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

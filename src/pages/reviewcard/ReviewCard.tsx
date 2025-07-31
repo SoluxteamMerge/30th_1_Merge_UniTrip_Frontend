@@ -2,6 +2,7 @@ import './ReviewCard.css';
 import starIcon from '../../assets/mainpage/star.svg';
 import heartIcon from '../../assets/mainpage/heart.svg';
 import scrapIcon from '../../assets/mainpage/scrap.svg';
+import defaultImage from '../../assets/mainpage/defaultimage.png';
 
 interface ReviewCardProps {
   postId: number;
@@ -24,13 +25,11 @@ export const ReviewCard = ({
   likeCount,
   scrapCount,
 }: ReviewCardProps) => {
+  const finalImageUrl = imageUrl || defaultImage;
+
   return (
     <div className="review-card">
-      {imageUrl ? (
-        <img src={imageUrl} alt="리뷰 이미지" className="card-img" />
-      ) : (
-        <div className="card-img-placeholder">이미지 없음</div>
-      )}
+      <img src={finalImageUrl} alt="리뷰 이미지" className="card-img" />
 
       <div className="card-content">
         <div className="card-author-line">
