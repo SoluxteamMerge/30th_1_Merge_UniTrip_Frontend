@@ -9,6 +9,7 @@ import starRatingIcon from "../assets/interaction/star.svg";
 import moreIcon from "../assets/interaction/more.svg";
 import closeIcon from "../assets/module/close.svg";
 import locationIcon from "../assets/toolbar/location.svg";
+import scheduleIcon from "../assets/toolbar/calender.svg";
 import { deleteReview } from '../api/Review/deleteReviewApi';
 import { getReviewDetail, ReviewDetailResponse } from '../api/Review/getReviewsApi';
 import { likeReview } from '../api/Review/likeReviewApi';
@@ -1083,13 +1084,16 @@ const YouthTalkDetailPage: React.FC = () => {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div className="ytd-username">{postData.nickname}</div>
                   <div className="yt-info-divider" />
-                  <div className="ytd-date">{postData.scheduleDate || new Date(postData.createdAt).toLocaleString('ko-KR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img src={scheduleIcon} alt="일정" style={{ width: 20, height: 20 }} />
+                    <div className="ytd-date">{postData.scheduleDate || new Date(postData.createdAt).toLocaleString('ko-KR', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}</div>
+                  </div>
                 </div>
               </div>
               <div className="ytd-interactions">
