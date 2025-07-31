@@ -134,7 +134,8 @@
           try {
             const response = await getPlaceByRegion(regionParam, token);
             setRegionReviews(response.data);
-            setIsRegionFiltered(regionCode !== "");
+            //setIsRegionFiltered(regionCode !== "");
+            setIsRegionFiltered(true);
           } catch (error) {
             console.error("Error fetching region posts:", error);
           }
