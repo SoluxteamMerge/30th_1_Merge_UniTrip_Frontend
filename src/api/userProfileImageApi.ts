@@ -58,7 +58,7 @@ export const deleteUserProfileImage = async (token: string) => {
   try {
     const response = await api.delete('/api/user/profileImage', {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.trim()}`,
       }
     });
 
