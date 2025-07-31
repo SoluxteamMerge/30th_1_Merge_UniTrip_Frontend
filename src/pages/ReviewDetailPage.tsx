@@ -695,6 +695,8 @@ const YouthTalkDetailPage: React.FC = () => {
     ));
   };
 
+
+
   return (
     <div className="ytd-bg">
       <style>{`
@@ -1124,12 +1126,16 @@ const YouthTalkDetailPage: React.FC = () => {
                       <div className="ytd-more-menu-item" onClick={handleCopyUrl} style={{ borderTop: '1px solid #bbb' }}>
                         URL 복사
                       </div>
-                      <div className="ytd-more-menu-item" onClick={handleEditClick}>
-                        수정
-                      </div>
-                      <div className="ytd-more-menu-item danger" onClick={handleDeleteClick}>
-                        삭제
-                      </div>
+                      {currentUser === postData.nickname && (
+                        <>
+                          <div className="ytd-more-menu-item" onClick={handleEditClick}>
+                            수정
+                          </div>
+                          <div className="ytd-more-menu-item danger" onClick={handleDeleteClick}>
+                            삭제
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1285,12 +1291,14 @@ const YouthTalkDetailPage: React.FC = () => {
                           <button 
                             className="ytd-comment-action-btn"
                             onClick={() => handleCommentEdit(comment.id)}
+                            style={{ marginLeft: '8px' }}
                           >
                             수정
                           </button>
                           <button 
-                            className="ytd-comment-action-btn"
+                            className="ytd-comment-action-btn danger"
                             onClick={() => handleCommentDelete(comment.id)}
+                            style={{ marginLeft: '8px', color: '#e74c3c' }}
                           >
                             삭제
                           </button>

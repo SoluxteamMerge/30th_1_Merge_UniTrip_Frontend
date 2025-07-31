@@ -15,6 +15,7 @@ const YouthTalkBoardPage: React.FC = () => {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [averageRatings, setAverageRatings] = useState<Record<string, number>>({});
+  const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
 
   // 별점 표시 컴포넌트
   const renderStars = (rating: number) => {
@@ -257,28 +258,44 @@ const YouthTalkBoardPage: React.FC = () => {
             <div className="yt-post-list">
                              {reviews.map(review => (
                                    <div key={review.postId} className="yt-post-card" onClick={async () => {
-                    // 함께해요 카테고리 중 동행구해요, 번개모임만 이메일 인증 확인
-                    const restrictedCategories = ['동행구해요', '번개모임'];
+                    // 함께해요 카테고리 중 동행모집, 모임구인만 이메일 인증 확인
+                    const restrictedCategories = ['동행모집', '모임구인'];
                     const isRestrictedCategory = restrictedCategories.some(cat => 
                       review.categoryName?.includes(cat) || review.boardType?.includes(cat)
                     );
                    
-                                       if (isRestrictedCategory) {
+                    console.log('게시글 클릭:', {
+                      postId: review.postId,
+                      categoryName: review.categoryName,
+                      boardType: review.boardType,
+                      isRestrictedCategory
+                    });
+                   
+                    if (isRestrictedCategory) {
+                      console.log('제한된 카테고리입니다. 이메일 인증 확인 중...');
                       try {
                         const userInfo = await fetchMyUserInfo();
+                        console.log('사용자 정보:', userInfo);
                         if (!userInfo.emailVerified) {
-                          alert('동행구해요/번개모임 게시글을 보려면 이메일 인증이 필요합니다.');
+                          console.log('이메일 인증이 필요합니다. 모달을 표시합니다.');
+                          setShowEmailVerificationModal(true);
                           return;
+                        } else {
+                          console.log('이메일 인증이 완료되었습니다. 게시글로 이동합니다.');
                         }
                       } catch (error) {
                         console.error('사용자 정보 조회 실패:', error);
-                        alert('사용자 정보를 확인할 수 없습니다. 다시 로그인해주세요.');
+                        setShowEmailVerificationModal(true);
                         return;
                       }
+                    } else {
+                      console.log('제한되지 않은 카테고리입니다. 바로 이동합니다.');
                     }
                    
-                   navigate(`/review/${review.postId}?category=청춘톡`);
-                 }} style={{ cursor: 'pointer' }}>
+                    // 이메일 인증이 완료되었거나 제한되지 않은 카테고리인 경우에만 이동
+                    console.log('게시글 상세 페이지로 이동합니다.');
+                    navigate(`/review/${review.postId}?category=청춘톡`);
+                  }} style={{ cursor: 'pointer' }}>
                   {/* 상단: 프로필/닉네임/날짜(왼쪽) + 태그(오른쪽) */}
                   <div className="yt-post-top-row">
                     <div className="yt-post-info-row">
@@ -361,6 +378,64 @@ const YouthTalkBoardPage: React.FC = () => {
       >
         <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
       </button>
+
+                    {/* 이메일 인증 필요 모달 */}
+        {showEmailVerificationModal && (
+          <>
+            <div className="wr-overlay" style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.13)',
+              zIndex: 200,
+              pointerEvents: 'auto'
+            }} />
+            <div className="wr-modal" style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: '#fff',
+              borderRadius: '25px',
+              boxShadow: '0 4px 32px 0 rgba(0,0,0,0.13)',
+              padding: '80px 150px 50px 150px',
+              zIndex: 300,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}>
+              <div className="wr-modal-text" style={{
+                fontSize: '20px',
+                color: '#black',
+                fontWeight: '700',
+                textAlign: 'center',
+                marginBottom: '30px',
+                lineHeight: '1.5'
+              }}>
+                동행 구해요/번개모임 게시글을 보려면<br />
+                이메일 인증이 필요합니다.
+              </div>
+              <button
+                className="wr-modal-btn"
+                onClick={() => setShowEmailVerificationModal(false)}
+                style={{
+                  background: '#0b0b61',
+                  color: '#fff',
+                  fontSize: '20px',
+                  fontWeight: '600',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '12px 48px',
+                  cursor: 'pointer'
+                }}
+              >
+                확인
+              </button>
+            </div>
+          </>
+        )}
     </div>
   );
 };
