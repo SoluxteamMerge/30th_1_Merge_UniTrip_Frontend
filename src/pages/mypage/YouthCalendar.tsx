@@ -67,6 +67,9 @@ const YouthCalendar: React.FC = () => {
   const [endMonth, setEndMonth] = useState<number | null>(null); 
   const [endYear, setEndYear] = useState<number | null>(null);
 
+  const [startDateObj, setStartDateObj] = useState<Date | null>(null);
+
+
   useEffect(() => {
     const stored = localStorage.getItem("youthCalendarSchedules");
     if (stored) {
@@ -129,7 +132,7 @@ const YouthCalendar: React.FC = () => {
   const handleSave = async () => {
       if (!selectedDate || !scheduleTitle) return;
 
-      const start = new Date(currentYear, currentMonth, selectedDate); //시작일
+      const start = startDateObj || new Date(currentYear, currentMonth, selectedDate); //시작일
       const end = new Date( //종료일 
         endYear !== null ? endYear : currentYear,
         endMonth !== null ? endMonth - 1 : currentMonth,
@@ -279,6 +282,7 @@ const YouthCalendar: React.FC = () => {
         setEndMonth(null);
         setEndYear(null);
         setEditingScheduleId(null);
+        setStartDateObj(null); // ✅ 시작일 상태 초기화
 
         // TODO 목록 새로고침 등 후처리 필요 시 추가
       } catch (error: any) {
@@ -329,6 +333,7 @@ const YouthCalendar: React.FC = () => {
       setEditingEntry(null);
       setEditingScheduleId(null);
       setIsMemoSelected(false);
+      setStartDateObj(null); // ✅ 시작일 상태 초기화
     } catch (error: any) {
       console.error("일정 삭제 실패:", error);
       setAlertMessage(error?.response?.data?.message || "일정 삭제에 실패했습니다.");
@@ -444,6 +449,7 @@ const YouthCalendar: React.FC = () => {
 
                   const start = new Date(detail.startDate);
                   const end = new Date(detail.endDate);
+                  setStartDateObj(start); 
 
                   // 시작일도 세팅
                   setSelectedDate(start.getDate());
