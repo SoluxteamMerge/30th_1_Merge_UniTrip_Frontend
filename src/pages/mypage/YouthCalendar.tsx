@@ -167,7 +167,6 @@ const YouthCalendar: React.FC = () => {
 
           console.log("일정 수정 성공:", response);
 
-          const key = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
           const updatedEntry = {
             scheduleId: editingScheduleId,
             title: scheduleTitle,
@@ -176,9 +175,14 @@ const YouthCalendar: React.FC = () => {
           };
 
           const updatedSchedules = { ...savedSchedules };
-          updatedSchedules[key] = (savedSchedules[key] || []).map((entry) =>
-            entry.scheduleId === editingScheduleId ? updatedEntry : entry
-          );
+
+          // 모든 날짜의 동일한 scheduleId 항목 수정
+          for (const dateKey in updatedSchedules) {
+            updatedSchedules[dateKey] = updatedSchedules[dateKey].map((entry) =>
+              entry.scheduleId === editingScheduleId ? updatedEntry : entry
+            );
+          }
+
           setSavedSchedules(updatedSchedules);
           localStorage.setItem("youthCalendarSchedules", JSON.stringify(updatedSchedules));
         } else {
@@ -239,10 +243,6 @@ const YouthCalendar: React.FC = () => {
 
             updated[key] = [...existing, newEntry]; // ✔ 각 날짜에 push
           }
-
-
-
-
           setSavedSchedules(updated);
           localStorage.setItem("youthCalendarSchedules", JSON.stringify(updated));
 
