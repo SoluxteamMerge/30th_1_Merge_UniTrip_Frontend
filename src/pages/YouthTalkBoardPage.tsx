@@ -18,6 +18,22 @@ const YouthTalkBoardPage: React.FC = () => {
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // 정렬된 리뷰 계산
+  const sortedReviews = [...reviews].sort((a, b) => {
+    switch (sort) {
+      case "스크랩순":
+        return b.scrapCount - a.scrapCount;
+      case "공감순":
+        return b.likes - a.likes;
+      case "최신순":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "인기순":
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
+  });
+
   // 별점 표시 컴포넌트
   const renderStars = (rating: number) => {
     const stars = [];
@@ -257,7 +273,7 @@ const YouthTalkBoardPage: React.FC = () => {
             </div>
           ) : (
             <div className="yt-post-list">
-              {reviews.map(review => (
+              {sortedReviews.map(review => (
                                    <div key={review.postId} className="yt-post-card" onClick={async () => {
                     // 로그인 체크
                     const isLoggedIn = !!localStorage.getItem('accessToken');

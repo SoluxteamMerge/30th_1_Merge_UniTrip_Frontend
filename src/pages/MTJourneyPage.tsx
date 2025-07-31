@@ -23,6 +23,22 @@ const MTJourneyPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // 정렬된 리뷰 계산
+  const sortedReviews = [...reviews].sort((a, b) => {
+    switch (sort) {
+      case "스크랩순":
+        return b.scrapCount - a.scrapCount;
+      case "공감순":
+        return b.likes - a.likes;
+      case "최신순":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "인기순":
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
+  });
+
   useEffect(() => {
     const fetchReviews = async () => {
       setLoading(true);
@@ -168,7 +184,7 @@ const MTJourneyPage: React.FC = () => {
             <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
           ) : (
             <div className="mt-post-list">
-              {reviews.map(review => (
+              {sortedReviews.map(review => (
                 <div key={review.postId} className="mt-post-card" onClick={() => {
                   const isLoggedIn = !!localStorage.getItem('accessToken');
                   if (!isLoggedIn) {
