@@ -98,7 +98,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
 
   const handleLogoutSuccessConfirm = () => {
     setShowLogoutSuccessModal(false);
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   const handleLoginRequiredModalClose = () => {
