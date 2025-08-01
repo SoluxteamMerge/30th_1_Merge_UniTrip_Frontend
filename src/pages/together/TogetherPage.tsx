@@ -376,7 +376,7 @@ const TogetherPage: React.FC = () => {
                         />
                         <span className="together-username">{review.nickname} 님</span>
                         <div className="together-info-divider" />
-                        <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                        <span className="together-date">{new Date(review.updateAt !== review.createdAt ? review.updateAt : review.createdAt).toLocaleString('ko-KR', {
                           year: 'numeric',
                           month: '2-digit',
                           day: '2-digit',
