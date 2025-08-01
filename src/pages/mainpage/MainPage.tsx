@@ -28,6 +28,8 @@ function MainPage() {
   const [selectedBoard, setSelectedBoard] = useState('전체 보기');
   const [dropdownOpen,setDropdownOpen] = useState(false);
   const [redirectToLogin, setRedirectToLogin] = useState(false);
+
+
   const navigate = useNavigate();
 
   const token = localStorage.getItem('accessToken') ?? '';
@@ -70,7 +72,9 @@ const filteredReviews = reviews.filter((review) =>
     selectedBoard === '전체 보기'
       ? true
       : review.boardType === boardTypeMap[selectedBoard]
+
   );
+const sortedReviews = [...filteredReviews].sort((a, b) => b.postId - a.postId);
 
 
 
@@ -196,7 +200,7 @@ const filteredReviews = reviews.filter((review) =>
 
             </div>
             <div className="review-grid">
-              {filteredReviews
+              {sortedReviews
                 .slice(0, visibleCount)
                 .map((review) => (
                 <div key={review.postId} onClick={() => handleCardClick(review.postId)}>
