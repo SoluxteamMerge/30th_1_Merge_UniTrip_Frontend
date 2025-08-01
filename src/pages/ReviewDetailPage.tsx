@@ -73,8 +73,17 @@ const YouthTalkDetailPage: React.FC = () => {
         const userData = await fetchUserInfo();
         console.log('사용자 정보 로드 완료:', userData.nickname);
         setCurrentUser(userData.nickname);
-      } catch (error) {
+      } catch (error: any) {
         console.error('사용자 정보 조회 실패:', error);
+        
+        // 구체적인 에러 메시지 처리
+        if (error.message && error.message.includes('IncorrectResultSizeDataAccessException')) {
+          console.error('데이터베이스 중복 데이터 오류: 같은 이메일로 여러 계정이 존재합니다.');
+          alert('계정 정보에 문제가 있습니다. 관리자에게 문의해주세요.');
+        } else {
+          console.error('일반적인 사용자 정보 조회 실패:', error.message);
+        }
+        
         setCurrentUser("");
       }
     };
