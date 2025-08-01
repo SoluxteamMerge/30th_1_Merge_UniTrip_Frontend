@@ -1598,7 +1598,7 @@ const handleDeleteConfirm = async () => {
           <div 
           style={{
           width: "400px",
-          height: "200px", 
+          height: "150px", 
           backgroundColor: "#fff",
           borderRadius: "16px",
           padding: "24px",
@@ -1608,7 +1608,7 @@ const handleDeleteConfirm = async () => {
             <div 
             style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
-              <div style={{ margin: "8px 0 16px 0" }}> {/* 위/아래 여백 */}
+              <div style={{ margin: "20px 0 8px 0" }}> {/* 위/아래 여백 */}
                 <span style={{ fontSize: "16px", fontWeight: "bold" }}>
                   스크랩이 취소되었습니다.
                 </span>
@@ -1623,13 +1623,12 @@ const handleDeleteConfirm = async () => {
             </div>
             <div 
               style={{
-                marginTop: "16px", // 여백 줄임
+                marginTop: "8px", // 여백 줄임
                 display: "flex",
                 justifyContent: "center",
               }}
               >
-              <button 
-              
+              <button     
               onClick={handleScrapCancelModalClose}
               style={{
                 padding: "8px 16px",
