@@ -1597,7 +1597,7 @@ const handleDeleteConfirm = async () => {
         >
           <div 
           style={{
-          width: "320px",
+          width: "400px",
           backgroundColor: "#fff",
           borderRadius: "16px",
           padding: "24px",
@@ -1624,7 +1624,7 @@ const handleDeleteConfirm = async () => {
               style={{
                 marginTop: "16px", // 여백 줄임
                 display: "flex",
-                justifyContent: "flex-end",
+                justifyContent: "center",
               }}
               >
               <button 
