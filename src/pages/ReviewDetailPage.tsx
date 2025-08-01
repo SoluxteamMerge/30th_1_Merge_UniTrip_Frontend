@@ -259,7 +259,6 @@ const YouthTalkDetailPage: React.FC = () => {
         alert('로그인이 필요합니다.');
         return;
       }
-
       console.log('좋아요 버튼 클릭 - 현재 상태:', { isLiked, currentLikes: postData?.likes });
 
       // 낙관적 업데이트 - 즉시 UI 변경
@@ -317,7 +316,6 @@ const YouthTalkDetailPage: React.FC = () => {
         alert('로그인이 필요합니다.');
         return;
       }
-
       console.log('스크랩 버튼 클릭 - 현재 상태:', { isStarred, currentScrapCount: postData?.scrapCount });
 
       // 낙관적 업데이트 - 즉시 UI 변경
@@ -325,10 +323,6 @@ const YouthTalkDetailPage: React.FC = () => {
       const newScrapCount = isStarred ? (postData?.scrapCount || 0) - 1 : (postData?.scrapCount || 0) + 1;
 
       console.log('낙관적 업데이트:', { newStarredState, newScrapCount });
-
-
-
-
 
       // 상태를 즉시 업데이트 (최종 UI 상태로 유지)
       setIsStarred(newStarredState);
@@ -1594,7 +1588,7 @@ const handleDeleteConfirm = async () => {
           </div>
         </div>
       )}
-
+      {/* 스크랩 취소 모달 */}
       {showScrapCancelModal && (
         <div className="ytd-modal-overlay">
           <div className="ytd-modal publish">
