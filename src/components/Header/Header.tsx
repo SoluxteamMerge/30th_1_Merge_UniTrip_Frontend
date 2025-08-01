@@ -3,6 +3,7 @@ import { Link, useLocation, useSearchParams, useNavigate } from "react-router-do
 import AlertModal from "../AlertModal/AlertModal";
 import defaultProfile from "../../assets/header/default-profile.svg";
 import { fetchUserInfo } from "../../api/mypage/userApi";
+import logo from '../../assets/header/logo.svg'
 
 interface HeaderProps {
   isLoggedIn?: boolean; //todo
@@ -335,7 +336,7 @@ function Header({ isLoggedIn = false, username = "", profileUrl = "" }: HeaderPr
       <header className="header">
         <div className="header-left">
           <Link to="/" style={{ textDecoration: 'none' }}>
-            <img src="/src/assets/header/logo.svg" alt="로고" className="header-logo" />
+            <img src={logo} alt="logo" className="header-logo" />
           </Link>
           <nav>
             {menuLinks.map((link) => {
