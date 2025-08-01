@@ -28,6 +28,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [isLiked, setIsLiked] = useState(false);
   const [isStarred, setIsStarred] = useState(false);
+  const [isStarLoading, setIsStarLoading] = useState(false); 
   const [isRated, setIsRated] = useState(false);
   
 
