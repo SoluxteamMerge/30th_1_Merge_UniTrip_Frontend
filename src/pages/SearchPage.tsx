@@ -2,9 +2,13 @@
   import Header from "../components/Header/Header";
   import searchIcon from '../assets/search_icon.svg';
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
+  import "./SearchPage.css";  
   import { useNavigate } from "react-router-dom"; 
   //import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
   import { ReviewCard } from "./reviewcard/ReviewCard";
+
+  import AlertModal from "../components/AlertModal/AlertModal.tsx";
+  import "../components/AlertModal/AlertModal.css";
 
   import SortDropdown from "../components/SortDropdown"; //리뷰 정렬 드롭다운
   import Pagination from "../components/Pagination";
@@ -52,6 +56,9 @@
       const [isSearchActive, setIsSearchActive] = useState(false);
 
       const [popularKeywords, setPopularKeywords] = useState<{ keyword: string, rank: number, searchCount: number }[]>([]);
+
+      const [showAlert, setShowAlert] = useState(false);//모달창 띄우기
+      const [alertMessage, setAlertMessage] = useState("");
 
       //console.log("🔥 SearchPage 렌더링됨");
 
@@ -191,7 +198,8 @@
         try {
           const token = localStorage.getItem("accessToken");
           if (!token) {
-            alert("로그인이 필요합니다.");
+            setAlertMessage("로그인이 필요합니다.");
+            setShowAlert(true);
             return;
           }
 
@@ -241,6 +249,10 @@
     return (
       <>
         <Header />
+        <AlertModal
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+        />
 
         <div className="mainpage-background">
           {/* 검색 섹션 */}
@@ -358,13 +370,7 @@
                       <li
                         key={idx}
                         onClick={() => handleKeywordClick(item.keyword)}
-                        style={{
-                          marginBottom: 6,
-                          fontSize: 16,
-                          color: "#000",
-                          fontWeight: 500,
-                          cursor: "pointer",
-                        }}
+                        className="popular-keyword-item"
                       >
                         {item.rank}. {item.keyword}
                       </li>

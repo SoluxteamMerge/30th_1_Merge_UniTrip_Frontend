@@ -27,11 +27,46 @@ const categories = [
 const TogetherPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
   const [selectedCategory, setSelectedCategory] = useState("동행구해요");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 정렬 변경 시 1페이지로 이동
+  const handleSortChange = (newSort: string) => {
+    setSort(newSort);
+    setCurrentPage(1);
+  };
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // 정렬된 리뷰 계산
+  const sortedReviews = [...reviews].sort((a, b) => {
+    switch (sort) {
+      case "스크랩순":
+        return b.scrapCount - a.scrapCount;
+      case "공감순":
+        return b.likes - a.likes;
+      case "최신순":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "인기순":
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
+  });
+
+  // 현재 페이지의 리뷰 계산
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentReviews = sortedReviews.slice(startIndex, startIndex + itemsPerPage);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // 로그인 상태 확인
   const isLoggedIn = !!localStorage.getItem('accessToken');
@@ -54,51 +89,56 @@ const TogetherPage: React.FC = () => {
       <>
         <Header isLoggedIn={false} username="" profileUrl="" />
         {showLoginModal && (
-          <div className="modal-overlay" style={{
+          <div style={{
             position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.13)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             zIndex: 1000
           }}>
-            <div className="modal-content" style={{
-              backgroundColor: '#fff',
-              borderRadius: '25px',
-              padding: '80px 0px 50px 0px',
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '15px',
+              padding: '40px',
               maxWidth: '400px',
               width: '90%',
               textAlign: 'center',
-              boxShadow: '0 4px 32px 0 rgba(0,0,0,0.13)',
-              border: '2px solid #bbb'
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
             }}>
-              <h3 style={{
-                margin: '0 0 30px 0',
-                fontSize: '20px',
-                fontWeight: '700',
-                color: '#333'
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: '20px', 
+                fontSize: '18px',
+                fontWeight: '600'
               }}>
-                해당 서비스를 이용하려면<br />
-                로그인이 필요합니다.
+                로그인이 필요한 서비스입니다
               </h3>
+              <p style={{ 
+                color: '#666', 
+                marginBottom: '30px',
+                fontSize: '14px',
+                lineHeight: '1.5'
+              }}>
+                게시글을 보려면 로그인해주세요
+              </p>
               <button
                 onClick={handleLoginModalClose}
                 style={{
+                  padding: '10px 20px',
+                  border: 'none',
+                  borderRadius: '8px',
                   backgroundColor: '#0b0b61',
                   color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  padding: '12px 48px',
-                  fontSize: '20px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  fontSize: '14px'
                 }}
               >
-                확인
+                로그인
               </button>
             </div>
           </div>
@@ -312,71 +352,95 @@ const TogetherPage: React.FC = () => {
           <div className="together-title-box">
             <span className="together-title-icon">▶</span>함께해요
           </div>
-          <SortDropdown value={sort} onChange={setSort} />
+          <SortDropdown value={sort} onChange={handleSortChange} />
         </div>
         <div className="together-white-container">
           <div className="together-board-title">{selectedCategory}</div>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
           ) : (
-            <div className="together-post-list">
-              {reviews.map(review => (
-                <div key={review.postId} className="together-post-card" onClick={() => navigate(`/review/${review.postId}?category=${selectedCategory}`)} style={{ cursor: 'pointer' }}>
-                  {/* 상단: 프로필/닉네임/날짜 */}
-                  <div className="together-post-top-row">
-                    <div className="together-post-info-row">
-                      <div 
-                        className="together-profile" 
-                        style={{
-                          backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
+            <>
+                               <div className="together-post-list">
+                   {currentReviews.map(review => (
+                  <div key={review.postId} className="together-post-card" onClick={() => navigate(`/review/${review.postId}?category=${selectedCategory}`)} style={{ cursor: 'pointer' }}>
+                    {/* 상단: 프로필/닉네임/날짜 */}
+                    <div className="together-post-top-row">
+                      <div className="together-post-info-row">
+                        <div 
+                          className="together-profile" 
+                          style={{
+                            backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                          }}
+                        />
+                        <span className="together-username">{review.nickname} 님</span>
+                        <div className="together-info-divider" />
+                        <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}</span>
+                      </div>
+                      {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
+                      {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
+                        <div className="together-rating-container">
+                          {renderStars(review.rating)}
+                        </div>
+                      )}
+                    </div>
+                    {/* 제목+내용 */}
+                    <div className="together-main-row">
+                      <div className="together-main-texts">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div className="together-post-title">{review.title}</div>
+                        </div>
+                        <div className="together-post-content">{review.content}</div>
+                      </div>
+                      <img 
+                        src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
+                        alt="썸네일" 
+                        className="together-thumbnail" 
+                        onError={(e) => {
+                          // 이미지 로드 실패 시 기본 이미지로 대체
+                          e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
                         }}
                       />
-                      <span className="together-username">{review.nickname} 님</span>
-                      <div className="together-info-divider" />
-                      <span className="together-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}</span>
                     </div>
-                    {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
-                    {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
-                      <div className="together-rating-container">
-                        {renderStars(review.rating)}
-                      </div>
-                    )}
-                  </div>
-                  {/* 제목+내용 */}
-                  <div className="together-main-row">
-                    <div className="together-main-texts">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div className="together-post-title">{review.title}</div>
-                      </div>
-                      <div className="together-post-content">{review.content}</div>
+                    {/* 태그들 */}
+                    <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                      <span className="together-tag together-tag-main">{review.categoryName}</span>
                     </div>
-                    <img 
-                      src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
-                      alt="썸네일" 
-                      className="together-thumbnail" 
-                      onError={(e) => {
-                        // 이미지 로드 실패 시 기본 이미지로 대체
-                        e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
-                      }}
-                    />
                   </div>
-                  {/* 태그들 */}
-                  <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                    <span className="together-tag together-tag-main">{review.categoryName}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+                                 {/* 페이지네이션 버튼 */}
+                   {totalPages >= 1 && (
+                     <div style={{ textAlign: "center", marginTop: 24 }}>
+                       {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => (
+                         <button
+                           key={page}
+                           onClick={() => handlePageChange(page)}
+                           style={{
+                             margin: "0 8px",
+                             padding: "8px 14px",
+                             border: "none",
+                             borderRadius: 6,
+                             fontWeight: currentPage === page ? 700 : 400,
+                             backgroundColor: currentPage === page ? "#ececec" : "transparent",
+                             cursor: "pointer",
+                             fontSize: 16
+                           }}
+                         >
+                           {page}
+                         </button>
+                       ))}
+                     </div>
+                   )}
+            </>
           )}
-        </div>
       </div>
 
       {/* 플로팅 글쓰기 버튼 */}
@@ -387,7 +451,7 @@ const TogetherPage: React.FC = () => {
         <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
       </button>
     </div>
-  );
-};
+  </div>
+)};
 
 export default TogetherPage; 

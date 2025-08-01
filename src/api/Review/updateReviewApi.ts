@@ -35,10 +35,17 @@ export const updateReview = async (
     hasToken: !!accessToken
   });
   
-  const response = await api.patch(`/api/reviews/${postId}`, review, {
+  // FormData를 사용하여 boardRequest 파트로 데이터 전송
+  const formData = new FormData();
+  const boardRequest = new Blob([JSON.stringify(review)], {
+    type: 'application/json'
+  });
+  formData.append('boardRequest', boardRequest);
+  
+  const response = await api.patch(`/api/reviews/${postId}`, formData, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'multipart/form-data'
+      // Content-Type은 자동으로 설정되도록 제거
     },
   });
   

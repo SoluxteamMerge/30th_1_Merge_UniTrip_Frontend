@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import SortDropdown from "../components/SortDropdown";
+import Pagination from "../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import writeIcon from "../assets/write-icon.svg";
 import starWishIcon from "../assets/module/star_wish.svg";
@@ -18,9 +19,45 @@ const categoryToBoardType: Record<string, string> = {
 
 const MTJourneyPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 정렬 변경 시 1페이지로 이동
+  const handleSortChange = (newSort: string) => {
+    setSort(newSort);
+    setCurrentPage(1);
+  };
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // 정렬된 리뷰 계산
+  const sortedReviews = [...reviews].sort((a, b) => {
+    switch (sort) {
+      case "스크랩순":
+        return b.scrapCount - a.scrapCount;
+      case "공감순":
+        return b.likes - a.likes;
+      case "최신순":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "인기순":
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
+  });
+
+  // 현재 페이지의 리뷰 계산
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentReviews = sortedReviews.slice(startIndex, startIndex + itemsPerPage);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -153,74 +190,106 @@ const MTJourneyPage: React.FC = () => {
           transition: box-shadow 0.2s;
         }
       `}</style>
-              <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
+      <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       <div className="mt-container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div className="mt-title-box">
             <span className="mt-title-icon">▶</span>MT여정지도
           </div>
-          <SortDropdown value={sort} onChange={setSort} />
+          <SortDropdown value={sort} onChange={handleSortChange} />
         </div>
         <div className="mt-white-container">
           <div className="mt-board-title">리뷰모음</div>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>로딩 중...</div>
-          ) : (
-            <div className="mt-post-list">
-              {reviews.map(review => (
-                <div key={review.postId} className="mt-post-card" onClick={() => navigate(`/review/${review.postId}?category=MT여정지도`)} style={{ cursor: 'pointer' }}>
-                  {/* 상단: 프로필/닉네임/날짜 */}
-                  <div className="mt-post-top-row">
-                    <div className="mt-post-info-row">
-                      <div className="mt-post-info-left">
-                      <div 
-                        className="mt-profile" 
-                        style={{
-                          backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
+                     ) : (
+            <>
+                             <div className="mt-post-list">
+                 {currentReviews.map(review => (
+                  <div key={review.postId} className="mt-post-card" onClick={() => {
+                    const isLoggedIn = !!localStorage.getItem('accessToken');
+                    if (!isLoggedIn) {
+                      setShowLoginModal(true);
+                      return;
+                    }
+                    navigate(`/review/${review.postId}?category=MT여정지도`);
+                  }} style={{ cursor: 'pointer' }}>
+                    {/* 상단: 프로필/닉네임/날짜 */}
+                    <div className="mt-post-top-row">
+                      <div className="mt-post-info-row">
+                        <div className="mt-post-info-left">
+                        <div 
+                          className="mt-profile" 
+                          style={{
+                            backgroundImage: review.profileImageUrl ? `url(${review.profileImageUrl})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                          }}
+                        />
+                        <span className="mt-username">{review.nickname} 님</span>
+                        <div className="mt-info-divider" />
+                        <span className="mt-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}</span>
+                        </div>
+                        <div className="mt-rating-container">
+                          {renderStars(review.rating)}
+                        </div>
+                      </div>
+                    </div>
+                    {/* 제목+별점(왼쪽) + 썸네일(오른쪽) 한 줄 */}
+                    <div className="mt-main-row">
+                      <div className="mt-main-texts">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div className="mt-post-title">{review.title}</div>
+                        </div>
+                        <div className="mt-post-content">{review.content}</div>
+                      </div>
+                      <img 
+                        src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
+                        alt="썸네일" 
+                        className="mt-thumbnail" 
+                        onError={(e) => {
+                          // 이미지 로드 실패 시 기본 이미지로 대체
+                          e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
                         }}
                       />
-                      <span className="mt-username">{review.nickname} 님</span>
-                      <div className="mt-info-divider" />
-                      <span className="mt-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}</span>
-                      </div>
-                      <div className="mt-rating-container">
-                        {renderStars(review.rating)}
-                      </div>
+                    </div>
+                    {/* 태그들 (사진 아래) */}
+                    <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                      <span className="mt-tag mt-tag-main">{review.categoryName}</span>
                     </div>
                   </div>
-                  {/* 제목+별점(왼쪽) + 썸네일(오른쪽) 한 줄 */}
-                  <div className="mt-main-row">
-                    <div className="mt-main-texts">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div className="mt-post-title">{review.title}</div>
-                      </div>
-                      <div className="mt-post-content">{review.content}</div>
-                    </div>
-                    <img 
-                      src={review.thumbnailUrl || "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png"} 
-                      alt="썸네일" 
-                      className="mt-thumbnail" 
-                      onError={(e) => {
-                        // 이미지 로드 실패 시 기본 이미지로 대체
-                        e.currentTarget.src = "https://unitripbucket.s3.ap-northeast-2.amazonaws.com/board/b5ab4d10-986a-4d86-b31e-386ccf413f67_KakaoTalk_20250717_171047777.png";
-                      }}
-                    />
-                  </div>
-                  {/* 태그들 (사진 아래) */}
-                  <div style={{ marginTop: '16px', marginRight: '0px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                    <span className="mt-tag mt-tag-main">{review.categoryName}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+                             {/* 페이지네이션 버튼 */}
+               {totalPages >= 1 && (
+                 <div style={{ textAlign: "center", marginTop: 24 }}>
+                   {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => (
+                     <button
+                       key={page}
+                       onClick={() => handlePageChange(page)}
+                       style={{
+                         margin: "0 8px",
+                         padding: "8px 14px",
+                         border: "none",
+                         borderRadius: 6,
+                         fontWeight: currentPage === page ? 700 : 400,
+                         backgroundColor: currentPage === page ? "#ececec" : "transparent",
+                         cursor: "pointer",
+                         fontSize: 16
+                       }}
+                     >
+                       {page}
+                     </button>
+                   ))}
+                 </div>
+               )}
+            </>
           )}
         </div>
       </div>
@@ -232,6 +301,82 @@ const MTJourneyPage: React.FC = () => {
       >
         <img src={writeIcon} alt="글쓰기" style={{ width: 120, height: 120 }} />
       </button>
+      
+      {/* 로그인 필요 모달 */}
+      {showLoginModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '15px',
+            padding: '40px',
+            maxWidth: '400px',
+            width: '90%',
+            textAlign: 'center',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+          }}>
+            <h3 style={{ 
+              color: '#333', 
+              marginBottom: '20px', 
+              fontSize: '18px',
+              fontWeight: '600'
+            }}>
+              로그인이 필요한 서비스입니다
+            </h3>
+            <p style={{ 
+              color: '#666', 
+              marginBottom: '30px',
+              fontSize: '14px',
+              lineHeight: '1.5'
+            }}>
+              게시글을 보려면 로그인해주세요
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowLoginModal(false)}
+                style={{
+                  padding: '10px 20px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  backgroundColor: 'white',
+                  color: '#666',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                취소
+              </button>
+              <button
+                onClick={() => {
+                  setShowLoginModal(false);
+                  navigate('/login');
+                }}
+                style={{
+                  padding: '10px 20px',
+                  border: 'none',
+                  borderRadius: '8px',
+                  backgroundColor: '#0b0b61',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                로그인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

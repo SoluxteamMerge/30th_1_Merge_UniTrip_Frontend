@@ -11,11 +11,47 @@ import { fetchMyUserInfo } from '../api/YouthDrawer/fetchMyUserInfo';
 
 const YouthTalkBoardPage: React.FC = () => {
   const [sort, setSort] = useState("최신순");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 정렬 변경 시 1페이지로 이동
+  const handleSortChange = (newSort: string) => {
+    setSort(newSort);
+    setCurrentPage(1);
+  };
   const navigate = useNavigate();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [averageRatings, setAverageRatings] = useState<Record<string, number>>({});
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // 정렬된 리뷰 계산
+  const sortedReviews = [...reviews].sort((a, b) => {
+    switch (sort) {
+      case "스크랩순":
+        return b.scrapCount - a.scrapCount;
+      case "공감순":
+        return b.likes - a.likes;
+      case "최신순":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "인기순":
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
+  });
+
+  // 현재 페이지의 리뷰 계산
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(sortedReviews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentReviews = sortedReviews.slice(startIndex, startIndex + itemsPerPage);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // 별점 표시 컴포넌트
   const renderStars = (rating: number) => {
@@ -244,7 +280,7 @@ const YouthTalkBoardPage: React.FC = () => {
           <div className="yt-title-box">
             <span className="yt-title-icon">▶</span>청춘톡
           </div>
-          <SortDropdown value={sort} onChange={setSort} />
+          <SortDropdown value={sort} onChange={handleSortChange} />
         </div>
         <div className="yt-white-container">
           <div className="yt-board-title">게시글 모음</div>
@@ -254,10 +290,18 @@ const YouthTalkBoardPage: React.FC = () => {
             <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
               게시글이 없습니다.
             </div>
-          ) : (
-            <div className="yt-post-list">
-              {reviews.map(review => (
+                      ) : (
+              <>
+                                   <div className="yt-post-list">
+                     {currentReviews.map(review => (
                                    <div key={review.postId} className="yt-post-card" onClick={async () => {
+                    // 로그인 체크
+                    const isLoggedIn = !!localStorage.getItem('accessToken');
+                    if (!isLoggedIn) {
+                      setShowLoginModal(true);
+                      return;
+                    }
+                    
                     // 함께해요 카테고리 중 동행모집, 모임구인만 이메일 인증 확인
                     const restrictedCategories = ['동행모집', '모임구인'];
                     const isRestrictedCategory = restrictedCategories.some(cat => 
@@ -364,10 +408,34 @@ const YouthTalkBoardPage: React.FC = () => {
                       }}
                     />
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                                 </div>
+               ))}
+             </div>
+                                {/* 페이지네이션 버튼 */}
+                   {totalPages >= 1 && (
+                     <div style={{ textAlign: "center", marginTop: 24 }}>
+                       {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => (
+                         <button
+                           key={page}
+                           onClick={() => handlePageChange(page)}
+                           style={{
+                             margin: "0 8px",
+                             padding: "8px 14px",
+                             border: "none",
+                             borderRadius: 6,
+                             fontWeight: currentPage === page ? 700 : 400,
+                             backgroundColor: currentPage === page ? "#ececec" : "transparent",
+                             cursor: "pointer",
+                             fontSize: 16
+                           }}
+                         >
+                           {page}
+                         </button>
+                       ))}
+                     </div>
+                   )}
+           </>
+         )}
         </div>
       </div>
 
@@ -428,6 +496,82 @@ const YouthTalkBoardPage: React.FC = () => {
       </button>
             </div>
           </>
+        )}
+        
+        {/* 로그인 필요 모달 */}
+        {showLoginModal && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000
+          }}>
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '15px',
+              padding: '40px',
+              maxWidth: '400px',
+              width: '90%',
+              textAlign: 'center',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+            }}>
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: '20px', 
+                fontSize: '18px',
+                fontWeight: '600'
+              }}>
+                로그인이 필요한 서비스입니다
+              </h3>
+              <p style={{ 
+                color: '#666', 
+                marginBottom: '30px',
+                fontSize: '14px',
+                lineHeight: '1.5'
+              }}>
+                게시글을 보려면 로그인해주세요
+              </p>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  style={{
+                    padding: '10px 20px',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    backgroundColor: 'white',
+                    color: '#666',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  취소
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLoginModal(false);
+                    navigate('/login');
+                  }}
+                  style={{
+                    padding: '10px 20px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    backgroundColor: '#0b0b61',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  로그인
+                </button>
+              </div>
+            </div>
+          </div>
         )}
     </div>
   );
