@@ -477,9 +477,13 @@ const WriteReviewPage: React.FC = () => {
           categoryGroupName: selectedLocation?.categoryGroupName || '',
           region: selectedLocation?.region || '',
           lat: selectedLocation?.lat || 0,
-          lng: selectedLocation?.lng || 0,
-          rating: rating // 별점을 reviewData에 포함
+          lng: selectedLocation?.lng || 0
+          // rating 필드 제거 - 별도 API로 처리
         };
+
+        console.log('별점 값:', rating);
+        console.log('별점 타입:', typeof rating);
+        console.log('reviewData:', reviewData);
 
         const images: File[] = [];
         if (selectedImageFile) {
@@ -487,7 +491,15 @@ const WriteReviewPage: React.FC = () => {
         }
         const res = await postReview(reviewData, images, accessToken);
         if (res.status === 200) {
-          // 별점은 이미 reviewData에 포함되었으므로 별도 호출 제거
+          // 게시글 생성 후 별점 등록
+          try {
+            const rateRes = await rateReview(res.postId, rating, accessToken);
+            console.log('별점 등록 응답:', rateRes);
+          } catch (rateError: any) {
+            console.error('별점 등록 오류:', rateError);
+            // 별점 등록 실패해도 게시글은 성공했으므로 경고만 표시
+            alert('게시글이 등록되었지만 별점 등록에 실패했습니다.');
+          }
           alert(res.message);
           // 성공 시 해당 게시판으로 이동
           switch (selectedCategory) {
