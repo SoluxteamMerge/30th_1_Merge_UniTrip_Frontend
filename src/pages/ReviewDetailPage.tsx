@@ -362,10 +362,14 @@ const YouthTalkDetailPage: React.FC = () => {
       actualCategory = categories[0];
     }
     
-    // categoryName에서 태그만 추출
+    // categoryName에서 하나의 태그만 추출 (백엔드에서 하나만 허용)
     let tags: string[] = [];
     if (postData.categoryName && postData.categoryName.trim() !== '') {
-      tags = postData.categoryName.split(',').map(part => part.trim()).filter(tag => tag.trim() !== '');
+      // categoryName이 하나의 태그만 저장하므로 split 불필요
+      const singleTag = postData.categoryName.trim();
+      if (singleTag !== '') {
+        tags = [singleTag];
+      }
     }
     
     const editData = {
