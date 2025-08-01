@@ -10,7 +10,7 @@ export const withdrawUser = async (token: string): Promise<WithdrawResponse> => 
     try {
         const response = await axios.delete('/api/user/signout', {
             headers: {
-                Authorization: `Bearer $${token.trim()}`,
+                Authorization: `Bearer ${token.trim()}`,
             },
         });
         return response.data;
