@@ -55,6 +55,7 @@ function YouthDrawer() {
 
     const handleWithdraw = async () => {
         const token = localStorage.getItem('accessToken');
+        console.log('🪪 accessToken:', token);
         if (!token) {
             setResultMessage('로그인이 필요합니다.');
             setShouldRedirect(true);
@@ -63,17 +64,19 @@ function YouthDrawer() {
         }
 
         try {
+            console.log('회원탈퇴 응답: ', token);
             const res = await api.delete('/api/user/signout', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             
-            console.log('회원탈퇴 응답: ', res);
+            console.log('✅ 회원탈퇴 응답: ', res);
 
             setResultMessage(res.data.message);
             setShouldRedirect(true);
             setIsResultModalOpen(true);
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
+            console.error('❌ 탈퇴 요청 실패 응답:', axiosError.response);
             setResultMessage(axiosError.response?.data?.message || '회원탈퇴 실패');
             setShouldRedirect(false);
             setIsResultModalOpen(true);
