@@ -378,7 +378,22 @@ const TogetherPage: React.FC = () => {
                         <div className="together-info-divider" />
                         <span className="together-date">{(() => {
                           const dateToShow = review.updateAt !== review.createdAt ? review.updateAt : review.createdAt;
-                          const date = new Date(dateToShow);
+                          let date;
+                          
+                          // ISO 형식 날짜 파싱 (마이크로초 포함)
+                          if (dateToShow.includes('T')) {
+                            // ISO 형식: "2025-08-01T20:21:13.438150"
+                            date = new Date(dateToShow);
+                          } else {
+                            // 일반 형식
+                            date = new Date(dateToShow);
+                          }
+                          
+                          // 유효한 날짜인지 확인
+                          if (isNaN(date.getTime())) {
+                            return '날짜 정보 없음';
+                          }
+                          
                           return date.toLocaleString('ko-KR', {
                             year: 'numeric',
                             month: '2-digit',
