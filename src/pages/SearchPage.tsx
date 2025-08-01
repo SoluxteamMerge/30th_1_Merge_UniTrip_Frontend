@@ -4,8 +4,8 @@
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
   import "./SearchPage.css";  
   import { useNavigate } from "react-router-dom"; 
-  //import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
-  import { ReviewCard } from "./reviewcard/ReviewCard";
+  import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
+  //import { ReviewCard } from "./reviewcard/ReviewCard";
 
   import AlertModal from "../components/AlertModal/AlertModal.tsx";
   import "../components/AlertModal/AlertModal.css";
@@ -161,13 +161,15 @@
         if (e.key === "Enter") {
           const token = localStorage.getItem("accessToken");
           if (!token) {
-            alert("로그인이 필요합니다.");
+            setAlertMessage("로그인이 필요합니다.");
+            setShowAlert(true);
             return;
           }
 
            // 공백이나 빈 문자열 감지
           if (!searchQuery.trim()) {
-            alert("검색어를 입력해주세요.");
+            setAlertMessage("검색어를 입력해주세요.");
+            setShowAlert(true);
             return;
           }
           try {
@@ -222,37 +224,15 @@
       };
 
 
-
-      {/*검색어 필터링 - 삭제(주석처리)
-      const filteredReviews = dummyReviews.filter((review) =>
-        review.title.includes(searchQuery)
-      );
-      */}
-
-      {/*리뷰 정렬(최신순, 인기순, 스크랩순, 공감순) - 삭제(주석처리)
-      const sortedReviews = [...filteredReviews].sort((a, b) => {
-      switch (sortOption) {
-        //case "인기순": 
-          //return b.starCount - a.starCount;
-        case "스크랩순": 
-          return b.scrapCount - a.scrapCount;
-        case "공감순": 
-          return b.likes - a.likes;
-        //case "최신순":
-        default:
-          return 0; // 정렬하지 않음 → 원래 순서 유지 (최신순이라고 간주)
-
-      }
-    })//.slice(0, 6); // 6개만 잘라서 보여주기
-    */}
-
     return (
       <>
         <Header />
-        <AlertModal
-          message={alertMessage}
-          onClose={() => setShowAlert(false)}
-        />
+        {showAlert && (
+          <AlertModal
+            message={alertMessage}
+            onClose={() => setShowAlert(false)}
+          />
+        )}
 
         <div className="mainpage-background">
           {/* 검색 섹션 */}
@@ -427,7 +407,7 @@
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCard
+                      <ReviewCardTwo
                         postId={review.postId}
                         postTitle={review.postTitle}
                         categoryName={review.categoryName}
@@ -493,7 +473,7 @@
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCard
+                      <ReviewCardTwo
                         postId={review.postId}
                         postTitle={review.postTitle}
                         categoryName={review.categoryName}
