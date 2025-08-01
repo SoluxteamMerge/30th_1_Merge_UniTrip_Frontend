@@ -39,6 +39,8 @@ function YouthDrawerEdit() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [originalNickname, setOriginalNickname] = useState('');
+    const [isSaved, setIsSaved] = useState(false); // 추가
+
 
 
     
@@ -246,8 +248,9 @@ function YouthDrawerEdit() {
                 emailVerified,
             });
             setResultMessage('회원정보가 저장되었습니다.');
+            setIsSaved(true);
             setIsResultModalOpen(true);
-            navigate('/youth-drawer');
+
         } catch (error) {
             setResultMessage((error as Error).message);
         } finally {
@@ -405,6 +408,8 @@ function YouthDrawerEdit() {
                         if (SUCCESS_MESSAGES.includes(resultMessage)) {
                             localStorage.clear();
                             navigate('/');
+                        } else if (isSaved) {
+                            navigate('/youth-drawer');
                         }
                     }}
                     onConfirm={() => {
@@ -412,6 +417,8 @@ function YouthDrawerEdit() {
                         if (SUCCESS_MESSAGES.includes(resultMessage)) {
                             localStorage.clear();
                             navigate('/');
+                        } else if (isSaved) {
+                            navigate('/youth-drawer');
                         }
                     }}
                 />
