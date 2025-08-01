@@ -373,29 +373,8 @@ const WriteReviewPage: React.FC = () => {
             }
             
             alert(res.message);
-            // 수정 완료 후 해당 게시판으로 이동
-            switch (selectedCategory) {
-              case "MT여정지도":
-                navigate('/mt-journey');
-                break;
-              case "함께해요-동행구해요":
-                navigate('/together?category=동행구해요');
-                break;
-              case "함께해요-번개모임":
-                navigate('/together?category=번개모임');
-                break;
-              case "함께해요-졸업/휴학여행":
-                navigate('/together?category=졸업/휴학여행');
-                break;
-              case "함께해요-국내학점교류":
-                navigate('/together?category=국내학점교류');
-                break;
-              case "함께해요-해외교환학생":
-                navigate('/together?category=해외교환학생');
-                break;
-              default:
-                navigate('/mt-journey');
-            }
+            // 수정 완료 후 해당 게시글 상세 페이지로 이동
+            navigate(`/review-detail/${editPostId}`);
           } else {
             alert('리뷰 수정에 실패했습니다.');
           }
@@ -460,32 +439,8 @@ const WriteReviewPage: React.FC = () => {
           }
           
           alert(res.message);
-          // 성공 시 페이지 이동
-        switch (selectedCategory) {
-          case "청춘톡":
-            navigate('/youth-talk');
-            break;
-          case "MT여정지도":
-            navigate('/mt-journey');
-            break;
-          case "함께해요-동행구해요":
-            navigate('/together?category=동행구해요');
-            break;
-          case "함께해요-번개모임":
-            navigate('/together?category=번개모임');
-            break;
-          case "함께해요-졸업/휴학여행":
-            navigate('/together?category=졸업/휴학여행');
-            break;
-          case "함께해요-국내학점교류":
-            navigate('/together?category=국내학점교류');
-            break;
-          case "함께해요-해외교환학생":
-            navigate('/together?category=해외교환학생');
-            break;
-          default:
-            navigate('/youth-talk');
-        }
+          // 성공 시 새로 작성된 게시글 상세 페이지로 이동
+          navigate(`/review-detail/${res.postId}`);
       } else {
         alert('게시글 등록에 실패했습니다.');
         }
