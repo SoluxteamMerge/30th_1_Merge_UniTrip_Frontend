@@ -30,9 +30,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isStarred, setIsStarred] = useState(false);
   const [isRated, setIsRated] = useState(false);
   
-  // 로딩 상태 추가
-  const [isLikeLoading, setIsLikeLoading] = useState(false);
-  const [isStarLoading, setIsStarLoading] = useState(false);
+
   
   // 현재 로그인한 사용자 정보
   const [currentUser, setCurrentUser] = useState("");
@@ -250,8 +248,6 @@ const YouthTalkDetailPage: React.FC = () => {
   }
 
   const handleLike = async () => {
-    if (isLikeLoading) return; // 이미 로딩 중이면 무시
-    
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
@@ -278,8 +274,6 @@ const YouthTalkDetailPage: React.FC = () => {
         console.log('postData 업데이트:', updated);
         return updated;
       });
-      
-      setIsLikeLoading(true);
 
       // API 호출 (응답은 확인하지 않음)
       await likeReview(postData.postId, accessToken);
@@ -306,14 +300,10 @@ const YouthTalkDetailPage: React.FC = () => {
       } else {
         alert('좋아요 처리 중 오류가 발생했습니다.');
       }
-    } finally {
-      setIsLikeLoading(false);
     }
   };
 
   const handleStar = async () => {
-    if (isStarLoading) return; // 이미 로딩 중이면 무시
-    
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
@@ -340,8 +330,6 @@ const YouthTalkDetailPage: React.FC = () => {
         console.log('postData 업데이트:', updated);
         return updated;
       });
-      
-      setIsStarLoading(true);
 
       // API 호출 (응답은 확인하지 않음)
       await bookmarkReview(postData.postId, accessToken);
@@ -368,8 +356,6 @@ const YouthTalkDetailPage: React.FC = () => {
       } else {
         alert('스크랩 처리 중 오류가 발생했습니다.');
       }
-    } finally {
-      setIsStarLoading(false);
     }
   };
 
@@ -1243,31 +1229,19 @@ const YouthTalkDetailPage: React.FC = () => {
 
               <div className="ytd-interactions">
                 <button 
-                  className={`ytd-interaction-btn ${isLiked ? 'active' : ''} ${isLikeLoading ? 'loading' : ''}`}
+                  className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
                   onClick={handleLike}
-                  disabled={isLikeLoading}
-                  style={{
-                    opacity: isLikeLoading ? 0.6 : 1,
-                    cursor: isLikeLoading ? 'not-allowed' : 'pointer'
-                  }}
                 >
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.likes}</span>
-                  {isLikeLoading && <span style={{ fontSize: '12px', color: '#999' }}>...</span>}
                 </button>
 
                 <button 
-                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''} ${isStarLoading ? 'loading' : ''}`}
+                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
                   onClick={handleStar}
-                  disabled={isStarLoading}
-                  style={{
-                    opacity: isStarLoading ? 0.6 : 1,
-                    cursor: isStarLoading ? 'not-allowed' : 'pointer'
-                  }}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.scrapCount}</span>
-                  {isStarLoading && <span style={{ fontSize: '12px', color: '#999' }}>...</span>}
                 </button>
 
                 <button 
