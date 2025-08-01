@@ -308,55 +308,55 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   const handleStar = async () => {
-  if (isStarLoading) return;
+    if (isStarLoading) return;
 
-  try {
-    const accessToken = localStorage.getItem('accessToken') || '';
-    if (!accessToken) {
-      alert('로그인이 필요합니다.');
-      return;
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const newStarredState = !isStarred;
+      const newScrapCount = isStarred
+        ? (postData?.scrapCount || 0) - 1
+        : (postData?.scrapCount || 0) + 1;
+
+      setIsStarred(newStarredState);
+      setPostData(prev => prev ? { ...prev, scrapCount: newScrapCount } : null);
+
+      // 🎯 모달 처리
+      if (!isStarred) {
+        setShowScrapModal(true); // 처음 스크랩
+      } else {
+        setShowScrapCancelModal(true); // 스크랩 취소
+      }
+
+      await bookmarkReview(postData.postId, accessToken);
+    } catch (error: any) {
+      console.error('스크랩 오류:', error);
+
+      // 에러 시 상태 복구
+      setIsStarred(isStarred);
+      setPostData(prev => prev
+        ? {
+            ...prev,
+            scrapCount: isStarred
+              ? (prev.scrapCount || 0) + 1
+              : (prev.scrapCount || 0) - 1
+          }
+        : null
+      );
+
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('스크랩 처리 중 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsStarLoading(false);
     }
-
-    const newStarredState = !isStarred;
-    const newScrapCount = isStarred
-      ? (postData?.scrapCount || 0) - 1
-      : (postData?.scrapCount || 0) + 1;
-
-    setIsStarred(newStarredState);
-    setPostData(prev => prev ? { ...prev, scrapCount: newScrapCount } : null);
-
-    // 🎯 모달 처리
-    if (!isStarred) {
-      setShowScrapModal(true); // 처음 스크랩
-    } else {
-      setShowScrapCancelModal(true); // 스크랩 취소
-    }
-
-    await bookmarkReview(postData.postId, accessToken);
-  } catch (error: any) {
-    console.error('스크랩 오류:', error);
-
-    // 에러 시 상태 복구
-    setIsStarred(isStarred);
-    setPostData(prev => prev
-      ? {
-          ...prev,
-          scrapCount: isStarred
-            ? (prev.scrapCount || 0) + 1
-            : (prev.scrapCount || 0) - 1
-        }
-      : null
-    );
-
-    if (error.response?.status === 401) {
-      alert('로그인이 필요합니다.');
-    } else {
-      alert('스크랩 처리 중 오류가 발생했습니다.');
-    }
-  } finally {
-    setIsStarLoading(false);
-  }
-};
+  };
 
 
   const handleRating = () => {
@@ -1581,16 +1581,65 @@ const handleDeleteConfirm = async () => {
       )}
       {/* 스크랩 취소 모달 */}
       {showScrapCancelModal && (
-        <div className="ytd-modal-overlay">
-          <div className="ytd-modal publish">
-            <div className="ytd-publish-header">
-              <span className="ytd-publish-title">스크랩이 취소되었습니다.</span>
-              <button className="ytd-publish-close" onClick={handleScrapCancelModalClose}>
-                <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+        <div className="ytd-modal-overlay"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+        }}
+        >
+          <div className="ytd-modal publish"
+          style={{
+          width: "320px",
+          backgroundColor: "#fff",
+          borderRadius: "16px",
+          padding: "24px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        }}
+          >
+            <div className="ytd-publish-header"
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span className="ytd-publish-title"
+              style={{ fontSize: "16px", fontWeight: "bold" }}
+              >
+                스크랩이 취소되었습니다.
+              </span>
+
+              <button className="ytd-publish-close" 
+              onClick={handleScrapCancelModalClose}
+              style={{ background: "none", border: "none", cursor: "pointer" }}
+              >
+                <img src={closeIcon} alt="닫기" style={{ width: 20, height: 20 }} />
               </button>
             </div>
-            <div className="ytd-publish-buttons">
-              <button className="ytd-publish-confirm-btn" onClick={handleScrapCancelModalClose}>
+            <div className="ytd-publish-buttons"
+              style={{
+                marginTop: "16px", // 여백 줄임
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+              >
+              <button 
+              className="ytd-publish-confirm-btn" 
+              onClick={handleScrapCancelModalClose}
+              style={{
+                padding: "8px 16px",
+                fontSize: "14px",
+                backgroundColor: "#0B0B61",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+              >
                 확인
               </button>
             </div>
