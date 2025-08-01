@@ -17,6 +17,7 @@ export interface UpdateReviewRequest {
   overnightFlag?: boolean;
   recruitmentCnt?: number;
   rating?: number; // 별점 필드 추가
+  updatedAt?: string; // 수정 시간 필드 추가
 }
 
 export interface UpdateReviewResponse {

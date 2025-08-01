@@ -30,9 +30,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isStarred, setIsStarred] = useState(false);
   const [isRated, setIsRated] = useState(false);
   
-  // 로딩 상태 추가
-  const [isLikeLoading, setIsLikeLoading] = useState(false);
-  const [isStarLoading, setIsStarLoading] = useState(false);
+
   
   // 현재 로그인한 사용자 정보
   const [currentUser, setCurrentUser] = useState("");
@@ -251,8 +249,6 @@ const YouthTalkDetailPage: React.FC = () => {
   }
 
   const handleLike = async () => {
-    if (isLikeLoading) return; // 이미 로딩 중이면 무시
-    
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
@@ -260,51 +256,60 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
-      // 낙관적 업데이트 - 즉시 UI 변경
-      setIsLiked(!isLiked);
-      setPostData(prev => prev ? {
-        ...prev,
-        likes: isLiked ? prev.likes - 1 : prev.likes + 1
-      } : null);
-      
-      setIsLikeLoading(true);
+      console.log('좋아요 버튼 클릭 - 현재 상태:', { isLiked, currentLikes: postData?.likes });
 
-      const response = await likeReview(postData.postId, accessToken);
+      // 낙관적 업데이트 - 즉시 UI 변경
+      const newLikedState = !isLiked;
+      const newLikeCount = isLiked ? (postData?.likes || 0) - 1 : (postData?.likes || 0) + 1;
       
-      // 성공 시 서버 응답으로 최종 상태 확인
-      console.log('좋아요 API 응답:', response);
+      console.log('낙관적 업데이트:', { newLikedState, newLikeCount });
       
-      // 서버 응답으로 최종 상태 설정
-      setIsLiked(response.liked);
-      setPostData(prev => prev ? {
-        ...prev,
-        likes: response.likeCount
-      } : null);
+      // 상태를 즉시 업데이트 (최종 UI 상태로 유지)
+      setIsLiked(newLikedState);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          likes: newLikeCount
+        };
+        console.log('postData 업데이트:', updated);
+        return updated;
+      });
+
+      // API 호출 (응답은 확인하지 않음)
+      await likeReview(postData.postId, accessToken);
+      
+      console.log('좋아요 API 호출 완료');
       
     } catch (error: any) {
       console.error('좋아요 오류:', error);
       
-      // 에러 시 UI 상태 되돌리기
+      // 에러 시에만 UI 상태 되돌리기
       setIsLiked(!isLiked);
-      setPostData(prev => prev ? {
-        ...prev,
-        likes: isLiked ? prev.likes + 1 : prev.likes - 1
-      } : null);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          likes: isLiked ? (prev.likes || 0) + 1 : (prev.likes || 0) - 1
+        };
+        console.log('에러 시 postData 되돌리기:', updated);
+        return updated;
+      });
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
       } else {
         alert('좋아요 처리 중 오류가 발생했습니다.');
       }
-    } finally {
-      setIsLikeLoading(false);
     }
   };
 
   const handleStar = async () => {
+
     if (isStarLoading) return; // 이미 로딩 중이면 무시
     let previousStarred = isStarred; // 이전 스크랩 상태 저장 (스크랩 여부)
     
+
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
@@ -312,7 +317,10 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
+      console.log('스크랩 버튼 클릭 - 현재 상태:', { isStarred, currentScrapCount: postData?.scrapCount });
+
       // 낙관적 업데이트 - 즉시 UI 변경
+
       setIsStarred(!previousStarred);
 
       setPostData(prev => prev ? {
@@ -341,6 +349,7 @@ const YouthTalkDetailPage: React.FC = () => {
         setShowScrapModal(true);       // ✅ 처음 스크랩 모달(스크랩 성공 모달)
       }
 
+
     } catch (error: any) {
       console.error('스크랩 오류:', error);
 
@@ -361,6 +370,7 @@ const YouthTalkDetailPage: React.FC = () => {
           console.error('스크랩 오류:', error);
           */
       
+
       // 에러 시 UI 상태 되돌리기
       setIsStarred(previousStarred);
       
@@ -368,14 +378,13 @@ const YouthTalkDetailPage: React.FC = () => {
         ...prev,
         scrapCount: previousStarred ? prev.scrapCount : prev.scrapCount - 1
       } : null);
+
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
       } else {
         alert('스크랩 처리 중 오류가 발생했습니다.');
       }
-    } finally {
-      setIsStarLoading(false);
     }
   };
 
@@ -1256,7 +1265,6 @@ const YouthTalkDetailPage: React.FC = () => {
                 <button 
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
                   onClick={handleLike}
-                  disabled={isLikeLoading}
                 >
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.likes}</span>
@@ -1265,7 +1273,6 @@ const YouthTalkDetailPage: React.FC = () => {
                 <button 
                   className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
                   onClick={handleStar}
-                  disabled={isStarLoading}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.scrapCount}</span>
