@@ -10,7 +10,7 @@ export interface ReviewItem {
   nickname: string;
   profileImageUrl?: string; // API 응답에 추가됨
   createdAt: string;
-  updateAt: string,
+  updateAt: string;
   scheduleDate?: string; // API 응답에 추가됨
   commentCount: number; // API 응답에 추가됨
   views: number;
