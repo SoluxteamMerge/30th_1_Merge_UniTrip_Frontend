@@ -133,6 +133,13 @@
         const regionCode = regionMap[region];
         const token = localStorage.getItem("accessToken");
 
+        //로그인 안 된 경우 먼저 검사해서 모달 띄우기
+        if (!token) {
+          setAlertMessage("로그인이 필요합니다.");
+          setShowAlert(true);
+          return;
+        }
+
         const regionParam = regionCode === "" ? null : regionCode;
 
         console.log("🌐 지역 선택됨:", region);            // ex) "전체보기", "경기"
