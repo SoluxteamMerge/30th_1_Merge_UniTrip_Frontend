@@ -368,6 +368,7 @@ const WriteReviewPage: React.FC = () => {
         
         console.log('수정 데이터:', updateData);
         console.log('수정 시간 (updatedAt):', updateData.updatedAt);
+        console.log('현재 시간:', new Date().toISOString());
 
         try {
           // 새로운 이미지 파일이 있는 경우 별도 처리
@@ -393,6 +394,8 @@ const WriteReviewPage: React.FC = () => {
           }
           
           console.log('수정 API 응답:', res);
+          console.log('수정 API 응답 상태:', res.status);
+          console.log('수정 API 응답 메시지:', res.message);
           if (res.status === 200) {
             // 별점은 이미 updateData에 포함되었으므로 별도 호출 제거
             alert(res.message);
