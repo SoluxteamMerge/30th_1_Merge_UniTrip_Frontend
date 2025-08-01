@@ -2,6 +2,7 @@
   import Header from "../components/Header/Header";
   import searchIcon from '../assets/search_icon.svg';
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
+  import "./SearchPage.css";  
   import { useNavigate } from "react-router-dom"; 
   //import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
   import { ReviewCard } from "./reviewcard/ReviewCard";
@@ -358,13 +359,7 @@
                       <li
                         key={idx}
                         onClick={() => handleKeywordClick(item.keyword)}
-                        style={{
-                          marginBottom: 6,
-                          fontSize: 16,
-                          color: "#000",
-                          fontWeight: 500,
-                          cursor: "pointer",
-                        }}
+                        className="popular-keyword-item"
                       >
                         {item.rank}. {item.keyword}
                       </li>
