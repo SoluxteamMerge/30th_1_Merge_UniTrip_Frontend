@@ -1581,7 +1581,7 @@ const handleDeleteConfirm = async () => {
       )}
       {/* 스크랩 취소 모달 */}
       {showScrapCancelModal && (
-        <div className="ytd-modal-overlay"
+        <div 
         style={{
           position: "fixed",
           top: 0,
@@ -1595,7 +1595,7 @@ const handleDeleteConfirm = async () => {
           zIndex: 1000,
         }}
         >
-          <div className="ytd-modal publish"
+          <div 
           style={{
           width: "320px",
           backgroundColor: "#fff",
@@ -1604,23 +1604,23 @@ const handleDeleteConfirm = async () => {
           boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
         }}
           >
-            <div className="ytd-publish-header"
+            <div 
             style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
-              <span className="ytd-publish-title"
+              <span 
               style={{ fontSize: "16px", fontWeight: "bold" }}
               >
                 스크랩이 취소되었습니다.
               </span>
 
-              <button className="ytd-publish-close" 
+              <button 
               onClick={handleScrapCancelModalClose}
               style={{ background: "none", border: "none", cursor: "pointer" }}
               >
                 <img src={closeIcon} alt="닫기" style={{ width: 20, height: 20 }} />
               </button>
             </div>
-            <div className="ytd-publish-buttons"
+            <div 
               style={{
                 marginTop: "16px", // 여백 줄임
                 display: "flex",
@@ -1628,7 +1628,7 @@ const handleDeleteConfirm = async () => {
               }}
               >
               <button 
-              className="ytd-publish-confirm-btn" 
+              
               onClick={handleScrapCancelModalClose}
               style={{
                 padding: "8px 16px",
