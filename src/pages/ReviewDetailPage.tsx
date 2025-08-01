@@ -347,8 +347,9 @@ const YouthTalkDetailPage: React.FC = () => {
 
        // ✅ 모달 분기
       if (previousStarred && !response.bookmarked) {
+
         setShowScrapCancelModal(true); // ❗스크랩 취소 모달
-      } else if (!previousStarred && response.bookmarked && currentUser !== postData.nickname) {
+      } else if (!previousStarred && response.bookmarked) {
         console.log("현재 유저:", currentUser);
         console.log("글 작성자:", postData.nickname);
         console.log("🔥 showScrapModal 모달 조건 진입!");
