@@ -1615,7 +1615,7 @@ const handleDeleteConfirm = async () => {
                 textAlign: "center"     
               }}
               > {/* 위/아래 여백 */}
-                <span style={{ fontSize: "16px", fontWeight: "bold" }}>
+                <span style={{ fontSize: "20px", fontWeight: "700px" }}>
                   스크랩이 취소되었습니다.
                 </span>
               </div>
@@ -1629,7 +1629,7 @@ const handleDeleteConfirm = async () => {
             </div>
             <div 
               style={{
-                marginTop: "14px", // 여백 줄임
+                padding: "30px 20px 30px 20px", // 여백 줄임
                 display: "flex",
                 justifyContent: "center",
               }}
