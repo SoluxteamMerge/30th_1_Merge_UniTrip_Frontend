@@ -275,36 +275,31 @@ const YouthTalkDetailPage: React.FC = () => {
         return updated;
       });
 
-      // API 호출을 백그라운드에서 실행 (비동기 처리)
-      likeReview(postData.postId, accessToken)
-        .then(() => {
-          console.log('좋아요 API 호출 완료');
-        })
-        .catch((error: any) => {
-          console.error('좋아요 API 오류:', error);
-          
-          // 에러 시에만 UI 상태 되돌리기
-          setIsLiked(!isLiked);
-          setPostData(prev => {
-            if (!prev) return null;
-            const updated = {
-              ...prev,
-              likes: isLiked ? (prev.likes || 0) + 1 : (prev.likes || 0) - 1
-            };
-            console.log('에러 시 postData 되돌리기:', updated);
-            return updated;
-          });
-          
-          if (error.response?.status === 401) {
-            alert('로그인이 필요합니다.');
-          } else {
-            alert('좋아요 처리 중 오류가 발생했습니다.');
-          }
-        });
+      // API 호출 (응답은 확인하지 않음)
+      await likeReview(postData.postId, accessToken);
+      
+      console.log('좋아요 API 호출 완료');
       
     } catch (error: any) {
-      console.error('좋아요 초기화 오류:', error);
-      alert('좋아요 처리 중 오류가 발생했습니다.');
+      console.error('좋아요 오류:', error);
+      
+      // 에러 시에만 UI 상태 되돌리기
+      setIsLiked(!isLiked);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          likes: isLiked ? (prev.likes || 0) + 1 : (prev.likes || 0) - 1
+        };
+        console.log('에러 시 postData 되돌리기:', updated);
+        return updated;
+      });
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('좋아요 처리 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -336,36 +331,31 @@ const YouthTalkDetailPage: React.FC = () => {
         return updated;
       });
 
-      // API 호출을 백그라운드에서 실행 (비동기 처리)
-      bookmarkReview(postData.postId, accessToken)
-        .then(() => {
-          console.log('스크랩 API 호출 완료');
-        })
-        .catch((error: any) => {
-          console.error('스크랩 API 오류:', error);
-          
-          // 에러 시에만 UI 상태 되돌리기
-          setIsStarred(!isStarred);
-          setPostData(prev => {
-            if (!prev) return null;
-            const updated = {
-              ...prev,
-              scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
-            };
-            console.log('에러 시 postData 되돌리기:', updated);
-            return updated;
-          });
-          
-          if (error.response?.status === 401) {
-            alert('로그인이 필요합니다.');
-          } else {
-            alert('스크랩 처리 중 오류가 발생했습니다.');
-          }
-        });
+      // API 호출 (응답은 확인하지 않음)
+      await bookmarkReview(postData.postId, accessToken);
+      
+      console.log('스크랩 API 호출 완료');
       
     } catch (error: any) {
-      console.error('스크랩 초기화 오류:', error);
-      alert('스크랩 처리 중 오류가 발생했습니다.');
+      console.error('스크랩 오류:', error);
+      
+      // 에러 시에만 UI 상태 되돌리기
+      setIsStarred(!isStarred);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
+        };
+        console.log('에러 시 postData 되돌리기:', updated);
+        return updated;
+      });
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('스크랩 처리 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -628,74 +618,36 @@ const handleDeleteConfirm = async () => {
         hasToken: !!accessToken
       });
 
-      // 현재 댓글 상태 저장
-      const currentComment = comments.find(c => c.id === commentId);
-      if (!currentComment) {
-        console.error('댓글을 찾을 수 없습니다:', commentId);
-        return;
+      const response = await likeComment(commentId, accessToken);
+      
+      if (response.code === 200) {
+        // API 응답으로 댓글 좋아요 상태 업데이트
+        setComments(comments.map(comment => 
+          comment.id === commentId 
+            ? { 
+                ...comment, 
+                isLiked: response.data.isLiked, 
+                likes: response.data.likeCount 
+              }
+            : comment
+        ));
+        
+        console.log('댓글 좋아요 성공:', response.message);
+      } else {
+        alert('댓글 좋아요 처리에 실패했습니다.');
       }
-
-      // 낙관적 업데이트 - 즉시 UI 변경
-      const newLikedState = !currentComment.isLiked;
-      const newLikesCount = currentComment.isLiked ? currentComment.likes - 1 : currentComment.likes + 1;
-      
-      setComments(comments.map(comment => 
-        comment.id === commentId 
-          ? { 
-              ...comment, 
-              isLiked: newLikedState, 
-              likes: newLikesCount 
-            }
-          : comment
-      ));
-
-      // API 호출을 백그라운드에서 실행
-      likeComment(commentId, accessToken)
-        .then((response) => {
-          if (response.code === 200) {
-            console.log('댓글 좋아요 성공:', response.message);
-          } else {
-            // API 응답이 실패한 경우 UI 되돌리기
-            setComments(comments.map(comment => 
-              comment.id === commentId 
-                ? { 
-                    ...comment, 
-                    isLiked: currentComment.isLiked, 
-                    likes: currentComment.likes 
-                  }
-                : comment
-            ));
-            alert('댓글 좋아요 처리에 실패했습니다.');
-          }
-        })
-        .catch((error: any) => {
-          console.error('댓글 좋아요 API 오류:', error);
-          
-          // 에러 시 UI 되돌리기
-          setComments(comments.map(comment => 
-            comment.id === commentId 
-              ? { 
-                  ...comment, 
-                  isLiked: currentComment.isLiked, 
-                  likes: currentComment.likes 
-                }
-              : comment
-          ));
-          
-          if (error.response?.status === 401) {
-            alert('로그인이 필요합니다.');
-          } else if (error.response?.status === 400) {
-            alert('요청 값이 올바르지 않습니다.');
-          } else if (error.response?.status === 404) {
-            alert('해당 댓글을 찾을 수 없습니다.');
-          } else {
-            alert('댓글 좋아요 처리 중 오류가 발생했습니다.');
-          }
-        });
-      
     } catch (error: any) {
-      console.error('댓글 좋아요 초기화 오류:', error);
-      alert('댓글 좋아요 처리 중 오류가 발생했습니다.');
+      console.error('댓글 좋아요 오류:', error);
+      
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else if (error.response?.status === 400) {
+        alert('요청 값이 올바르지 않습니다.');
+      } else if (error.response?.status === 404) {
+        alert('해당 댓글을 찾을 수 없습니다.');
+      } else {
+        alert('댓글 좋아요 처리 중 오류가 발생했습니다.');
+      }
     }
   };
 
