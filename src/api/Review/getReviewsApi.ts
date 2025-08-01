@@ -10,6 +10,7 @@ export interface ReviewItem {
   nickname: string;
   profileImageUrl?: string; // API 응답에 추가됨
   createdAt: string;
+  updateAt: string;
   scheduleDate?: string; // API 응답에 추가됨
   commentCount: number; // API 응답에 추가됨
   views: number;
@@ -127,6 +128,7 @@ export const transformReviewData = (apiReview: any): ReviewItem => {
   return {
     ...apiReview,
     // 필드명 매핑
+    updateAt: apiReview.updatedAt || apiReview.updateAt || null, // updatedAt을 updateAt으로 매핑
     scrapCount: apiReview.scraps || 0,
     isLiked: apiReview.liked || false,
     isScraped: apiReview.scraped || false,

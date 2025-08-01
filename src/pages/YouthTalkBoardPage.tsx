@@ -353,7 +353,7 @@ const YouthTalkBoardPage: React.FC = () => {
                       />
                       <span className="yt-username">{review.nickname}</span>
                       <div className="yt-info-divider" />
-                      <span className="yt-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                      <span className="yt-date">{new Date((review.updateAt && review.updateAt !== review.createdAt) ? review.updateAt : review.createdAt).toLocaleString('ko-KR', {
                         year: 'numeric',
                         month: '2-digit',
                         day: '2-digit',

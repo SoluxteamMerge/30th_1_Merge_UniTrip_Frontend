@@ -27,7 +27,9 @@ const YouthTalkDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLiked, setIsLiked] = useState(false);
+
   const [isStarred, setIsStarred] = useState(false);
+
   const [isRated, setIsRated] = useState(false);
   
   // 로딩 상태 추가
@@ -41,6 +43,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
   const [showUrlCopyModal, setShowUrlCopyModal] = useState(false);
   const [showScrapModal, setShowScrapModal] = useState(false);
+  const [showScrapCancelModal, setShowScrapCancelModal] = useState(false);//스크랩 두번 눌러 취소
 
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Array<{
@@ -250,63 +253,63 @@ const YouthTalkDetailPage: React.FC = () => {
   }
 
   const handleLike = async () => {
-    if (isLikeLoading) return; // 이미 로딩 중이면 무시
-    
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
         alert('로그인이 필요합니다.');
         return;
       }
+      console.log('좋아요 버튼 클릭 - 현재 상태:', { isLiked, currentLikes: postData?.likes });
 
       // 낙관적 업데이트 - 즉시 UI 변경
       const newLikedState = !isLiked;
       const newLikeCount = isLiked ? (postData?.likes || 0) - 1 : (postData?.likes || 0) + 1;
       
+      console.log('낙관적 업데이트:', { newLikedState, newLikeCount });
+      
+      // 상태를 즉시 업데이트 (최종 UI 상태로 유지)
       setIsLiked(newLikedState);
-      setPostData(prev => prev ? {
-        ...prev,
-        likes: newLikeCount
-      } : null);
-      
-      setIsLikeLoading(true);
-
-      const response = await likeReview(postData.postId, accessToken);
-      
-      console.log('좋아요 API 응답:', response);
-      
-      // 서버 응답과 낙관적 업데이트가 다르면 서버 응답으로 동기화
-      if (response.liked !== newLikedState || response.likeCount !== newLikeCount) {
-        setIsLiked(response.liked);
-        setPostData(prev => prev ? {
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
           ...prev,
-          likes: response.likeCount
-        } : null);
-      }
+          likes: newLikeCount
+        };
+        console.log('postData 업데이트:', updated);
+        return updated;
+      });
+
+      // API 호출 (응답은 확인하지 않음)
+      await likeReview(postData.postId, accessToken);
+      
+      console.log('좋아요 API 호출 완료');
       
     } catch (error: any) {
       console.error('좋아요 오류:', error);
       
-      // 에러 시 UI 상태 되돌리기
+      // 에러 시에만 UI 상태 되돌리기
       setIsLiked(!isLiked);
-      setPostData(prev => prev ? {
-        ...prev,
-        likes: isLiked ? (prev.likes || 0) + 1 : (prev.likes || 0) - 1
-      } : null);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          likes: isLiked ? (prev.likes || 0) + 1 : (prev.likes || 0) - 1
+        };
+        console.log('에러 시 postData 되돌리기:', updated);
+        return updated;
+      });
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
       } else {
         alert('좋아요 처리 중 오류가 발생했습니다.');
       }
-    } finally {
-      setIsLikeLoading(false);
     }
   };
 
   const handleStar = async () => {
-    if (isStarLoading) return; // 이미 로딩 중이면 무시
-    
+    if (isStarLoading) return;
+
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
@@ -314,45 +317,37 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
-      // 낙관적 업데이트 - 즉시 UI 변경
       const newStarredState = !isStarred;
-      const newScrapCount = isStarred ? (postData?.scrapCount || 0) - 1 : (postData?.scrapCount || 0) + 1;
-      
-      setIsStarred(newStarredState);
-      setPostData(prev => prev ? {
-        ...prev,
-        scrapCount: newScrapCount
-      } : null);
-      
-      setIsStarLoading(true);
+      const newScrapCount = isStarred
+        ? (postData?.scrapCount || 0) - 1
+        : (postData?.scrapCount || 0) + 1;
 
-      const response = await bookmarkReview(postData.postId, accessToken);
-      
-      console.log('스크랩 API 응답:', response);
-      
-      // 서버 응답과 낙관적 업데이트가 다르면 서버 응답으로 동기화
-      if (response.bookmarked !== newStarredState || response.bookmarkCount !== newScrapCount) {
-        setIsStarred(response.bookmarked);
-        setPostData(prev => prev ? {
-          ...prev,
-          scrapCount: response.bookmarkCount
-        } : null);
+      setIsStarred(newStarredState);
+      setPostData(prev => prev ? { ...prev, scrapCount: newScrapCount } : null);
+
+      // 🎯 모달 처리
+      if (!isStarred) {
+        setShowScrapModal(true); // 처음 스크랩
+      } else {
+        setShowScrapCancelModal(true); // 스크랩 취소
       }
-      
-      // 다른 사용자가 스크랩할 때 모달 표시
-      if (!response.bookmarked && currentUser !== postData.nickname) {
-        setShowScrapModal(true);
-      }
+
+      await bookmarkReview(postData.postId, accessToken);
     } catch (error: any) {
       console.error('스크랩 오류:', error);
-      
-      // 에러 시 UI 상태 되돌리기
-      setIsStarred(!isStarred);
-      setPostData(prev => prev ? {
-        ...prev,
-        scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
-      } : null);
-      
+
+      // 에러 시 상태 복구
+      setIsStarred(isStarred);
+      setPostData(prev => prev
+        ? {
+            ...prev,
+            scrapCount: isStarred
+              ? (prev.scrapCount || 0) + 1
+              : (prev.scrapCount || 0) - 1
+          }
+        : null
+      );
+
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
       } else {
@@ -362,6 +357,7 @@ const YouthTalkDetailPage: React.FC = () => {
       setIsStarLoading(false);
     }
   };
+
 
   const handleRating = () => {
     setIsRated(!isRated);
@@ -386,6 +382,11 @@ const YouthTalkDetailPage: React.FC = () => {
   // 스크랩 모달 닫기
   const handleScrapModalClose = () => {
     setShowScrapModal(false);
+  };
+
+  // 스크랩 두번 눌러 취소 시 모달 닫기
+  const handleScrapCancelModalClose = () => {
+    setShowScrapCancelModal(false);
   };
 
   // 스크랩 모달에서 글쓰기 페이지로 이동
@@ -478,38 +479,36 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   // 삭제 확인
-  const handleDeleteConfirm = async () => {
-    try {
-      const accessToken = localStorage.getItem('accessToken') || '';
-      const postId = parseInt(id || '0');
-      
-      if (!postId) {
-        alert('잘못된 게시글 ID입니다.');
-        return;
-      }
+const handleDeleteConfirm = async () => {
+  try {
+    const accessToken = localStorage.getItem('accessToken') || '';
+    const postId = parseInt(id || '0');
 
-      const response = await deleteReview(postId, accessToken);
-      
-      if (response.status === 200) {
-        setShowDeleteModal(false);
-        setShowDeleteSuccessModal(true);
-      } else {
-        alert('삭제에 실패했습니다.');
-      }
-    } catch (error: any) {
-      console.error('삭제 오류:', error);
-      
-      if (error.response?.status === 401) {
-        alert('로그인이 필요합니다.');
-      } else if (error.response?.status === 403) {
-        alert('삭제 권한이 없습니다.');
-      } else if (error.response?.status === 404) {
-        alert('게시글을 찾을 수 없습니다.');
-      } else {
-        alert('삭제 중 오류가 발생했습니다.');
-      }
+    if (!postId) {
+      alert('잘못된 게시글 ID입니다.');
+      return;
     }
-  };
+
+    // 백엔드는 성공 시 아무것도 반환하지 않으므로, 성공하면 에러 없이 넘어옴
+    await deleteReview(postId, accessToken);
+
+    setShowDeleteModal(false);
+    setShowDeleteSuccessModal(true);
+  } catch (error: any) {
+    console.error('삭제 오류:', error);
+
+    // AxiosError일 경우 error.response?.status 체크 가능
+    if (error.response?.status === 401) {
+      alert('로그인이 필요합니다.');
+    } else if (error.response?.status === 403) {
+      alert('삭제 권한이 없습니다.');
+    } else if (error.response?.status === 404) {
+      alert('게시글을 찾을 수 없습니다.');
+    } else {
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  }
+};
 
   // 삭제 취소
   const handleDeleteCancel = () => {
@@ -1233,21 +1232,31 @@ const YouthTalkDetailPage: React.FC = () => {
 
               <div className="ytd-interactions">
                 <button 
-                  className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
+                  className={`ytd-interaction-btn ${isLiked ? 'active' : ''} ${isLikeLoading ? 'loading' : ''}`}
                   onClick={handleLike}
                   disabled={isLikeLoading}
+                  style={{
+                    opacity: isLikeLoading ? 0.6 : 1,
+                    cursor: isLikeLoading ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.likes}</span>
+                  {isLikeLoading && <span style={{ fontSize: '12px', color: '#999' }}>...</span>}
                 </button>
 
                 <button 
-                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
+                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''} ${isStarLoading ? 'loading' : ''}`}
                   onClick={handleStar}
                   disabled={isStarLoading}
+                  style={{
+                    opacity: isStarLoading ? 0.6 : 1,
+                    cursor: isStarLoading ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.scrapCount}</span>
+                  {isStarLoading && <span style={{ fontSize: '12px', color: '#999' }}>...</span>}
                 </button>
 
                 <button 
@@ -1565,6 +1574,79 @@ const YouthTalkDetailPage: React.FC = () => {
               </button>
               <button className="ytd-publish-cancel-btn" onClick={handleScrapModalClose}>
                 아니요
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* 스크랩 취소 모달 */}
+      {showScrapCancelModal && (
+        <div 
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+        }}
+        >
+          <div 
+          style={{
+          width: "400px",
+          height: "150px", 
+          backgroundColor: "#fff",
+          borderRadius: "16px",
+          padding: "20px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        }}
+          >
+            <div 
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <div 
+              style={{ 
+                margin: "15px 0 8px 0", 
+                width: "100%",           
+                textAlign: "center"     
+              }}
+              > {/* 위/아래 여백 */}
+                <span style={{ fontSize: "20px", fontWeight: "700px" }}>
+                  스크랩이 취소되었습니다.
+                </span>
+              </div>
+
+              <button 
+              onClick={handleScrapCancelModalClose}
+              style={{ background: "none", border: "none", cursor: "pointer" }}
+              >
+                <img src={closeIcon} alt="닫기" style={{ width: 20, height: 20 }} />
+              </button>
+            </div>
+            <div 
+              style={{
+                padding: "30px 20px 30px 20px", // 여백 줄임
+                display: "flex",
+                justifyContent: "center",
+              }}
+              >
+              <button     
+              onClick={handleScrapCancelModalClose}
+              style={{
+                padding: "8px 16px",
+                fontSize: "14px",
+                backgroundColor: "#0B0B61",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+              >
+                확인
               </button>
             </div>
           </div>

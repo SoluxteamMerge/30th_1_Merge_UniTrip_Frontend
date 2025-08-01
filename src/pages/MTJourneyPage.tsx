@@ -228,7 +228,7 @@ const MTJourneyPage: React.FC = () => {
                         />
                         <span className="mt-username">{review.nickname} 님</span>
                         <div className="mt-info-divider" />
-                        <span className="mt-date">{new Date(review.createdAt).toLocaleString('ko-KR', {
+                        <span className="mt-date">{new Date((review.updateAt && review.updateAt !== review.createdAt) ? review.updateAt : review.createdAt).toLocaleString('ko-KR', {
                           year: 'numeric',
                           month: '2-digit',
                           day: '2-digit',
