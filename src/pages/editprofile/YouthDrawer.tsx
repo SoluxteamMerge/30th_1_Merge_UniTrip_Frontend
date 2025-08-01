@@ -66,7 +66,7 @@ function YouthDrawer() {
         try {
             console.log('회원탈퇴 응답: ', token);
             const res = await api.delete('/api/user/signout', {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token.trim()}` },
             });
             
             console.log('✅ 회원탈퇴 응답: ', res);
