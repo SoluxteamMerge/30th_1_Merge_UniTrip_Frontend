@@ -37,7 +37,7 @@ export const ReviewCardTwo = ({
 
   return (
     <div className="review-card">
-      <img src={imageUrl} alt="리뷰 이미지" className="card-img" />
+      <img src={finalImageUrl} alt="리뷰 이미지" className="card-img" />
 
       <div className="card-content">
         <div className="card-author-line">
