@@ -27,8 +27,10 @@ const YouthTalkDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLiked, setIsLiked] = useState(false);
+
   const [isStarred, setIsStarred] = useState(false);
-  const [isStarLoading, setIsStarLoading] = useState(false); 
+  const [isStarLoading, setIsStarLoading] = useState(false); //추가
+
   const [isRated, setIsRated] = useState(false);
   
 
@@ -309,12 +311,13 @@ const YouthTalkDetailPage: React.FC = () => {
 
     if (isStarLoading) return; // 이미 로딩 중이면 무시
     let previousStarred = isStarred; // 이전 스크랩 상태 저장 (스크랩 여부)
-    
+    setIsStarLoading(true);// 요청 시작 직후 세팅
 
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
         alert('로그인이 필요합니다.');
+        setIsStarLoading(false); // ❗조기 종료 시 로딩 해제 필요
         return;
       }
 
@@ -324,33 +327,32 @@ const YouthTalkDetailPage: React.FC = () => {
 
       setIsStarred(!previousStarred);
 
-      setPostData(prev => prev ? {
+      setPostData((prev) =>
+      prev ? {
         ...prev,
-        scrapCount: previousStarred ? prev.scrapCount - 1 : prev.scrapCount + 1
-      } : null);
-      
-      setIsStarLoading(true);
-
+        scrapCount: previousStarred
+          ? prev.scrapCount - 1
+          : prev.scrapCount + 1,
+        } : null
+    );
       const response = await bookmarkReview(postData.postId, accessToken);
-      // 성공 시 서버 응답으로 최종 상태 확인
-      console.log('스크랩 API 응답:', response);
-
+      console.log('스크랩 API 응답:', response); // 성공 시 서버 응답으로 최종 상태 확인
 
       // 최종 상태 반영
       setIsStarred(response.bookmarked);
-      setPostData(prev => prev ? {
+      setPostData((prev) => prev ? {
         ...prev,
         scrapCount: response.bookmarkCount
       } : null);
 
        // ✅ 모달 분기
-      if (!response.bookmarked) {
-        setShowScrapCancelModal(true); //스크랩 취소 모달
-      } else if (previousStarred === false && currentUser !== postData.nickname) {
-        setShowScrapModal(true);       // ✅ 처음 스크랩 모달(스크랩 성공 모달)
+      if (previousStarred && !response.bookmarked) {
+        // 이전에 스크랩돼 있었고 → 지금 취소된 상태라면
+        setShowScrapCancelModal(true); // ❗스크랩 취소 모달
+      } else if (!previousStarred && response.bookmarked && currentUser !== postData.nickname) {
+        // 처음 스크랩 눌렀을 때만 → 모달 표시
+        setShowScrapModal(true); // ✅ 처음 스크랩 모달
       }
-
-
     } catch (error: any) {
       console.error('스크랩 오류:', error);
 
@@ -375,7 +377,7 @@ const YouthTalkDetailPage: React.FC = () => {
       // 에러 시 UI 상태 되돌리기
       setIsStarred(previousStarred);
       
-      setPostData(prev => prev ? {
+      setPostData((prev) => prev ? {
         ...prev,
         scrapCount: previousStarred ? prev.scrapCount : prev.scrapCount - 1
       } : null);
@@ -386,6 +388,8 @@ const YouthTalkDetailPage: React.FC = () => {
       } else {
         alert('스크랩 처리 중 오류가 발생했습니다.');
       }
+    }finally {
+    setIsStarLoading(false); // 무조건 로딩 해제
     }
   };
 
