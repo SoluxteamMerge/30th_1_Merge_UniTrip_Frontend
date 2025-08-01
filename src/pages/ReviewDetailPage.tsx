@@ -1216,10 +1216,50 @@ const YouthTalkDetailPage: React.FC = () => {
             </div>
           </div>
 
+          {/* 장소정보가 있을 때 표시 (이미지 위에 배치) */}
+          {postData.placeName && (
+            <div style={{ 
+              marginTop: '40px',
+              marginLeft: '120px',
+              marginRight: '100px',
+              marginBottom: '40px',
+              textAlign: 'left'
+            }}>
+              <div style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center',
+                fontSize: '16px',
+                fontWeight: '600',
+                color: '#333'
+              }}>
+                <img 
+                  src={locationIcon} 
+                  alt="위치" 
+                  style={{ 
+                    width: '16px', 
+                    height: '16px', 
+                    marginRight: '8px',
+                    verticalAlign: 'middle'
+                  }} 
+                />
+                {postData.placeName}
+              </div>
+              {postData.address && (
+                <div style={{ 
+                  fontSize: '14px',
+                  color: '#666',
+                  marginTop: '4px'
+                }}>
+                  {postData.address}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* 게시글 이미지 */}
           {postData.imageUrl && (
             <div style={{ 
-              marginTop: '30px',
+              marginTop: '0px',
               marginLeft: '100px',
               marginRight: '100px'
             }}>
@@ -1230,7 +1270,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   width: '100%',
                   maxHeight: '600px',
                   objectFit: 'cover',
-                  borderRadius: '8px'
+                  borderRadius: '0px'
                 }}
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -1241,42 +1281,6 @@ const YouthTalkDetailPage: React.FC = () => {
 
           {/* 게시글 내용 */}
           <div className="ytd-post-content">
-            {/* 장소정보가 있을 때 표시 (내용 위에 배치) */}
-            {postData.placeName && (
-              <div style={{ 
-                marginBottom: '30px',
-                textAlign: 'right'
-              }}>
-                <div style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: '#333'
-                }}>
-                  <img 
-                    src={locationIcon} 
-                    alt="위치" 
-                    style={{ 
-                      width: '16px', 
-                      height: '16px', 
-                      marginRight: '8px',
-                      verticalAlign: 'middle'
-                    }} 
-                  />
-                  {postData.placeName}
-                </div>
-                {postData.address && (
-                  <div style={{ 
-                    fontSize: '14px',
-                    color: '#666',
-                    marginTop: '4px'
-                  }}>
-                    {postData.address}
-                  </div>
-                )}
-              </div>
-            )}
             
             <div className="ytd-content-text" dangerouslySetInnerHTML={{ __html: postData.content }}></div>
             
