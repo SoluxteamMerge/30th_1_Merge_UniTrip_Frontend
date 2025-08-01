@@ -144,7 +144,7 @@ function YouthDrawerEdit() {
 
     try {
         const res = await api.delete('/api/user/signout', {
-            headers: { Authorization: token },
+            headers: { Authorization: `Bearer ${token.trim()}` },
         });
 
         if (res.data.code === 200) {

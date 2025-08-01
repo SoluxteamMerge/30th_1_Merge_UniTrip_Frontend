@@ -19,6 +19,7 @@ import starWishFillIcon from "../assets/module/star_wish_fill.svg";
 import { postReview } from '../api/Review/writeReviewApi';
 import { updateReview } from '../api/Review/updateReviewApi';
 import { rateReview } from '../api/Review/ratingReviewApi';
+import api from '../api/api';
 
 const WriteReviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -327,7 +328,7 @@ const WriteReviewPage: React.FC = () => {
         // 수정 모드
         // 카테고리를 boardType으로 매핑 (백엔드 형식에 맞춤)
         const categoryToBoardType: Record<string, string> = {
-
+          "청춘톡": "청춘톡",
           "MT여정지도": "MT_LT",
           "함께해요-동행구해요": "동행모집",
           "함께해요-번개모임": "모임구인",
@@ -340,6 +341,13 @@ const WriteReviewPage: React.FC = () => {
         
         // categoryName에는 하나의 태그만 저장 (백엔드에서 하나만 허용)
         const categoryNameWithTag = tags.length > 0 ? tags[0] : selectedCategory;
+        
+        // 장소 정보 유효성 검사
+        if (selectedLocation && (!selectedLocation.name || !selectedLocation.address)) {
+          alert('장소 정보가 올바르지 않습니다. 장소를 다시 선택해주세요.');
+          return;
+        }
+        
         const updateData = {
           boardType: boardType,
           categoryName: categoryNameWithTag,
@@ -353,28 +361,65 @@ const WriteReviewPage: React.FC = () => {
           categoryGroupName: selectedLocation?.categoryGroupName || '',
           region: selectedLocation?.region || '',
           lat: selectedLocation?.lat || 0,
-          lng: selectedLocation?.lng || 0
+          lng: selectedLocation?.lng || 0,
+          rating: rating // 별점을 updateData에 포함
         };
         
+        console.log('수정 데이터:', updateData);
 
         try {
-          const res = await updateReview(editPostId, updateData, accessToken);
+          // 새로운 이미지 파일이 있는 경우 별도 처리
+          let res;
+          if (selectedImageFile) {
+            // 이미지 파일이 있는 경우 FormData로 전송
+            const formData = new FormData();
+            const boardRequest = new Blob([JSON.stringify(updateData)], {
+              type: 'application/json'
+            });
+            formData.append('boardRequest', boardRequest);
+            formData.append('images', selectedImageFile);
+            
+            const response = await api.patch(`/api/reviews/${editPostId}`, formData, {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            });
+            res = response.data;
+          } else {
+            // 이미지 파일이 없는 경우 기존 방식으로 전송
+            res = await updateReview(editPostId, updateData, accessToken);
+          }
+          
           console.log('수정 API 응답:', res);
           if (res.status === 200) {
-            // 게시글 수정 성공 후 별점 등록
-            if (rating > 0) {
-              try {
-                await rateReview(editPostId, rating, accessToken);
-                console.log('별점 등록 성공:', rating);
-              } catch (ratingError) {
-                console.error('별점 등록 실패:', ratingError);
-                // 별점 등록 실패해도 게시글 수정은 성공했으므로 계속 진행
-              }
-            }
-            
+            // 별점은 이미 updateData에 포함되었으므로 별도 호출 제거
             alert(res.message);
-            // 수정 완료 후 해당 게시글 상세 페이지로 이동
-            navigate(`/review-detail/${editPostId}`);
+            // 수정 완료 후 해당 게시판으로 이동
+            switch (selectedCategory) {
+              case "청춘톡":
+                navigate('/youth-talk');
+                break;
+              case "MT여정지도":
+                navigate('/mt-journey');
+                break;
+              case "함께해요-동행구해요":
+                navigate('/together?category=동행구해요');
+                break;
+              case "함께해요-번개모임":
+                navigate('/together?category=번개모임');
+                break;
+              case "함께해요-졸업/휴학여행":
+                navigate('/together?category=졸업/휴학여행');
+                break;
+              case "함께해요-국내학점교류":
+                navigate('/together?category=국내학점교류');
+                break;
+              case "함께해요-해외교환학생":
+                navigate('/together?category=해외교환학생');
+                break;
+              default:
+                navigate('/youth-talk');
+            }
           } else {
             alert('리뷰 수정에 실패했습니다.');
           }
@@ -385,6 +430,8 @@ const WriteReviewPage: React.FC = () => {
           
           if (error.response?.status === 400) {
             alert(`수정 실패: ${error.response.data.message}`);
+          } else if (error.response?.status === 500) {
+            alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
           } else {
             alert('리뷰 수정 중 오류가 발생했습니다.');
           }
@@ -406,6 +453,13 @@ const WriteReviewPage: React.FC = () => {
         
         // categoryName에는 하나의 태그만 저장 (백엔드에서 하나만 허용)
         const categoryNameWithTag = tags.length > 0 ? tags[0] : selectedCategory;
+        
+        // 장소 정보 유효성 검사
+        if (selectedLocation && (!selectedLocation.name || !selectedLocation.address)) {
+          alert('장소 정보가 올바르지 않습니다. 장소를 다시 선택해주세요.');
+          return;
+        }
+        
         const reviewData = {
           boardType: boardType,
           categoryName: categoryNameWithTag,
@@ -418,7 +472,8 @@ const WriteReviewPage: React.FC = () => {
           categoryGroupName: selectedLocation?.categoryGroupName || '',
           region: selectedLocation?.region || '',
           lat: selectedLocation?.lat || 0,
-          lng: selectedLocation?.lng || 0
+          lng: selectedLocation?.lng || 0,
+          rating: rating // 별점을 reviewData에 포함
         };
 
         const images: File[] = [];
@@ -427,20 +482,34 @@ const WriteReviewPage: React.FC = () => {
         }
         const res = await postReview(reviewData, images, accessToken);
         if (res.status === 200) {
-          // 게시글 작성 성공 후 별점 등록
-          if (rating > 0) {
-            try {
-              await rateReview(res.postId, rating, accessToken);
-              console.log('별점 등록 성공:', rating);
-            } catch (ratingError) {
-              console.error('별점 등록 실패:', ratingError);
-              // 별점 등록 실패해도 게시글 작성은 성공했으므로 계속 진행
-            }
-          }
-          
+          // 별점은 이미 reviewData에 포함되었으므로 별도 호출 제거
           alert(res.message);
-          // 성공 시 새로 작성된 게시글 상세 페이지로 이동
-          navigate(`/review-detail/${res.postId}`);
+          // 성공 시 해당 게시판으로 이동
+          switch (selectedCategory) {
+            case "청춘톡":
+              navigate('/youth-talk');
+              break;
+            case "MT여정지도":
+              navigate('/mt-journey');
+              break;
+            case "함께해요-동행구해요":
+              navigate('/together?category=동행구해요');
+              break;
+            case "함께해요-번개모임":
+              navigate('/together?category=번개모임');
+              break;
+            case "함께해요-졸업/휴학여행":
+              navigate('/together?category=졸업/휴학여행');
+              break;
+            case "함께해요-국내학점교류":
+              navigate('/together?category=국내학점교류');
+              break;
+            case "함께해요-해외교환학생":
+              navigate('/together?category=해외교환학생');
+              break;
+            default:
+              navigate('/youth-talk');
+          }
       } else {
         alert('게시글 등록에 실패했습니다.');
         }

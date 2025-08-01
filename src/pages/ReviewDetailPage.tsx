@@ -30,6 +30,10 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isStarred, setIsStarred] = useState(false);
   const [isRated, setIsRated] = useState(false);
   
+  // 로딩 상태 추가
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [isStarLoading, setIsStarLoading] = useState(false);
+  
   // 현재 로그인한 사용자 정보
   const [currentUser, setCurrentUser] = useState("");
   const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -246,6 +250,8 @@ const YouthTalkDetailPage: React.FC = () => {
   }
 
   const handleLike = async () => {
+    if (isLikeLoading) return; // 이미 로딩 중이면 무시
+    
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
@@ -253,9 +259,21 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
+      // 낙관적 업데이트 - 즉시 UI 변경
+      setIsLiked(!isLiked);
+      setPostData(prev => prev ? {
+        ...prev,
+        likes: isLiked ? prev.likes - 1 : prev.likes + 1
+      } : null);
+      
+      setIsLikeLoading(true);
+
       const response = await likeReview(postData.postId, accessToken);
       
-      // 좋아요 상태와 개수 업데이트
+      // 성공 시 서버 응답으로 최종 상태 확인
+      console.log('좋아요 API 응답:', response);
+      
+      // 서버 응답으로 최종 상태 설정
       setIsLiked(response.liked);
       setPostData(prev => prev ? {
         ...prev,
@@ -265,15 +283,26 @@ const YouthTalkDetailPage: React.FC = () => {
     } catch (error: any) {
       console.error('좋아요 오류:', error);
       
+      // 에러 시 UI 상태 되돌리기
+      setIsLiked(!isLiked);
+      setPostData(prev => prev ? {
+        ...prev,
+        likes: isLiked ? prev.likes + 1 : prev.likes - 1
+      } : null);
+      
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
       } else {
         alert('좋아요 처리 중 오류가 발생했습니다.');
       }
+    } finally {
+      setIsLikeLoading(false);
     }
   };
 
   const handleStar = async () => {
+    if (isStarLoading) return; // 이미 로딩 중이면 무시
+    
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
@@ -281,15 +310,27 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
-      const response = await bookmarkReview(postData.postId, accessToken);
-      setIsStarred(response.bookmarked);
-      
-      // 북마크 개수 업데이트
+      // 낙관적 업데이트 - 즉시 UI 변경
+      setIsStarred(!isStarred);
       setPostData(prev => prev ? {
         ...prev,
-        bookmarkCount: response.bookmarkCount
+        scrapCount: isStarred ? prev.scrapCount - 1 : prev.scrapCount + 1
       } : null);
+      
+      setIsStarLoading(true);
 
+      const response = await bookmarkReview(postData.postId, accessToken);
+      
+      // 성공 시 서버 응답으로 최종 상태 확인
+      console.log('스크랩 API 응답:', response);
+      
+      // 서버 응답으로 최종 상태 설정
+      setIsStarred(response.bookmarked);
+      setPostData(prev => prev ? {
+        ...prev,
+        scrapCount: response.bookmarkCount
+      } : null);
+      
       // 다른 사용자가 스크랩할 때 모달 표시
       if (!response.bookmarked && currentUser !== postData.nickname) {
         setShowScrapModal(true);
@@ -297,11 +338,20 @@ const YouthTalkDetailPage: React.FC = () => {
     } catch (error: any) {
       console.error('스크랩 오류:', error);
       
+      // 에러 시 UI 상태 되돌리기
+      setIsStarred(!isStarred);
+      setPostData(prev => prev ? {
+        ...prev,
+        scrapCount: isStarred ? prev.scrapCount + 1 : prev.scrapCount - 1
+      } : null);
+      
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
       } else {
         alert('스크랩 처리 중 오류가 발생했습니다.');
       }
+    } finally {
+      setIsStarLoading(false);
     }
   };
 
@@ -805,6 +855,10 @@ const YouthTalkDetailPage: React.FC = () => {
         .ytd-interaction-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; color: #333; font-size: 20px; font-weight: 700; padding: 8px; transition: all 0.2s; font-family: inherit; }
         .ytd-interaction-btn.active { color: #0b0b61; }
         .ytd-interaction-btn.active .ytd-interaction-count { color: #0b0b61; }
+        .ytd-interaction-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
         .ytd-more-btn { 
           background: none; 
           border: none; 
@@ -1173,6 +1227,7 @@ const YouthTalkDetailPage: React.FC = () => {
                 <button 
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
                   onClick={handleLike}
+                  disabled={isLikeLoading}
                 >
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.likes}</span>
@@ -1181,6 +1236,7 @@ const YouthTalkDetailPage: React.FC = () => {
                 <button 
                   className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
                   onClick={handleStar}
+                  disabled={isStarLoading}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.scrapCount}</span>
@@ -1226,12 +1282,53 @@ const YouthTalkDetailPage: React.FC = () => {
             </div>
           </div>
 
+          {/* 장소정보가 있을 때 표시 (이미지 위에 배치) */}
+          {postData.placeName && (
+            <div style={{ 
+              marginTop: '40px',
+              marginLeft: '100px',
+              marginRight: '100px',
+              marginBottom: '20px',
+              textAlign: 'left'
+            }}>
+              <div style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center',
+                fontSize: '16px',
+                fontWeight: '600',
+                color: '#333'
+              }}>
+                <img 
+                  src={locationIcon} 
+                  alt="위치" 
+                  style={{ 
+                    width: '16px', 
+                    height: '16px', 
+                    marginRight: '8px',
+                    verticalAlign: 'middle'
+                  }} 
+                />
+                {postData.placeName}
+              </div>
+              {postData.address && (
+                <div style={{ 
+                  fontSize: '14px',
+                  color: '#666',
+                  marginTop: '4px'
+                }}>
+                  {postData.address}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* 게시글 이미지 */}
           {postData.imageUrl && (
             <div style={{ 
-              marginTop: '30px',
+              marginTop: '0px',
               marginLeft: '100px',
-              marginRight: '100px'
+              marginRight: '100px',
+              marginBottom: '40px'
             }}>
               <img 
                 src={postData.imageUrl} 
@@ -1240,7 +1337,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   width: '100%',
                   maxHeight: '600px',
                   objectFit: 'cover',
-                  borderRadius: '8px'
+                  borderRadius: '0px'
                 }}
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -1251,44 +1348,6 @@ const YouthTalkDetailPage: React.FC = () => {
 
           {/* 게시글 내용 */}
           <div className="ytd-post-content">
-            {/* 장소정보가 있을 때 표시 (내용 위에 배치) */}
-            {postData.placeName && (
-              <div style={{ 
-                marginBottom: '30px',
-                textAlign: 'right'
-              }}>
-                <div style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: '#333'
-                }}>
-                  <img 
-                    src={locationIcon} 
-                    alt="위치" 
-                    style={{ 
-                      width: '16px', 
-                      height: '16px', 
-                      marginRight: '8px',
-                      verticalAlign: 'middle'
-                    }} 
-                  />
-                  {postData.placeName}
-                </div>
-
-                {postData.address && (
-                  <div style={{ 
-                    fontSize: '14px',
-                    color: '#666',
-                    marginTop: '4px'
-                  }}>
-                    {postData.address}
-                  </div>
-                )}
-
-              </div>
-            )}
             
             <div className="ytd-content-text" dangerouslySetInnerHTML={{ __html: postData.content }}></div>
             
