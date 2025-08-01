@@ -5,6 +5,7 @@ export interface ReviewRequest {
   categoryName: string;
   title: string;
   content: string; // HTML 문자열
+  scheduleDate?: string; // 일정 필드 추가
   placeName: string;
   address: string;
   kakaoId: string;
@@ -14,6 +15,7 @@ export interface ReviewRequest {
   lng: number;
   overnightFlag?: boolean;
   recruitmentCnt?: number;
+  rating?: number; // 별점 필드 추가
 }
 
 export interface ReviewResponse {
