@@ -347,10 +347,11 @@ const YouthTalkDetailPage: React.FC = () => {
 
        // ✅ 모달 분기
       if (previousStarred && !response.bookmarked) {
-        // 이전에 스크랩돼 있었고 → 지금 취소된 상태라면
         setShowScrapCancelModal(true); // ❗스크랩 취소 모달
       } else if (!previousStarred && response.bookmarked && currentUser !== postData.nickname) {
-        // 처음 스크랩 눌렀을 때만 → 모달 표시
+        console.log("현재 유저:", currentUser);
+        console.log("글 작성자:", postData.nickname);
+        console.log("🔥 showScrapModal 모달 조건 진입!");
         setShowScrapModal(true); // ✅ 처음 스크랩 모달
       }
     } catch (error: any) {
