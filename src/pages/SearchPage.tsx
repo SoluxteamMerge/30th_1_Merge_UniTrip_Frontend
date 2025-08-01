@@ -4,8 +4,8 @@
   import "./mainpage/MainPage.css"; // 기존 메인페이지 CSS 재사용
   import "./SearchPage.css";  
   import { useNavigate } from "react-router-dom"; 
-  //import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
-  import { ReviewCard } from "./reviewcard/ReviewCard";
+  import { ReviewCardTwo } from "../pages/reviewcard/ReviewCardTwo";
+  //import { ReviewCard } from "./reviewcard/ReviewCard";
 
   import AlertModal from "../components/AlertModal/AlertModal.tsx";
   import "../components/AlertModal/AlertModal.css";
@@ -407,7 +407,7 @@
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCard
+                      <ReviewCardTwo
                         postId={review.postId}
                         postTitle={review.postTitle}
                         categoryName={review.categoryName}
@@ -473,7 +473,7 @@
                   itemsPerPage={6}
                   renderItem={(review) => (
                     <div key={review.postId} onClick={() => navigate(`/youth-talk/${review.postId}`)}>
-                      <ReviewCard
+                      <ReviewCardTwo
                         postId={review.postId}
                         postTitle={review.postTitle}
                         categoryName={review.categoryName}
