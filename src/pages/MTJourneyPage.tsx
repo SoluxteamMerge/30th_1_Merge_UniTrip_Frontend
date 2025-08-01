@@ -228,13 +228,22 @@ const MTJourneyPage: React.FC = () => {
                         />
                         <span className="mt-username">{review.nickname} 님</span>
                         <div className="mt-info-divider" />
-                        <span className="mt-date">{new Date((review.updateAt && review.updateAt !== review.createdAt) ? review.updateAt : review.createdAt).toLocaleString('ko-KR', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}</span>
+                        <span className="mt-date">{(() => {
+                          console.log('review.updateAt:', review.updateAt);
+                          console.log('review.createdAt:', review.createdAt);
+                          console.log('updateAt !== createdAt:', review.updateAt !== review.createdAt);
+                          
+                          const dateToShow = (review.updateAt && review.updateAt !== review.createdAt) ? review.updateAt : review.createdAt;
+                          console.log('최종 선택된 날짜:', dateToShow);
+                          
+                          return new Date(dateToShow).toLocaleString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          });
+                        })()}</span>
                         </div>
                         <div className="mt-rating-container">
                           {renderStars(review.rating)}
