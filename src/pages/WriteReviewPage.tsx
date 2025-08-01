@@ -362,7 +362,8 @@ const WriteReviewPage: React.FC = () => {
           region: selectedLocation?.region || '',
           lat: selectedLocation?.lat || 0,
           lng: selectedLocation?.lng || 0,
-          rating: rating // 별점을 updateData에 포함
+          rating: rating, // 별점을 updateData에 포함
+          updatedAt: new Date().toISOString() // 수정 시간 추가
         };
         
         console.log('수정 데이터:', updateData);
