@@ -39,6 +39,7 @@ const YouthTalkDetailPage: React.FC = () => {
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
   const [showUrlCopyModal, setShowUrlCopyModal] = useState(false);
   const [showScrapModal, setShowScrapModal] = useState(false);
+  const [showScrapCancelModal, setShowScrapCancelModal] = useState(false);//스크랩 두번 눌러 취소
 
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Array<{
@@ -304,6 +305,11 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   const handleStar = async () => {
+
+    if (isStarLoading) return; // 이미 로딩 중이면 무시
+    let previousStarred = isStarred; // 이전 스크랩 상태 저장 (스크랩 여부)
+    
+
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
@@ -314,42 +320,65 @@ const YouthTalkDetailPage: React.FC = () => {
       console.log('스크랩 버튼 클릭 - 현재 상태:', { isStarred, currentScrapCount: postData?.scrapCount });
 
       // 낙관적 업데이트 - 즉시 UI 변경
-      const newStarredState = !isStarred;
-      const newScrapCount = isStarred ? (postData?.scrapCount || 0) - 1 : (postData?.scrapCount || 0) + 1;
-      
-      console.log('낙관적 업데이트:', { newStarredState, newScrapCount });
-      
-      // 상태를 즉시 업데이트 (최종 UI 상태로 유지)
-      setIsStarred(newStarredState);
-      setPostData(prev => {
-        if (!prev) return null;
-        const updated = {
-          ...prev,
-          scrapCount: newScrapCount
-        };
-        console.log('postData 업데이트:', updated);
-        return updated;
-      });
 
-      // API 호출 (응답은 확인하지 않음)
-      await bookmarkReview(postData.postId, accessToken);
+      setIsStarred(!previousStarred);
+
+      setPostData(prev => prev ? {
+        ...prev,
+        scrapCount: previousStarred ? prev.scrapCount - 1 : prev.scrapCount + 1
+      } : null);
       
-      console.log('스크랩 API 호출 완료');
-      
+      setIsStarLoading(true);
+
+      const response = await bookmarkReview(postData.postId, accessToken);
+      // 성공 시 서버 응답으로 최종 상태 확인
+      console.log('스크랩 API 응답:', response);
+
+
+      // 최종 상태 반영
+      setIsStarred(response.bookmarked);
+      setPostData(prev => prev ? {
+        ...prev,
+        scrapCount: response.bookmarkCount
+      } : null);
+
+       // ✅ 모달 분기
+      if (!response.bookmarked) {
+        setShowScrapCancelModal(true); //스크랩 취소 모달
+      } else if (previousStarred === false && currentUser !== postData.nickname) {
+        setShowScrapModal(true);       // ✅ 처음 스크랩 모달(스크랩 성공 모달)
+      }
+
+
     } catch (error: any) {
       console.error('스크랩 오류:', error);
+
+
+          /*
+          // 서버 응답으로 최종 상태 설정
+          setIsStarred(response.bookmarked);
+          setPostData(prev => prev ? {
+            ...prev,
+            scrapCount: response.bookmarkCount
+          } : null);
+          
+          // 다른 사용자가 스크랩할 때 모달 표시
+          if (!response.bookmarked && currentUser !== postData.nickname) {
+            setShowScrapModal(true);
+          }
+        } catch (error: any) {
+          console.error('스크랩 오류:', error);
+          */
       
-      // 에러 시에만 UI 상태 되돌리기
-      setIsStarred(!isStarred);
-      setPostData(prev => {
-        if (!prev) return null;
-        const updated = {
-          ...prev,
-          scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
-        };
-        console.log('에러 시 postData 되돌리기:', updated);
-        return updated;
-      });
+
+      // 에러 시 UI 상태 되돌리기
+      setIsStarred(previousStarred);
+      
+      setPostData(prev => prev ? {
+        ...prev,
+        scrapCount: previousStarred ? prev.scrapCount : prev.scrapCount - 1
+      } : null);
+
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
@@ -382,6 +411,11 @@ const YouthTalkDetailPage: React.FC = () => {
   // 스크랩 모달 닫기
   const handleScrapModalClose = () => {
     setShowScrapModal(false);
+  };
+
+  // 스크랩 두번 눌러 취소 시 모달 닫기
+  const handleScrapCancelModalClose = () => {
+    setShowScrapCancelModal(false);
   };
 
   // 스크랩 모달에서 글쓰기 페이지로 이동
@@ -1559,6 +1593,24 @@ const YouthTalkDetailPage: React.FC = () => {
               </button>
               <button className="ytd-publish-cancel-btn" onClick={handleScrapModalClose}>
                 아니요
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showScrapCancelModal && (
+        <div className="ytd-modal-overlay">
+          <div className="ytd-modal publish">
+            <div className="ytd-publish-header">
+              <span className="ytd-publish-title">스크랩이 취소되었습니다.</span>
+              <button className="ytd-publish-close" onClick={handleScrapCancelModalClose}>
+                <img src={closeIcon} alt="닫기" style={{ width: 25, height: 25 }} />
+              </button>
+            </div>
+            <div className="ytd-publish-buttons">
+              <button className="ytd-publish-confirm-btn" onClick={handleScrapCancelModalClose}>
+                확인
               </button>
             </div>
           </div>
