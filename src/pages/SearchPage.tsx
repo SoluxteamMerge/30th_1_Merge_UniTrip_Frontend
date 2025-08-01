@@ -130,6 +130,11 @@
       const handleRegionChange = async (region: string) => {
         setSelectedRegion(region);
 
+        // 기존 검색어 결과 제거
+        setIsSearchActive(false);
+        setSearchResults([]);
+        setSearchQuery(""); // 선택 (검색창 입력값도 비우고 싶을 경우)
+
         const regionCode = regionMap[region];
         const token = localStorage.getItem("accessToken");
 
@@ -152,8 +157,7 @@
             console.log("📦 전체보기 응답 데이터:", response);
 
             setRegionReviews(response.data);
-            //setIsRegionFiltered(regionCode !== "");
-            setIsRegionFiltered(true);
+            setIsRegionFiltered(true); // 지역 결과만 true
           } catch (error) {
             console.error("Error fetching region posts:", error);
           }
@@ -180,6 +184,7 @@
             return;
           }
           try {
+            // ✅ 지역 결과 제거
             setIsRegionFiltered(false);
             setRegionReviews([]);
 
@@ -194,7 +199,7 @@
               setSearchResults([]);
             }
 
-            setIsSearchActive(true);
+            setIsSearchActive(true); // 검색 결과만 true
           } catch (error: any) {
             console.error("검색 오류:", error);
             alert(error?.response?.data?.message || "검색에 실패했습니다.");
