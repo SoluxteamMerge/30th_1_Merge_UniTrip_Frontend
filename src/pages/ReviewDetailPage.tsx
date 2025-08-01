@@ -308,79 +308,65 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   const handleStar = async () => {
-  if (isStarLoading) return; // 이미 로딩 중이면 무시
+    if (isStarLoading) return; // 이미 로딩 중이면 무시
 
-  let previousStarred = isStarred; // 이전 스크랩 상태 저장
-  setIsStarLoading(true); // 요청 시작 직후 세팅
+    try {
+      const accessToken = localStorage.getItem('accessToken') || '';
+      if (!accessToken) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+      console.log('스크랩 버튼 클릭 - 현재 상태:', { isStarred, currentScrapCount: postData?.scrapCount });
 
-  try {
-    const accessToken = localStorage.getItem('accessToken') || '';
-    if (!accessToken) {
-      alert('로그인이 필요합니다.');
+      // 낙관적 업데이트 - 즉시 UI 변경
+      const newStarredState = !isStarred;
+      const newScrapCount = isStarred ? (postData?.scrapCount || 0) - 1 : (postData?.scrapCount || 0) + 1;
+
+      console.log('낙관적 업데이트:', { newStarredState, newScrapCount });
+
+      // 상태를 즉시 업데이트 (최종 UI 상태로 유지)
+      setIsStarred(newStarredState);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          scrapCount: newScrapCount
+        };
+        console.log('postData 업데이트:', updated);
+        return updated;
+      });
+
+      //setIsStarLoading(true);//주석 처리
+
+      // API 호출 (응답은 확인하지 않음)
+      await bookmarkReview(postData.postId, accessToken);
+
+      console.log('스크랩 API 호출 완료');
+
+    } catch (error: any) {
+      console.error('스크랩 오류:', error);
+
+      // 에러 시에만 UI 상태 되돌리기
+      setIsStarred(!isStarred);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
+        };
+        console.log('에러 시 postData 되돌리기:', updated);
+        return updated;
+      });
+
+      if (error.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('스크랩 처리 중 오류가 발생했습니다.');
+      }
+    } finally {
       setIsStarLoading(false);
-      return;
     }
-
-    console.log('스크랩 버튼 클릭 - 현재 상태:', {
-      isStarred,
-      currentScrapCount: postData?.scrapCount
-    });
-
-    // 낙관적 업데이트 - 즉시 UI 변경
-    const newStarredState = !previousStarred;
-    const newScrapCount = previousStarred
-      ? (postData?.scrapCount || 0) - 1
-      : (postData?.scrapCount || 0) + 1;
-
-    setIsStarred(newStarredState);
-    setPostData((prev) =>
-      prev ? { ...prev, scrapCount: newScrapCount } : null
-    );
-
-    // 서버에 요청
-    const response = await bookmarkReview(postData.postId, accessToken);
-    console.log('스크랩 API 호출 완료:', response);
-
-    // 서버 응답에 따라 최종 UI 상태 반영
-    setIsStarred(response.bookmarked);
-    setPostData((prev) =>
-      prev ? { ...prev, scrapCount: response.bookmarkCount } : null
-    );
-
-    // ✅ 모달 조건 분기 (기존 로직에 추가된 부분)
-    if (!previousStarred && response.bookmarked && currentUser !== postData.nickname) {
-      console.log("✅ 처음 스크랩, 모달 띄움!");
-      setShowScrapModal(true);
-    } else if (previousStarred && !response.bookmarked) {
-      console.log("✅ 스크랩 취소, 모달 띄움!");
-      setShowScrapCancelModal(true);
-    }
-
-  } catch (error: any) {
-    console.error('스크랩 오류:', error);
-
-    // 에러 시 상태 복구
-    setIsStarred(previousStarred);
-    setPostData((prev) =>
-      prev
-        ? {
-            ...prev,
-            scrapCount: previousStarred
-              ? (prev.scrapCount || 0)
-              : (prev.scrapCount || 0) - 1
-          }
-        : null
-    );
-
-    if (error.response?.status === 401) {
-      alert('로그인이 필요합니다.');
-    } else {
-      alert('스크랩 처리 중 오류가 발생했습니다.');
-    }
-  } finally {
-    setIsStarLoading(false); // 무조건 로딩 해제
-  }
-};
+  };
 
   const handleRating = () => {
     setIsRated(!isRated);
