@@ -308,90 +308,68 @@ const YouthTalkDetailPage: React.FC = () => {
   };
 
   const handleStar = async () => {
-
     if (isStarLoading) return; // 이미 로딩 중이면 무시
-    let previousStarred = isStarred; // 이전 스크랩 상태 저장 (스크랩 여부)
-    setIsStarLoading(true);// 요청 시작 직후 세팅
 
     try {
       const accessToken = localStorage.getItem('accessToken') || '';
       if (!accessToken) {
         alert('로그인이 필요합니다.');
-        setIsStarLoading(false); // ❗조기 종료 시 로딩 해제 필요
         return;
       }
 
       console.log('스크랩 버튼 클릭 - 현재 상태:', { isStarred, currentScrapCount: postData?.scrapCount });
 
       // 낙관적 업데이트 - 즉시 UI 변경
+      const newStarredState = !isStarred;
+      const newScrapCount = isStarred ? (postData?.scrapCount || 0) - 1 : (postData?.scrapCount || 0) + 1;
 
-      setIsStarred(!previousStarred);
+      console.log('낙관적 업데이트:', { newStarredState, newScrapCount });
 
-      setPostData((prev) =>
-      prev ? {
-        ...prev,
-        scrapCount: previousStarred
-          ? prev.scrapCount - 1
-          : prev.scrapCount + 1,
-        } : null
-    );
-      const response = await bookmarkReview(postData.postId, accessToken);
-      console.log('스크랩 API 응답:', response); // 성공 시 서버 응답으로 최종 상태 확인
 
-      // 최종 상태 반영
-      setIsStarred(response.bookmarked);
-      setPostData((prev) => prev ? {
-        ...prev,
-        scrapCount: response.bookmarkCount
-      } : null);
 
-       // ✅ 모달 분기
-      if (previousStarred && !response.bookmarked) {
 
-        setShowScrapCancelModal(true); // ❗스크랩 취소 모달
-      } else if (!previousStarred && response.bookmarked) {
-        console.log("현재 유저:", currentUser);
-        console.log("글 작성자:", postData.nickname);
-        console.log("🔥 showScrapModal 모달 조건 진입!");
-        setShowScrapModal(true); // ✅ 처음 스크랩 모달
-      }
+
+      // 상태를 즉시 업데이트 (최종 UI 상태로 유지)
+      setIsStarred(newStarredState);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          scrapCount: newScrapCount
+        };
+        console.log('postData 업데이트:', updated);
+        return updated;
+      });
+
+      setIsStarLoading(true);
+
+      // API 호출 (응답은 확인하지 않음)
+      await bookmarkReview(postData.postId, accessToken);
+
+      console.log('스크랩 API 호출 완료');
+
     } catch (error: any) {
       console.error('스크랩 오류:', error);
 
+      // 에러 시에만 UI 상태 되돌리기
+      setIsStarred(!isStarred);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
+        };
+        console.log('에러 시 postData 되돌리기:', updated);
+        return updated;
+      });
 
-          /*
-          // 서버 응답으로 최종 상태 설정
-          setIsStarred(response.bookmarked);
-          setPostData(prev => prev ? {
-            ...prev,
-            scrapCount: response.bookmarkCount
-          } : null);
-          
-          // 다른 사용자가 스크랩할 때 모달 표시
-          if (!response.bookmarked && currentUser !== postData.nickname) {
-            setShowScrapModal(true);
-          }
-        } catch (error: any) {
-          console.error('스크랩 오류:', error);
-          */
-      
-
-      // 에러 시 UI 상태 되돌리기
-      setIsStarred(previousStarred);
-      
-      setPostData((prev) => prev ? {
-        ...prev,
-        scrapCount: previousStarred ? prev.scrapCount : prev.scrapCount - 1
-      } : null);
-
-      
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
       } else {
         alert('스크랩 처리 중 오류가 발생했습니다.');
       }
-    }finally {
-    setIsStarLoading(false); // 무조건 로딩 해제
+    } finally {
+      setIsStarLoading(false);
     }
   };
 
