@@ -1125,7 +1125,7 @@ const YouthTalkDetailPage: React.FC = () => {
           color: #666;
         }
       `}</style>
-              <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
+      <Header isLoggedIn={!!localStorage.getItem('accessToken')} username="" profileUrl="" />
       
       <div className="ytd-container">
         <div className="ytd-post-card">
@@ -1133,6 +1133,7 @@ const YouthTalkDetailPage: React.FC = () => {
           <button className="ytd-back-btn" onClick={handleBackClick}>
             <img src={backIcon} alt="뒤로가기" />
           </button>
+
           {/* 게시글 헤더 */}
           <div className="ytd-post-header">
             <h1 className="ytd-post-title">{postData.title}</h1>
@@ -1147,9 +1148,11 @@ const YouthTalkDetailPage: React.FC = () => {
                       e.currentTarget.className = 'ytd-profile ytd-profile-default';
                     }}
                   />
-                ) : (
-                  <div className="ytd-profile ytd-profile-default" />
-                )}
+                  ) : (
+                    <div className="ytd-profile ytd-profile-default" />
+                  )
+                }
+
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div className="ytd-username">{postData.nickname}</div>
                   <div className="yt-info-divider" />
@@ -1165,6 +1168,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+
               <div className="ytd-interactions">
                 <button 
                   className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
@@ -1173,6 +1177,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.likes}</span>
                 </button>
+
                 <button 
                   className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
                   onClick={handleStar}
@@ -1180,6 +1185,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.scrapCount}</span>
                 </button>
+
                 <button 
                   className="ytd-interaction-btn"
                   onClick={handleRating}
@@ -1187,6 +1193,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   <img src={starRatingIcon} alt="별점" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.rating}</span>
                 </button>
+
                 <div style={{ position: 'relative' }}>
                   <button 
                     className="ytd-more-btn"
@@ -1194,6 +1201,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   >
                     <img src={moreIcon} alt="더보기" style={{ width: 20, height: 20 }} />
                   </button>
+
                   {showMoreMenu && (
                     <div className="ytd-more-menu">
                       <div className="ytd-more-menu-item" onClick={handleCopyUrl} style={{ borderTop: '1px solid #bbb' }}>
@@ -1212,7 +1220,9 @@ const YouthTalkDetailPage: React.FC = () => {
                     </div>
                   )}
                 </div>
+
               </div>
+
             </div>
           </div>
 
@@ -1266,6 +1276,7 @@ const YouthTalkDetailPage: React.FC = () => {
                   />
                   {postData.placeName}
                 </div>
+
                 {postData.address && (
                   <div style={{ 
                     fontSize: '14px',
@@ -1275,6 +1286,7 @@ const YouthTalkDetailPage: React.FC = () => {
                     {postData.address}
                   </div>
                 )}
+
               </div>
             )}
             
@@ -1291,9 +1303,11 @@ const YouthTalkDetailPage: React.FC = () => {
 
           {/* 댓글 섹션 */}
           <div className="ytd-comments-section">
+
             <div className="ytd-comments-header">
               <div className="ytd-comments-title">댓글 {comments.length}</div>
             </div>
+
             {/* 댓글 입력 */}
             <div className="ytd-comment-input-container">
               <textarea
@@ -1424,7 +1438,9 @@ const YouthTalkDetailPage: React.FC = () => {
                 아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
               </div>
             )}
+
           </div>
+          
         </div>
       </div>
 
