@@ -327,7 +327,7 @@ const WriteReviewPage: React.FC = () => {
         // 수정 모드
         // 카테고리를 boardType으로 매핑 (백엔드 형식에 맞춤)
         const categoryToBoardType: Record<string, string> = {
-
+          "청춘톡": "청춘톡",
           "MT여정지도": "MT_LT",
           "함께해요-동행구해요": "동행모집",
           "함께해요-번개모임": "모임구인",
@@ -375,6 +375,9 @@ const WriteReviewPage: React.FC = () => {
             alert(res.message);
             // 수정 완료 후 해당 게시판으로 이동
             switch (selectedCategory) {
+              case "청춘톡":
+                navigate('/youth-talk');
+                break;
               case "MT여정지도":
                 navigate('/mt-journey');
                 break;
@@ -394,7 +397,7 @@ const WriteReviewPage: React.FC = () => {
                 navigate('/together?category=해외교환학생');
                 break;
               default:
-                navigate('/mt-journey');
+                navigate('/youth-talk');
             }
           } else {
             alert('리뷰 수정에 실패했습니다.');
