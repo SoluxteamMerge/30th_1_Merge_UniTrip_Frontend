@@ -10,6 +10,7 @@ export interface ReviewItem {
   likeCount: number;
   scrapCount: number;
   categoryName: string;
+  boardType: string;
 }
 
 interface ReviewResultResponse {
