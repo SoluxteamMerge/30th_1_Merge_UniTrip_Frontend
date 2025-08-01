@@ -66,6 +66,13 @@ function MainPage() {
   'MT여정지도': 'MT_LT',
 };
 
+const filteredReviews = reviews.filter((review) =>
+    selectedBoard === '전체 보기'
+      ? true
+      : review.boardType === boardTypeMap[selectedBoard]
+  );
+
+
 
   // 추천 리뷰 API
   useEffect(() => {
@@ -177,6 +184,7 @@ function MainPage() {
                       onClick={() => {
                       setSelectedBoard(option);
                       setDropdownOpen(false);
+                      setVisibleCount(6);
                     }}
                   >
                     {option}
@@ -188,12 +196,8 @@ function MainPage() {
 
             </div>
             <div className="review-grid">
-              {reviews
-                .filter((review) =>
-                  selectedBoard === '전체 보기' 
-                    ? true 
-                    : review.boardType === boardTypeMap[selectedBoard])
-                .slice(0,visibleCount)
+              {filteredReviews
+                .slice(0, visibleCount)
                 .map((review) => (
                 <div key={review.postId} onClick={() => handleCardClick(review.postId)}>
                   <ReviewCard
@@ -212,7 +216,7 @@ function MainPage() {
             </div>
           </div>
 
-          {visibleCount < reviews.length ? (
+          {visibleCount < filteredReviews.length ? (
             <button className="more-button" onClick={handleMoreClick}>
               <span style={{ textDecoration: 'underline' }}>더보기</span> +
             </button>
