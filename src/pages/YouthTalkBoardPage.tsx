@@ -353,32 +353,13 @@ const YouthTalkBoardPage: React.FC = () => {
                       />
                       <span className="yt-username">{review.nickname}</span>
                       <div className="yt-info-divider" />
-                      <span className="yt-date">{(() => {
-                        const dateToShow = review.updateAt !== review.createdAt ? review.updateAt : review.createdAt;
-                        let date;
-                        
-                        // ISO 형식 날짜 파싱 (마이크로초 포함)
-                        if (dateToShow.includes('T')) {
-                          // ISO 형식: "2025-08-01T20:21:13.438150"
-                          date = new Date(dateToShow);
-                        } else {
-                          // 일반 형식
-                          date = new Date(dateToShow);
-                        }
-                        
-                        // 유효한 날짜인지 확인
-                        if (isNaN(date.getTime())) {
-                          return '날짜 정보 없음';
-                        }
-                        
-                        return date.toLocaleString('ko-KR', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        });
-                      })()}</span>
+                      <span className="yt-date">{new Date(review.updateAt !== review.createdAt ? review.updateAt : review.createdAt).toLocaleString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}</span>
                     </div>
                     <div className="yt-tag-row">
                       <span className="yt-tag yt-tag-main">{review.categoryName}</span>

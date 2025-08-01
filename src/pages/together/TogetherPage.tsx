@@ -376,32 +376,13 @@ const TogetherPage: React.FC = () => {
                         />
                         <span className="together-username">{review.nickname} 님</span>
                         <div className="together-info-divider" />
-                        <span className="together-date">{(() => {
-                          const dateToShow = review.updateAt !== review.createdAt ? review.updateAt : review.createdAt;
-                          let date;
-                          
-                          // ISO 형식 날짜 파싱 (마이크로초 포함)
-                          if (dateToShow.includes('T')) {
-                            // ISO 형식: "2025-08-01T20:21:13.438150"
-                            date = new Date(dateToShow);
-                          } else {
-                            // 일반 형식
-                            date = new Date(dateToShow);
-                          }
-                          
-                          // 유효한 날짜인지 확인
-                          if (isNaN(date.getTime())) {
-                            return '날짜 정보 없음';
-                          }
-                          
-                          return date.toLocaleString('ko-KR', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          });
-                        })()}</span>
+                        <span className="together-date">{new Date(review.updateAt !== review.createdAt ? review.updateAt : review.createdAt).toLocaleString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}</span>
                       </div>
                       {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
                       {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
