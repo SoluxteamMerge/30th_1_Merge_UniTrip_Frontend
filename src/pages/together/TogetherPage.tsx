@@ -376,13 +376,13 @@ const TogetherPage: React.FC = () => {
                         />
                         <span className="together-username">{review.nickname} 님</span>
                         <div className="together-info-divider" />
-                        <span className="together-date">{new Date(review.updateAt !== review.createdAt ? review.updateAt : review.createdAt).toLocaleString('ko-KR', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}</span>
+                                                 <span className="together-date">{new Date((review.updateAt && review.updateAt !== review.createdAt) ? review.updateAt : review.createdAt).toLocaleString('ko-KR', {
+                           year: 'numeric',
+                           month: '2-digit',
+                           day: '2-digit',
+                           hour: '2-digit',
+                           minute: '2-digit'
+                         })}</span>
                       </div>
                       {/* 별점 (졸업/휴학여행, 국내학점교류, 해외교환학생 카테고리인 경우) */}
                       {(selectedCategory === "졸업/휴학여행" || selectedCategory === "국내학점교류" || selectedCategory === "해외교환학생") && (
