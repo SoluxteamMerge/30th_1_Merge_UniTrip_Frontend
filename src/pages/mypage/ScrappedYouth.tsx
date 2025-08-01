@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 import grayThumbnail from "../../assets/gray-thumbnail.svg";
 
-//import { ReviewCardTwo } from "../../pages/reviewcard/ReviewCardTwo";
-import { ReviewCard } from '../reviewcard/ReviewCard';
+import { ReviewCardTwo } from "../../pages/reviewcard/ReviewCardTwo";
+//import { ReviewCard } from '../reviewcard/ReviewCard';
 import '../mainpage/MainPage.css';
 import MyPageSidebar from "../../components/MyPageSidebar";
 import Pagination from "../../components/Pagination"; 
@@ -227,7 +227,7 @@ const ScrappedYouthPage: React.FC = () => {
                 itemsPerPage={6}
                 renderItem={(post) => (
                   <div key={post.postId} onClick={() => navigate(`/youth-talk/${post.postId}`)}>
-                    <ReviewCard
+                    <ReviewCardTwo
                       postId={post.postId}
                       postTitle={post.postTitle}
                       categoryName={post.categoryName}
