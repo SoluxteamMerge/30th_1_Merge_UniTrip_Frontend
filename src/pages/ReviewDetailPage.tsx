@@ -29,11 +29,12 @@ const YouthTalkDetailPage: React.FC = () => {
   const [isLiked, setIsLiked] = useState(false);
 
   const [isStarred, setIsStarred] = useState(false);
-  const [isStarLoading, setIsStarLoading] = useState(false); //추가
 
   const [isRated, setIsRated] = useState(false);
   
-
+  // 로딩 상태 추가
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [isStarLoading, setIsStarLoading] = useState(false);
   
   // 현재 로그인한 사용자 정보
   const [currentUser, setCurrentUser] = useState("");
@@ -1248,19 +1249,31 @@ const YouthTalkDetailPage: React.FC = () => {
 
               <div className="ytd-interactions">
                 <button 
-                  className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
+                  className={`ytd-interaction-btn ${isLiked ? 'active' : ''} ${isLikeLoading ? 'loading' : ''}`}
                   onClick={handleLike}
+                  disabled={isLikeLoading}
+                  style={{
+                    opacity: isLikeLoading ? 0.6 : 1,
+                    cursor: isLikeLoading ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.likes}</span>
+                  {isLikeLoading && <span style={{ fontSize: '12px', color: '#999' }}>...</span>}
                 </button>
 
                 <button 
-                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
+                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''} ${isStarLoading ? 'loading' : ''}`}
                   onClick={handleStar}
+                  disabled={isStarLoading}
+                  style={{
+                    opacity: isStarLoading ? 0.6 : 1,
+                    cursor: isStarLoading ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.scrapCount}</span>
+                  {isStarLoading && <span style={{ fontSize: '12px', color: '#999' }}>...</span>}
                 </button>
 
                 <button 
