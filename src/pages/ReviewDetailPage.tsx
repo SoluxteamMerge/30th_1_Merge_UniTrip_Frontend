@@ -260,25 +260,29 @@ const YouthTalkDetailPage: React.FC = () => {
       }
 
       // 낙관적 업데이트 - 즉시 UI 변경
-      setIsLiked(!isLiked);
+      const newLikedState = !isLiked;
+      const newLikeCount = isLiked ? (postData?.likes || 0) - 1 : (postData?.likes || 0) + 1;
+      
+      setIsLiked(newLikedState);
       setPostData(prev => prev ? {
         ...prev,
-        likes: isLiked ? prev.likes - 1 : prev.likes + 1
+        likes: newLikeCount
       } : null);
       
       setIsLikeLoading(true);
 
       const response = await likeReview(postData.postId, accessToken);
       
-      // 성공 시 서버 응답으로 최종 상태 확인
       console.log('좋아요 API 응답:', response);
       
-      // 서버 응답으로 최종 상태 설정
-      setIsLiked(response.liked);
-      setPostData(prev => prev ? {
-        ...prev,
-        likes: response.likeCount
-      } : null);
+      // 서버 응답과 낙관적 업데이트가 다르면 서버 응답으로 동기화
+      if (response.liked !== newLikedState || response.likeCount !== newLikeCount) {
+        setIsLiked(response.liked);
+        setPostData(prev => prev ? {
+          ...prev,
+          likes: response.likeCount
+        } : null);
+      }
       
     } catch (error: any) {
       console.error('좋아요 오류:', error);
@@ -287,7 +291,7 @@ const YouthTalkDetailPage: React.FC = () => {
       setIsLiked(!isLiked);
       setPostData(prev => prev ? {
         ...prev,
-        likes: isLiked ? prev.likes + 1 : prev.likes - 1
+        likes: isLiked ? (prev.likes || 0) + 1 : (prev.likes || 0) - 1
       } : null);
       
       if (error.response?.status === 401) {
@@ -311,25 +315,29 @@ const YouthTalkDetailPage: React.FC = () => {
       }
 
       // 낙관적 업데이트 - 즉시 UI 변경
-      setIsStarred(!isStarred);
+      const newStarredState = !isStarred;
+      const newScrapCount = isStarred ? (postData?.scrapCount || 0) - 1 : (postData?.scrapCount || 0) + 1;
+      
+      setIsStarred(newStarredState);
       setPostData(prev => prev ? {
         ...prev,
-        scrapCount: isStarred ? prev.scrapCount - 1 : prev.scrapCount + 1
+        scrapCount: newScrapCount
       } : null);
       
       setIsStarLoading(true);
 
       const response = await bookmarkReview(postData.postId, accessToken);
       
-      // 성공 시 서버 응답으로 최종 상태 확인
       console.log('스크랩 API 응답:', response);
       
-      // 서버 응답으로 최종 상태 설정
-      setIsStarred(response.bookmarked);
-      setPostData(prev => prev ? {
-        ...prev,
-        scrapCount: response.bookmarkCount
-      } : null);
+      // 서버 응답과 낙관적 업데이트가 다르면 서버 응답으로 동기화
+      if (response.bookmarked !== newStarredState || response.bookmarkCount !== newScrapCount) {
+        setIsStarred(response.bookmarked);
+        setPostData(prev => prev ? {
+          ...prev,
+          scrapCount: response.bookmarkCount
+        } : null);
+      }
       
       // 다른 사용자가 스크랩할 때 모달 표시
       if (!response.bookmarked && currentUser !== postData.nickname) {
@@ -342,7 +350,7 @@ const YouthTalkDetailPage: React.FC = () => {
       setIsStarred(!isStarred);
       setPostData(prev => prev ? {
         ...prev,
-        scrapCount: isStarred ? prev.scrapCount + 1 : prev.scrapCount - 1
+        scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
       } : null);
       
       if (error.response?.status === 401) {
