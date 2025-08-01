@@ -184,9 +184,9 @@
             return;
           }
           try {
-            // ✅ 지역 결과 제거
-            setIsRegionFiltered(false);
+            setIsRegionFiltered(false);// 지역 결과 제거
             setRegionReviews([]);
+            setSelectedRegion(null); //라디오 버튼 초기화
 
             console.log("💥 searchReviews 호출됨:", searchQuery);
             const response = await searchReviews(searchQuery, token, "popular"); // 공통 함수로 변경
@@ -217,9 +217,12 @@
             return;
           }
 
-          setIsRegionFiltered(false);
+          setIsRegionFiltered(false);//지역 상태 초기화
           setRegionReviews([]);
+          setSelectedRegion(null); //라디오 버튼 초기화
+          
           setSearchQuery(keyword);
+          
 
           const response = await searchReviews(keyword, token,"popular", true); 
 
