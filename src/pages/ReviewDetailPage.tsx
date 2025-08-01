@@ -267,6 +267,7 @@ const YouthTalkDetailPage: React.FC = () => {
       
       console.log('낙관적 업데이트:', { newLikedState, newLikeCount });
       
+      // 상태를 즉시 업데이트 (최종 UI 상태로 유지)
       setIsLiked(newLikedState);
       setPostData(prev => {
         if (!prev) return null;
@@ -280,26 +281,15 @@ const YouthTalkDetailPage: React.FC = () => {
       
       setIsLikeLoading(true);
 
-      const response = await likeReview(postData.postId, accessToken);
+      // API 호출 (응답은 확인하지 않음)
+      await likeReview(postData.postId, accessToken);
       
-      console.log('좋아요 API 응답:', response);
-      
-      // 서버 응답으로 상태 업데이트 (항상 서버 응답을 신뢰)
-      setIsLiked(response.liked);
-      setPostData(prev => {
-        if (!prev) return null;
-        const updated = {
-          ...prev,
-          likes: response.likeCount
-        };
-        console.log('서버 응답으로 postData 업데이트:', updated);
-        return updated;
-      });
+      console.log('좋아요 API 호출 완료');
       
     } catch (error: any) {
       console.error('좋아요 오류:', error);
       
-      // 에러 시 UI 상태 되돌리기
+      // 에러 시에만 UI 상태 되돌리기
       setIsLiked(!isLiked);
       setPostData(prev => {
         if (!prev) return null;
@@ -339,6 +329,7 @@ const YouthTalkDetailPage: React.FC = () => {
       
       console.log('낙관적 업데이트:', { newStarredState, newScrapCount });
       
+      // 상태를 즉시 업데이트 (최종 UI 상태로 유지)
       setIsStarred(newStarredState);
       setPostData(prev => {
         if (!prev) return null;
@@ -352,30 +343,15 @@ const YouthTalkDetailPage: React.FC = () => {
       
       setIsStarLoading(true);
 
-      const response = await bookmarkReview(postData.postId, accessToken);
+      // API 호출 (응답은 확인하지 않음)
+      await bookmarkReview(postData.postId, accessToken);
       
-      console.log('스크랩 API 응답:', response);
+      console.log('스크랩 API 호출 완료');
       
-      // 서버 응답으로 상태 업데이트 (항상 서버 응답을 신뢰)
-      setIsStarred(response.bookmarked);
-      setPostData(prev => {
-        if (!prev) return null;
-        const updated = {
-          ...prev,
-          scrapCount: response.bookmarkCount
-        };
-        console.log('서버 응답으로 postData 업데이트:', updated);
-        return updated;
-      });
-      
-      // 다른 사용자가 스크랩할 때 모달 표시
-      if (!response.bookmarked && currentUser !== postData.nickname) {
-        setShowScrapModal(true);
-      }
     } catch (error: any) {
       console.error('스크랩 오류:', error);
       
-      // 에러 시 UI 상태 되돌리기
+      // 에러 시에만 UI 상태 되돌리기
       setIsStarred(!isStarred);
       setPostData(prev => {
         if (!prev) return null;
@@ -1263,20 +1239,30 @@ const YouthTalkDetailPage: React.FC = () => {
               </div>
               <div className="ytd-interactions">
                 <button 
-                  className={`ytd-interaction-btn ${isLiked ? 'active' : ''}`}
+                  className={`ytd-interaction-btn ${isLiked ? 'active' : ''} ${isLikeLoading ? 'loading' : ''}`}
                   onClick={handleLike}
                   disabled={isLikeLoading}
+                  style={{
+                    opacity: isLikeLoading ? 0.6 : 1,
+                    cursor: isLikeLoading ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   <img src={isLiked ? heartFillIcon : heartIcon} alt="좋아요" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.likes}</span>
+                  {isLikeLoading && <span style={{ fontSize: '12px', color: '#999' }}>...</span>}
                 </button>
                 <button 
-                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''}`}
+                  className={`ytd-interaction-btn ${isStarred ? 'active' : ''} ${isStarLoading ? 'loading' : ''}`}
                   onClick={handleStar}
                   disabled={isStarLoading}
+                  style={{
+                    opacity: isStarLoading ? 0.6 : 1,
+                    cursor: isStarLoading ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   <img src={isStarred ? starFillIcon : starIcon} alt="스크랩" style={{ width: 30, height: 30 }} />
                   <span className="ytd-interaction-count">{postData.scrapCount}</span>
+                  {isStarLoading && <span style={{ fontSize: '12px', color: '#999' }}>...</span>}
                 </button>
                 <button 
                   className="ytd-interaction-btn"
