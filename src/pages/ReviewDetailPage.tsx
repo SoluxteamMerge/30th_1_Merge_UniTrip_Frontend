@@ -1598,6 +1598,7 @@ const handleDeleteConfirm = async () => {
           <div 
           style={{
           width: "400px",
+          height: "200px", 
           backgroundColor: "#fff",
           borderRadius: "16px",
           padding: "24px",
@@ -1607,11 +1608,11 @@ const handleDeleteConfirm = async () => {
             <div 
             style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
-              <span 
-              style={{ fontSize: "16px", fontWeight: "bold" }}
-              >
-                스크랩이 취소되었습니다.
-              </span>
+              <div style={{ margin: "8px 0 16px 0" }}> {/* 위/아래 여백 */}
+                <span style={{ fontSize: "16px", fontWeight: "bold" }}>
+                  스크랩이 취소되었습니다.
+                </span>
+              </div>
 
               <button 
               onClick={handleScrapCancelModalClose}
