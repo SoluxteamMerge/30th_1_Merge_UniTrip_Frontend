@@ -246,13 +246,6 @@
   border: #DEDEDE;
 }
 
-/* 선택된 항목 강조 */
-.dropdown-menu li.selected {
-  background-color: #DEDEDE;
-  color: black;
-}
-
-
 
 
 

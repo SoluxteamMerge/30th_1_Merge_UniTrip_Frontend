@@ -28,6 +28,7 @@ function YouthDrawer() {
 
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
+        console.log('📌 토큰 확인:', token);
         if (!token) {
             setResultMessage('로그인이 필요합니다.');
             setIsResultModalOpen(true);
@@ -65,6 +66,8 @@ function YouthDrawer() {
             const res = await api.delete('/api/user/signout', {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            
+            console.log('회원탈퇴 응답: ', res);
 
             setResultMessage(res.data.message);
             setShouldRedirect(true);
