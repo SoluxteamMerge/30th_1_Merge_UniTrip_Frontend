@@ -336,7 +336,7 @@ const YouthTalkDetailPage: React.FC = () => {
         return updated;
       });
 
-      setIsStarLoading(true);
+      //setIsStarLoading(true);//주석 처리
 
       // API 호출 (응답은 확인하지 않음)
       await bookmarkReview(postData.postId, accessToken);
