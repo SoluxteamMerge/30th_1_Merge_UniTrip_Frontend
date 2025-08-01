@@ -1608,8 +1608,14 @@ const handleDeleteConfirm = async () => {
             <div 
             style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
-              <div style={{ margin: "15px 0 8px 0" }}> {/* 위/아래 여백 */}
-                <span style={{ fontSize: "16px", fontWeight: "bold" }}>
+              <div 
+              style={{ 
+                margin: "15px 0 8px 0", 
+                width: "100%",           
+                textAlign: "center"     
+              }}
+              > {/* 위/아래 여백 */}
+                <span style={{ fontSize: "20px", fontWeight: "700px" }}>
                   스크랩이 취소되었습니다.
                 </span>
               </div>
@@ -1623,7 +1629,7 @@ const handleDeleteConfirm = async () => {
             </div>
             <div 
               style={{
-                marginTop: "8px", // 여백 줄임
+                padding: "30px 20px 30px 20px", // 여백 줄임
                 display: "flex",
                 justifyContent: "center",
               }}
