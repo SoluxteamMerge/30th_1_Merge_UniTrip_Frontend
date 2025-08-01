@@ -259,15 +259,24 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
+      console.log('좋아요 버튼 클릭 - 현재 상태:', { isLiked, currentLikes: postData?.likes });
+
       // 낙관적 업데이트 - 즉시 UI 변경
       const newLikedState = !isLiked;
       const newLikeCount = isLiked ? (postData?.likes || 0) - 1 : (postData?.likes || 0) + 1;
       
+      console.log('낙관적 업데이트:', { newLikedState, newLikeCount });
+      
       setIsLiked(newLikedState);
-      setPostData(prev => prev ? {
-        ...prev,
-        likes: newLikeCount
-      } : null);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          likes: newLikeCount
+        };
+        console.log('postData 업데이트:', updated);
+        return updated;
+      });
       
       setIsLikeLoading(true);
 
@@ -275,24 +284,32 @@ const YouthTalkDetailPage: React.FC = () => {
       
       console.log('좋아요 API 응답:', response);
       
-      // 서버 응답과 낙관적 업데이트가 다르면 서버 응답으로 동기화
-      if (response.liked !== newLikedState || response.likeCount !== newLikeCount) {
-        setIsLiked(response.liked);
-        setPostData(prev => prev ? {
+      // 서버 응답으로 상태 업데이트 (항상 서버 응답을 신뢰)
+      setIsLiked(response.liked);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
           ...prev,
           likes: response.likeCount
-        } : null);
-      }
+        };
+        console.log('서버 응답으로 postData 업데이트:', updated);
+        return updated;
+      });
       
     } catch (error: any) {
       console.error('좋아요 오류:', error);
       
       // 에러 시 UI 상태 되돌리기
       setIsLiked(!isLiked);
-      setPostData(prev => prev ? {
-        ...prev,
-        likes: isLiked ? (prev.likes || 0) + 1 : (prev.likes || 0) - 1
-      } : null);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          likes: isLiked ? (prev.likes || 0) + 1 : (prev.likes || 0) - 1
+        };
+        console.log('에러 시 postData 되돌리기:', updated);
+        return updated;
+      });
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');
@@ -314,15 +331,24 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
+      console.log('스크랩 버튼 클릭 - 현재 상태:', { isStarred, currentScrapCount: postData?.scrapCount });
+
       // 낙관적 업데이트 - 즉시 UI 변경
       const newStarredState = !isStarred;
       const newScrapCount = isStarred ? (postData?.scrapCount || 0) - 1 : (postData?.scrapCount || 0) + 1;
       
+      console.log('낙관적 업데이트:', { newStarredState, newScrapCount });
+      
       setIsStarred(newStarredState);
-      setPostData(prev => prev ? {
-        ...prev,
-        scrapCount: newScrapCount
-      } : null);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          scrapCount: newScrapCount
+        };
+        console.log('postData 업데이트:', updated);
+        return updated;
+      });
       
       setIsStarLoading(true);
 
@@ -330,14 +356,17 @@ const YouthTalkDetailPage: React.FC = () => {
       
       console.log('스크랩 API 응답:', response);
       
-      // 서버 응답과 낙관적 업데이트가 다르면 서버 응답으로 동기화
-      if (response.bookmarked !== newStarredState || response.bookmarkCount !== newScrapCount) {
-        setIsStarred(response.bookmarked);
-        setPostData(prev => prev ? {
+      // 서버 응답으로 상태 업데이트 (항상 서버 응답을 신뢰)
+      setIsStarred(response.bookmarked);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
           ...prev,
           scrapCount: response.bookmarkCount
-        } : null);
-      }
+        };
+        console.log('서버 응답으로 postData 업데이트:', updated);
+        return updated;
+      });
       
       // 다른 사용자가 스크랩할 때 모달 표시
       if (!response.bookmarked && currentUser !== postData.nickname) {
@@ -348,10 +377,15 @@ const YouthTalkDetailPage: React.FC = () => {
       
       // 에러 시 UI 상태 되돌리기
       setIsStarred(!isStarred);
-      setPostData(prev => prev ? {
-        ...prev,
-        scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
-      } : null);
+      setPostData(prev => {
+        if (!prev) return null;
+        const updated = {
+          ...prev,
+          scrapCount: isStarred ? (prev.scrapCount || 0) + 1 : (prev.scrapCount || 0) - 1
+        };
+        console.log('에러 시 postData 되돌리기:', updated);
+        return updated;
+      });
       
       if (error.response?.status === 401) {
         alert('로그인이 필요합니다.');

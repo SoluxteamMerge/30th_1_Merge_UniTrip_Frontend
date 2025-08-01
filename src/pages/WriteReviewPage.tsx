@@ -367,6 +367,7 @@ const WriteReviewPage: React.FC = () => {
         };
         
         console.log('수정 데이터:', updateData);
+        console.log('수정 시간 (updatedAt):', updateData.updatedAt);
 
         try {
           // 새로운 이미지 파일이 있는 경우 별도 처리
