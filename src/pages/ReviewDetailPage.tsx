@@ -1601,14 +1601,14 @@ const handleDeleteConfirm = async () => {
           height: "150px", 
           backgroundColor: "#fff",
           borderRadius: "16px",
-          padding: "24px",
+          padding: "20px",
           boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
         }}
           >
             <div 
             style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
-              <div style={{ margin: "20px 0 8px 0" }}> {/* 위/아래 여백 */}
+              <div style={{ margin: "15px 0 8px 0" }}> {/* 위/아래 여백 */}
                 <span style={{ fontSize: "16px", fontWeight: "bold" }}>
                   스크랩이 취소되었습니다.
                 </span>
