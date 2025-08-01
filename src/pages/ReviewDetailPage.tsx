@@ -259,10 +259,7 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
-      // 낙관적 업데이트
-      const previousLiked = isLiked;
-      const previousLikes = postData.likes;
-      
+      // 낙관적 업데이트 - 즉시 UI 변경
       setIsLiked(!isLiked);
       setPostData(prev => prev ? {
         ...prev,
@@ -273,7 +270,10 @@ const YouthTalkDetailPage: React.FC = () => {
 
       const response = await likeReview(postData.postId, accessToken);
       
-      // 서버 응답으로 상태 업데이트
+      // 성공 시 서버 응답으로 최종 상태 확인
+      console.log('좋아요 API 응답:', response);
+      
+      // 서버 응답으로 최종 상태 설정
       setIsLiked(response.liked);
       setPostData(prev => prev ? {
         ...prev,
@@ -310,10 +310,7 @@ const YouthTalkDetailPage: React.FC = () => {
         return;
       }
 
-      // 낙관적 업데이트
-      const previousStarred = isStarred;
-      const previousScrapCount = postData.scrapCount;
-      
+      // 낙관적 업데이트 - 즉시 UI 변경
       setIsStarred(!isStarred);
       setPostData(prev => prev ? {
         ...prev,
@@ -324,13 +321,16 @@ const YouthTalkDetailPage: React.FC = () => {
 
       const response = await bookmarkReview(postData.postId, accessToken);
       
-      // 서버 응답으로 상태 업데이트
+      // 성공 시 서버 응답으로 최종 상태 확인
+      console.log('스크랩 API 응답:', response);
+      
+      // 서버 응답으로 최종 상태 설정
       setIsStarred(response.bookmarked);
       setPostData(prev => prev ? {
         ...prev,
         scrapCount: response.bookmarkCount
       } : null);
-
+      
       // 다른 사용자가 스크랩할 때 모달 표시
       if (!response.bookmarked && currentUser !== postData.nickname) {
         setShowScrapModal(true);
