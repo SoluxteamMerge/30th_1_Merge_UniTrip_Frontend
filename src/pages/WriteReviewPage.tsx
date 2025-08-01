@@ -70,11 +70,7 @@ const WriteReviewPage: React.FC = () => {
         setRating(editData.rating || 0);
         setScheduleInput(editData.schedule || "");
         
-        console.log('수정 모드 데이터 로드:', editData);
-        console.log('설정된 카테고리:', editData.category);
-        console.log('설정된 태그:', editData.tags);
-        console.log('selectedCategory 상태:', selectedCategory);
-        console.log('tags 상태:', tags);
+
       } catch (error) {
         console.error('수정 데이터 파싱 오류:', error);
       }
@@ -342,13 +338,11 @@ const WriteReviewPage: React.FC = () => {
 
         const boardType = categoryToBoardType[selectedCategory] || selectedCategory;
         
-        // 태그들을 categoryName에 포함 (카테고리는 제외)
-        const tagString = tags.length > 0 ? tags.join(', ') : '';
-        const categoryNameWithTags = tagString || '';
-        
+        // categoryName에는 하나의 태그만 저장 (백엔드에서 하나만 허용)
+        const categoryNameWithTag = tags.length > 0 ? tags[0] : selectedCategory;
         const updateData = {
           boardType: boardType,
-          categoryName: categoryNameWithTags,
+          categoryName: categoryNameWithTag,
           title: title.trim(),
           content: content,
           scheduleDate: scheduleInput,
@@ -362,13 +356,7 @@ const WriteReviewPage: React.FC = () => {
           lng: selectedLocation?.lng || 0
         };
         
-        console.log('매핑된 boardType:', boardType);
-        console.log('selectedCategory:', selectedCategory);
-        console.log('전체 updateData:', JSON.stringify(updateData, null, 2));
 
-        console.log('수정 모드 updateData:', updateData);
-        console.log('editPostId:', editPostId);
-        console.log('accessToken:', accessToken ? '있음' : '없음');
         try {
           const res = await updateReview(editPostId, updateData, accessToken);
           console.log('수정 API 응답:', res);
@@ -437,13 +425,11 @@ const WriteReviewPage: React.FC = () => {
 
         const boardType = categoryToBoardType[selectedCategory] || selectedCategory;
         
-        // 태그들을 categoryName에 포함 (카테고리는 제외)
-        const tagString = tags.length > 0 ? tags.join(', ') : '';
-        const categoryNameWithTags = tagString || '';
-        
+        // categoryName에는 하나의 태그만 저장 (백엔드에서 하나만 허용)
+        const categoryNameWithTag = tags.length > 0 ? tags[0] : selectedCategory;
         const reviewData = {
           boardType: boardType,
-          categoryName: categoryNameWithTags,
+          categoryName: categoryNameWithTag,
           title: title.trim(),
           content: content,
           scheduleDate: scheduleInput,
