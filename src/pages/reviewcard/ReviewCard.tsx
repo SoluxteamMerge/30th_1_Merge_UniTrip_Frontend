@@ -13,6 +13,7 @@ interface ReviewCardProps {
   rating: number;
   likeCount: number;
   scrapCount: number;
+  boardType: string;
 }
 
 export const ReviewCard = ({
